@@ -35,7 +35,7 @@ box:
 # in particular the two-pass halo-catalog fix from 30 Jun 2026)
 # -----------------------------------------------------------------------------
 p21c_options:
-  sampler_min_mass: 1.0e8
+  sampler_min_mass: 1.0e+8
   sampler_buffer_factor: 2.0
   halo_catalog_mem_factor: 3.0
   keep_3d_velocities: true
@@ -57,8 +57,8 @@ lightcone:
 # Tracer selection cuts
 # -----------------------------------------------------------------------------
 tracers:
-  halo_mass_cut_msun: 1.0e10        # applied to the raw halo tracer map
-  lae_lbg_mass_cut_msun: 3.162e9    # 10^9.5 -- the mass-cut subset that
+  halo_mass_cut_msun: 1.0e+10        # applied to the raw halo tracer map
+  lae_lbg_mass_cut_msun: 3.162e+9    # 10^9.5 -- the mass-cut subset that
                                      # Jahaan's LAE/LBG ids index into
   lbg_muv_cut: -17.0
 

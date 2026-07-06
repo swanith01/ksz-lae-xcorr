@@ -12,6 +12,11 @@ dependencies:
   - fftw         # system dep required by 21cmFAST's C backend
   - pip
   - pip:
-      - git+https://github.com/21cmFAST/21cmFAST.git@54a215398
+      # Official tagged release, confirmed to match the API this repo's
+      # halos/coeval_pipeline.py was written against (determine_halo_catalog,
+      # generate_coeval, get_logspaced_redshifts all present). Preferred
+      # over pinning an untagged dev commit -- this is a real, reproducible
+      # PyPI release.
+      - 21cmFAST==4.1.0
       - camb
       - pytest

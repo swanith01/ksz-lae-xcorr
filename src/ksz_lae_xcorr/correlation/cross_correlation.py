@@ -32,7 +32,9 @@ def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) 
 
     Returns: results[tracer_name][seed][z_center][signal_name] =
         {'ell', 'D_ell', 'D_err', 'r'}
-    for tracer_name in ('halo', 'lae', 'lbg').
+    for each tracer_name in cfg.correlation.tracers that was actually stitched
+    (tracers pending external catalogue handover, e.g. LAE/LBG, are simply
+    omitted -- this does not require all configured tracers to be present).
     """
     cosmo = get_cosmology(cfg)
     h = little_h(cfg)
@@ -44,12 +46,17 @@ def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) 
     z_cents = 0.5 * (z_edges[:-1] + z_edges[1:])
 
     signal_maps = {name: maps[name] for name in cfg.correlation.signals}
-    tracer_names = cfg.correlation.tracers  # ('halo', 'lae', 'lbg')
+    count_key = {"halo": "halo_count_lc", "lae": "lae_count_lc", "lbg": "lbg_count_lc"}
 
-    results = {t: {s: {} for s in seeds} for t in tracer_names}
+    results = {t: {s: {} for s in seeds} for t in cfg.correlation.tracers}
 
     for seed in seeds:
         if seed not in maps["kSZ2"] or seed not in tracer_data:
+            continue
+
+        # Only cross-correlate tracers that were actually stitched for this seed.
+        available_tracers = [t for t in cfg.correlation.tracers if count_key[t] in tracer_data[seed]]
+        if not available_tracers:
             continue
 
         z_nodes_t = tracer_data[seed]["z_nodes"]
@@ -62,19 +69,21 @@ def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) 
                 continue
 
             tracer_proj = {
-                "halo": tracer_data[seed]["halo_count_lc"][:, :, zi_lo_t:zi_hi_t].sum(axis=2),
-                "lae": tracer_data[seed]["lae_count_lc"][:, :, zi_lo_t:zi_hi_t].sum(axis=2),
-                "lbg": tracer_data[seed]["lbg_count_lc"][:, :, zi_lo_t:zi_hi_t].sum(axis=2),
+                t: tracer_data[seed][count_key[t]][:, :, zi_lo_t:zi_hi_t].sum(axis=2)
+                for t in available_tracers
             }
             delta = {name: make_overdensity(proj) for name, proj in tracer_proj.items()}
 
-            if delta["lae"].std() == 0 and delta["lbg"].std() == 0:
+            # Skip this z-slice only if EVERY available tracer has zero variance here
+            # (e.g. an empty bin) -- not hardcoded to lae/lbg specifically, so a
+            # halo-only run isn't skipped just because LAE/LBG aren't present.
+            if all(delta[t].std() == 0 for t in available_tracers):
                 continue
 
             chi_c = cosmo.comoving_distance(z_c).to_value("Mpc")
             ell_c = make_ell(kg.k_centers, chi_c, h)
 
-            for t in tracer_names:
+            for t in available_tracers:
                 results[t][seed][z_c] = {}
 
             for signal_name, smaps in signal_maps.items():
@@ -84,7 +93,7 @@ def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) 
                 sig = sig - sig.mean()
                 T_cmb = constants.T_CMB_UK if signal_name == "kSZ2" else None
 
-                for t in tracer_names:
+                for t in available_tracers:
                     d = delta[t]
                     P, Pe, r = cross_power_2d(sig, d - d.mean(), kg)
                     C, Ce = to_Cell(P, Pe, chi_c, h)

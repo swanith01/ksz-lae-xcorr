@@ -112,6 +112,102 @@ pbs/             cluster job scripts
 tests/           smoke tests
 ```
 
+## Quicktest (halo pipeline + stitching + cross-correlation sanity check)
+
+Before committing to a full cluster run, `configs/variants/quicktest.yaml`
+runs the exact same code path (`halos/` → `lightcone/` → `correlation/`) at
+a tiny size (50 Mpc, HII_DIM=32, DIM=64, 1 seed, z=6–10) so it finishes in
+under a minute on a desktop. It deliberately runs **halo tracer only** —
+LAE/LBG are left out via `lightcone.fields.discrete: [halos]` and
+`correlation.tracers: [halo]` until Jahaan's catalogues are available (see
+`data/README.md`).
+
+### One-time environment setup
+
+21cmFAST v4 moves fast enough that conda-forge and PyPI can lag behind
+whatever's actually installed in a working env. Confirm what you actually
+have before assuming `environment.yml` is right:
+
+```bash
+conda activate <your-working-21cmfast-env>
+python -c "import py21cmfast as p21c; print(p21c.__version__)"
+python -c "import py21cmfast as p21c; print('determine_halo_catalog' in dir(p21c), 'generate_coeval' in dir(p21c))"
+```
+
+Both should print `True`/`True` for `determine_halo_catalog` and
+`generate_coeval` — those are the two calls `halos/coeval_pipeline.py`
+depends on. This repo is built against the official **21cmFAST v4.1.0**
+PyPI release (`pip install 21cmFAST==4.1.0`), confirmed to match. If your
+working env has a different version, check whether these two functions
+exist under those exact names before assuming the code will just work —
+an earlier dev-snapshot build we tried (`4.0.0b1.dev...`) had renamed them
+(`compute_halo_grid`, `determine_halo_list`) and would have needed a
+different `halos/coeval_pipeline.py` to match.
+
+```bash
+conda env create -f environment.yml
+conda activate ksz-lae-xcorr
+pip install -e .          # editable install of src/ksz_lae_xcorr -- required,
+                           # scripts import it as a package, not via PYTHONPATH
+python -c "import ksz_lae_xcorr; print('OK')"
+```
+
+### Running the quicktest
+
+```bash
+export OMP_NUM_THREADS=4   # a handful of cores is plenty at this size
+python scripts/01_run_coeval_seed.py --seed 1 --config configs/variants/quicktest.yaml
+python scripts/02_stitch_lightcones.py --seed 1 --config configs/variants/quicktest.yaml
+python scripts/04_compute_xcorr.py --config configs/variants/quicktest.yaml
+```
+
+Expect ~1,000,000 halos at z=6 falling to a few hundred thousand by z=10.27
+(monotonic decrease with z is the expected structure-formation trend), and
+`cross_results.pkl` / `auto_results.pkl` under `quicktest_data/products/`.
+
+### Inspecting results
+
+```bash
+python -c "
+import pickle, numpy as np
+with open('quicktest_data/products/cross_results.pkl', 'rb') as f:
+    d = pickle.load(f)
+cross = d['cross_results']
+halo = cross['halo'][1]
+for signal in ['kSZ2', 'xe2', 'v2']:
+    for z in sorted(halo.keys()):
+        D = halo[z][signal]['D_ell']
+        print(f'{signal} z={z:.2f}: D_ell range [{np.nanmin(D):.4g}, {np.nanmax(D):.4g}]')
+"
+```
+
+Large swings and sign changes in `D_ell` at this box size are **expected**,
+not a bug — 32³ cells gives very few independent Fourier modes per k-bin,
+so sample variance dominates. The 300 Mpc/300³ fiducial run averaged over
+10 seeds is what actually beats that down; this test only confirms the
+code path runs correctly end to end, not that the numbers mean anything
+physically.
+
+Plots (`plotting/lightcone_panels.py`, `plotting/spectra_plots.py`) can be
+called directly on the quicktest products the same way `scripts/06` calls
+them on real products — see git history around this section for worked
+examples, or just ask.
+
+### Known gotchas hit during this validation (fixed, but worth knowing)
+
+- **PyYAML silently turns unsigned scientific notation into a string.**
+  `1.0e10` parses as the string `'1.0e10'`, not the float `1e10` --
+  `1.0e+10` (explicit sign) is required. All configs in this repo use the
+  signed form; `lightcone/stitch.py` also defensively casts these values
+  with `float(...)` so a future slip doesn't fail silently deep inside a
+  numpy comparison.
+- **`matplotlib.cm.get_cmap` was removed** in newer matplotlib --
+  `matplotlib.colormaps["name"].resampled(n)` is the current API, used in
+  `plotting/spectra_plots.py`.
+- 21cmFAST's exact installed build matters more than usual right now (see
+  environment setup above) -- check the two function names before
+  assuming any dev/beta build matches this repo's API.
+
 ## Releases
 
 - `v0.1` — tagged when the first full pipeline (steps 01–06) runs end to end.

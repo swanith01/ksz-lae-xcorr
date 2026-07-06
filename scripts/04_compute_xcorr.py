@@ -37,7 +37,7 @@ def main():
     print("Building projected 2D maps...")
     maps = build_projected_maps(cfg, field_data, tracer_data, seeds)
 
-    print("Computing cross-power spectra (halo, LAE, LBG)...")
+    print(f"Computing cross-power spectra ({', '.join(cfg.correlation.tracers)})...")
     cross_results = compute_cross_spectra(cfg, maps, tracer_data, seeds)
 
     print("Computing auto-power spectra (needed by the SNR kSZ-reion filter)...")

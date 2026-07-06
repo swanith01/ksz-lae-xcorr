@@ -20,6 +20,10 @@ logs/
 configs/variants/local_*.yaml
 .pbs_jobids
 
+# Local quicktest scratch output (configs/variants/quicktest.yaml) -- pure
+# throwaway sanity-check data, never a real product.
+quicktest_data/
+
 # Python
 __pycache__/
 *.pyc

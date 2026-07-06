@@ -68,8 +68,8 @@ class Stitcher:
         self.z_max = cfg.box.z_max
         self.n_lc_pix = cfg.lightcone.n_lc_pix
         self.angle_deg = cfg.lightcone.angle_deg
-        self.halo_mass_cut = cfg.tracers.halo_mass_cut_msun
-        self.muv_cut = cfg.tracers.lbg_muv_cut
+        self.halo_mass_cut = float(cfg.tracers.halo_mass_cut_msun)
+        self.muv_cut = float(cfg.tracers.lbg_muv_cut)
 
         self.root_coeval = cfg.paths.coeval_root
         self.root_halos = cfg.paths.halo_root

@@ -19,14 +19,13 @@ import numpy as np
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 
 
 def plot_dell_vs_ell(cross_results: dict, tracer: str, signal: str, seed: int, out_dir: str) -> None:
     """Rainbow-over-redshift D_ell vs ell for one seed/tracer/signal combination."""
     os.makedirs(out_dir, exist_ok=True)
     z_cents = sorted(cross_results[tracer][seed].keys())
-    cmap = cm.get_cmap("rainbow", len(z_cents))
+    cmap = matplotlib.colormaps["rainbow"].resampled(max(len(z_cents), 1))
 
     fig, ax = plt.subplots(figsize=(7, 5), constrained_layout=True)
     for i, z_c in enumerate(z_cents):

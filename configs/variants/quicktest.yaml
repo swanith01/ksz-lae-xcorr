@@ -1,0 +1,77 @@
+# =============================================================================
+# quicktest.yaml
+# Small, fast config for sanity-checking the halo/coeval pipeline code path
+# (scripts/01_run_coeval_seed.py) locally, without touching LAE/LBG at all
+# -- that script never reads LAE/LBG catalogues in the first place.
+#
+# NOT for science -- box is far too small/low-res for real results. This
+# only exists to confirm the two-pass halo-catalog fix and the
+# save_coeval() field extraction still work against the installed
+# py21cmfast API before committing to a full cluster run.
+# =============================================================================
+
+run_name: "quicktest_local"
+
+cosmology:
+  H0: 67.77
+  Om0: 0.3086
+  Ob0: 0.0489
+  ns: 0.9665
+
+box:
+  box_len_mpc: 50.0     # tiny box vs fiducial's 300 Mpc
+  hii_dim: 32           # vs fiducial's 300
+  dim: 64               # vs fiducial's 600
+  z_min: 6.0
+  z_max: 10.0            # narrow range vs fiducial's 5-20
+  z_step_factor: 1.1      # coarser node spacing -> fewer redshift nodes
+  seeds: [1]
+
+p21c_options:
+  sampler_min_mass: 1.0e+8
+  sampler_buffer_factor: 2.0
+  halo_catalog_mem_factor: 3.0
+  keep_3d_velocities: true
+  use_interpolation_tables: "hmf-interpolation"
+  inhomo_reco: true
+  use_ts_fluct: true
+
+lightcone:
+  n_lc_pix: 64
+  angle_deg: 10.0
+  fields:
+    continuous: [xH, density, vz]
+    discrete: [halos]        # LAE/LBG left out until Jahaan's pipeline is available
+
+tracers:
+  halo_mass_cut_msun: 1.0e+10
+  lae_lbg_mass_cut_msun: 3.162e+9
+  lbg_muv_cut: -17.0
+
+correlation:
+  n_kbins: 10
+  dz_tracer_bin: 0.5
+  signals: [kSZ2, xe2, v2]    # kSZ^2, x_e^2 projected, v_parallel^2 projected
+  tracers: [halo]             # halo-only for now -- LAE/LBG added once available
+
+snr:
+  tracer: lae
+  ell_min: 100
+  ell_max: 10000
+  n_ell: 100
+  camb_lmax: 3000
+  f_sky: 0.053
+  experiments:
+    SO:
+      delta_n_uk_arcmin: 10.0
+      theta_fwhm_arcmin: 1.4
+
+# Local paths on usha -- NOT the cluster paths from fiducial.yaml.
+paths:
+  project_root: "~/Desktop/Research/ksz-lae-xcorr/quicktest_data"
+  coeval_root: "${paths.project_root}/coeval"
+  halo_root: "${paths.project_root}/coeval"
+  lightcone_root: "${paths.project_root}/lightcones"
+  products_root: "quicktest_data/products"
+  lae_catalogue_root: "TBD"
+  lbg_catalogue_root: "TBD"

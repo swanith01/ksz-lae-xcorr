@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ksz-lae-xcorr"
+version = "0.1.0"
+description = "kSZ^2 x LAE (x LBG) cross-correlation pipeline"
+authors = [{ name = "Swanith Upadhye" }]
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
