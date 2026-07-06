@@ -8,8 +8,10 @@ dependencies:
   - astropy
   - matplotlib
   - pyyaml
+  - gsl          # system dep required by 21cmFAST's C backend
+  - fftw         # system dep required by 21cmFAST's C backend
   - pip
   - pip:
-      - py21cmfast>=4.0
+      - git+https://github.com/21cmFAST/21cmFAST.git@54a215398
       - camb
       - pytest
