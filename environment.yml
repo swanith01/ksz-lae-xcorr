@@ -1,0 +1,15 @@
+name: ksz-lae-xcorr
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - scipy
+  - astropy
+  - matplotlib
+  - pyyaml
+  - pip
+  - pip:
+      - py21cmfast>=4.0
+      - camb
+      - pytest

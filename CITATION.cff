@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+title: "ksz-lae-xcorr: kSZ^2 x LAE cross-correlation pipeline"
+authors:
+  - family-names: Upadhye
+    given-names: Swanith
+    affiliation: "Tata Institute of Fundamental Research (TIFR)"
+version: "0.1.0"
+date-released: "2026-07-06"
+repository-code: "https://github.com/swanith01/ksz-lae-xcorr"
+license: MIT
+# TODO: add the paper's arXiv/DOI reference once submitted, and update the
+# `submitted-v1` / `accepted-v1` release notes accordingly.

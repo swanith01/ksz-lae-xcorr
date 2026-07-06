@@ -1,0 +1,38 @@
+# Heavy simulation caches / raw outputs -- never commit
+*.h5
+*.hdf5
+*.pkl.lock
+cache/
+*/cache/
+halo_catalogs/
+coeval_z*/
+checkpoints/
+
+# Large intermediate arrays (npy) -- final small products (npz under
+# data/products/) ARE committed; raw per-redshift npy dumps are not.
+*.npy
+
+# Logs
+logs/
+*.log
+
+# Local/cluster-specific paths
+configs/variants/local_*.yaml
+.pbs_jobids
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+*.pyo
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Figures generated locally (final paper figures should be added
+# explicitly with `git add -f` if you want them tracked)
+paper/figure_scripts/output/
