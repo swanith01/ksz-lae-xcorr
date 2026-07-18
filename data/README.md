@@ -9,9 +9,11 @@ where every input and intermediate product actually lives.
 |---|---|---|---|
 | Coeval boxes + halo catalogs | `scripts/01_run_coeval_seed.py` | `paths.coeval_root` in `configs/fiducial.yaml` | No (`.gitignore`) |
 | Stitched 3D lightcones (`lc_xH.npz`, `lc_density.npz`, `lc_vz.npz`, `lc_halos.npz`, `lc_lae.npz`, `lc_lbg.npz`) | `scripts/02_stitch_lightcones.py` | `paths.lightcone_root` | No |
+| Full-3D LAE luminosity/REW value fields (`lc_lae_lum_3d.npz`, `lc_lae_rew_3d.npz`) | `scripts/07_stitch_lae_value_fields.py` | `paths.lightcone_root` | No |
 | Type B physical-value grids (`lc_halos_mass.npz`, `lc_lae_lum.npz`, `lc_lbg_muv.npz`) | `scripts/03_make_type_b_grids.py` | `paths.lightcone_root` | No |
 | Cross-power / auto-power products (`cross_results.pkl`, `auto_results.pkl`) | `scripts/04_compute_xcorr.py` | `data/products/` | **Yes** (small, final) |
 | SNR forecast (`snr_results.pkl`) | `scripts/05_compute_snr.py` | `data/products/` | **Yes** (small, final) |
+| Realistic survey-selection SNR forecast (`realistic_snr_results.pkl`) | `scripts/08_compute_realistic_snr.py` | `data/products/` | **Yes** (small, final) |
 | Paper figures | `scripts/06_make_figures.py` | `paper/figure_scripts/output/` | Case by case — final paper figures yes, intermediate diagnostics no |
 
 ## External: LAE and LBG catalogues (NOT part of this repo)
@@ -26,6 +28,7 @@ into this repo.
 | Catalogue | Source | Cluster path (as of last handover) | Indexes into |
 |---|---|---|---|
 | LAE (`halo_ids_obs`, `lya_lum_obs`) | Jahaan | `/user1/jahaan/swanith/obs_prop/` | mass-cut (`tracers.lae_lbg_mass_cut_msun`, 10^9.5 Msun) subset of this repo's halo coords/masses |
+| LAE REW (`lya_rew_obs`) | Jahaan | **NEW as of the realistic-survey-selection extension (`scripts/07`-`08`) -- not yet requested/handed over.** Same `obs_prop/` directory and `halo_ids_obs` indexing as `lya_lum_obs`, but rest-frame Lya equivalent width instead of luminosity. Only needed for `scripts/07_stitch_lae_value_fields.py` + the SILVERRUSH realistic forecast in `scripts/08`; the core pipeline (scripts 01-06) and the "optimistic" SNR forecast (script 05) do not need this. | same as `lya_lum_obs` |
 | LBG (`halo_ids_lbg`, `MUV_lbg`) | Jahaan | `/user1/jahaan/swanith/int_prop/` | same mass-cut subset, further cut at `tracers.lbg_muv_cut` |
 
 **Format/path TBD** — the exact filename convention

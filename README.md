@@ -51,6 +51,41 @@ Both LAE and LBG catalogues come from an external pipeline (see
 `snr.tracer: lae` is the single place this is set. LBG cross-power figures
 are for the paper's physics discussion, not the headline detectability claim.
 
+## Realistic LAE survey selection (extension)
+
+Beyond the core "optimistic" S/N forecast (`scripts/05`, which assumes every
+simulated LAE above the halo mass cut is observed), `scripts/07` and
+`scripts/08` add a realistic-survey-selection layer, refactored from the
+original analysis notebook's Cells 10-11:
+
+```
+scripts/07_stitch_lae_value_fields.py   full-3D LAE luminosity + REW fields
+            |                           (lc_lae_lum_3d.npz, lc_lae_rew_3d.npz)
+            |
+scripts/08_compute_realistic_snr.py     for each survey in configs/lae_surveys.yaml:
+                                           - "optimistic-with-shot-noise": full
+                                             simulated field, shot-noise term
+                                             corrected for the survey's real
+                                             (flux-cut-reduced) density
+                                           - "realistic" (SILVERRUSH, Roman-Grism):
+                                             a genuinely new field keeping only
+                                             LAEs passing the survey's flux/REW
+                                             cut at each redshift
+```
+
+This requires a **new external input from Jahaan not needed by the core
+pipeline**: rest-frame Lya equivalent width (`lya_rew_obs`), alongside the
+luminosity his pipeline already provides -- see `data/README.md`.
+
+Survey definitions, flux/REW cut tables, and the Roman-Grism luminosity-
+distance-based flux ceiling all live in `configs/lae_surveys.yaml`, kept
+separate from `configs/fiducial.yaml` since these are observational/survey
+parameters, not simulation parameters.
+
+`src/ksz_lae_xcorr/snr/survey_selection.py` implements this generically --
+one code path reused across every named survey, rather than duplicated
+per-survey blocks as in the original notebook.
+
 ## Cosmology
 
 This repo standardizes on the **21cmFAST-default cosmology**

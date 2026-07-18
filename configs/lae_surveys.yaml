@@ -1,0 +1,80 @@
+# =============================================================================
+# lae_surveys.yaml
+# Realistic LAE survey selection for the S/N forecast extension
+# (src/ksz_lae_xcorr/snr/survey_selection.py). Separate from fiducial.yaml
+# since these are survey/observational parameters, not simulation parameters
+# -- update this file when survey specs change without touching the
+# simulation config.
+#
+# "Optimistic" (fiducial.yaml's snr.tracer=lae) forecast assumes every
+# simulated LAE above the halo mass cut is observed. This file adds the
+# realistic version: real surveys only detect LAEs bright enough to clear a
+# flux (and sometimes rest-frame equivalent width, REW) cut, which shrinks
+# both the number density (shot noise goes up) and the correlated signal
+# (only a "duty cycle" fraction of simulated LAEs would actually be seen).
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Flux/REW cuts vs redshift, Subaru/HSC narrow-band surveys (SILVERRUSH-type).
+# From Weinberger et al. 2019 Table 1, tracing back to Konno+14, Konno+18,
+# Ota+17/Itoh+18 for the individual points. L_min in erg/s.
+# -----------------------------------------------------------------------------
+silverrush_flux_cuts:
+  - {z: 5.7, REW_min: 10.0, L_min: 6.3e+42, ref: "Konno+18"}
+  - {z: 6.6, REW_min: 14.0, L_min: 7.9e+42, ref: "Konno+18"}
+  - {z: 7.0, REW_min: 10.0, L_min: 2.0e+42, ref: "Ota+17 / Itoh+18"}
+  - {z: 7.3, REW_min: 0.0,  L_min: 2.4e+42, ref: "Konno+14"}
+# L_min(z)/REW_min(z) are linearly interpolated between these points; NaN
+# (survey does not apply) outside [5.7, 7.3].
+
+# -----------------------------------------------------------------------------
+# Roman-Grism flux limit (Wold et al. 2023, via Perez-Gonzalez+23).
+# Flux-only cut -- grism measures line flux directly, no REW component.
+# Below z=7.7: flat flux ceiling converted to L_min(z) via luminosity distance.
+# Above z=7.7: tabulated luminosity limits used directly.
+# -----------------------------------------------------------------------------
+roman_grism_flux_cut:
+  flux_ceiling_erg_s_cm2: 1.4e-17     # applied for z < ceiling_z_max
+  ceiling_z_max: 7.7
+  tabulated:                          # used for z >= ceiling_z_max
+    - {z: 7.5,  L_min: 9.1e+42}
+    - {z: 8.5,  L_min: 7.4e+42}
+    - {z: 9.5,  L_min: 8.6e+42}
+    - {z: 10.5, L_min: 9.9e+42}
+
+# -----------------------------------------------------------------------------
+# Named survey definitions: footprint, redshift coverage, whether a flux
+# cut applies (PFS-SSP is spectroscopic with no flux-cut data yet, so its
+# S/N uses the plain simulated LAE count with no shot-noise correction).
+# f_sky is computed from area_deg2 at load time (area_deg2 / 41253).
+# -----------------------------------------------------------------------------
+surveys:
+  SILVERRUSH:
+    area_deg2: 25.0
+    z_range: [2.2, 7.3]
+    has_flux_cut: true
+    cut_type: joint_L_and_REW           # uses silverrush_flux_cuts
+    note: "Subaru/HSC narrow-band -- matches Weinberger+19 cuts"
+  PFS-SSP:
+    area_deg2: 15.0
+    z_range: [5.7, 6.6]
+    has_flux_cut: false
+    cut_type: none
+    note: "Subaru/PFS spectroscopic -- no flux-cut data yet"
+  Roman-Grism:
+    area_deg2: 16.0
+    z_range: [6.0, 10.0]
+    has_flux_cut: true
+    cut_type: L_only                    # uses roman_grism_flux_cut, no REW
+    note: "Future -- luminosity-only cut (grism)"
+
+# -----------------------------------------------------------------------------
+# Path to the "2D companion" Type-B lightcone products (occupancy + mean
+# Lya luminosity/REW per pixel) used for the duty-cycle and joint-cut
+# calculations. Produced by tracers/type_b_grids.py -- see
+# scripts/03_make_type_b_grids.py. Defaults to the same lightcone_root as
+# the main pipeline (configs/fiducial.yaml paths.lightcone_root); override
+# here only if the Type-B products live somewhere different.
+# -----------------------------------------------------------------------------
+paths:
+  type_b_root: null   # null = use paths.lightcone_root from fiducial.yaml
