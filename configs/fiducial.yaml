@@ -98,10 +98,10 @@ snr:
 # Paths — cluster (pride/swarm). Override in configs/variants/ for local runs.
 # -----------------------------------------------------------------------------
 paths:
-  project_root: "~/kSZ_LAE_project"
-  coeval_root: "${paths.project_root}/coeval"
-  halo_root: "${paths.project_root}/coeval"        # halo catalogs live alongside coeval boxes
-  lightcone_root: "${paths.project_root}/lightcones"
+  project_root: "/user1/swanith/kSZ2_LAE_project_22Jun2026"
+  coeval_root: "${paths.project_root}"
+  halo_root: "${paths.project_root}"
+  lightcone_root: "/user1/swanith/ksz_lae_lightcones_300Mpc"
   products_root: "data/products"                    # committed, small, final arrays
 
   # External inputs -- NOT part of this repo, see data/README.md
