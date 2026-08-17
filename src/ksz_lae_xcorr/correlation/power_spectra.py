@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from ksz_lae_xcorr.utils.cosmology import get_cosmology, little_h
+from ksz_lae_xcorr.utils.cosmology import get_cosmology
 
 
 class KGrid:
@@ -74,13 +74,26 @@ def cross_power_2d(field_a: np.ndarray, field_b: np.ndarray, kg: KGrid):
     return P_cross, P_err, r_cross
 
 
-def make_ell(k_centers: np.ndarray, chi_mpc: float, h: float) -> np.ndarray:
-    """Limber approximation: ell = k * chi / h."""
-    return k_centers * chi_mpc / h
+def make_ell(k_centers: np.ndarray, chi_mpc: float) -> np.ndarray:
+    """
+    Limber approximation: ell = k * chi.
+    No factor of h -- k_centers (from KGrid, off box_len_mpc) and chi_mpc
+    (from astropy comoving_distance().to_value('Mpc')) are BOTH already in
+    physical Mpc throughout this codebase, never h^-1 Mpc. An earlier
+    version of this function divided by h, which was a bug (found via
+    external code review, Jul 2026): it silently shifted every ell value
+    by a factor of ~1/h ~ 1.47, since k and chi carry no h-dependence here
+    to begin with.
+    """
+    return k_centers * chi_mpc
 
 
-def to_Cell(P_cross, P_err, chi_mpc: float, h: float):
-    factor = h**2 / chi_mpc**2
+def to_Cell(P_cross, P_err, chi_mpc: float):
+    """
+    Same unit convention as make_ell: chi_mpc is physical Mpc, not h^-1 Mpc,
+    so no factor of h belongs here either (previously had an erroneous h**2).
+    """
+    factor = 1.0 / chi_mpc**2
     return P_cross * factor, P_err * factor
 
 
@@ -97,4 +110,4 @@ def ell_at_redshift(cfg, kg: KGrid, z: float) -> np.ndarray:
     """Convenience: Limber ell grid at redshift z for this config's cosmology."""
     cosmo = get_cosmology(cfg)
     chi = cosmo.comoving_distance(z).to_value("Mpc")
-    return make_ell(kg.k_centers, chi, little_h(cfg))
+    return make_ell(kg.k_centers, chi)

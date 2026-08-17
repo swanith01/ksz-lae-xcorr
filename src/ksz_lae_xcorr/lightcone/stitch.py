@@ -34,6 +34,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
+from ksz_lae_xcorr.utils.grid import block_average_downsample
 
 
 def setup_logger(seed: int, out_root: str) -> logging.Logger:
@@ -63,12 +64,14 @@ class Stitcher:
         self.cosmo = get_cosmology(cfg)
         self.box_len = cfg.box.box_len_mpc
         self.ngrid = cfg.box.hii_dim
+        self.dim = cfg.box.dim
         self.cell = self.box_len / self.ngrid
         self.z_min = cfg.box.z_min
         self.z_max = cfg.box.z_max
         self.n_lc_pix = cfg.lightcone.n_lc_pix
         self.angle_deg = cfg.lightcone.angle_deg
         self.halo_mass_cut = float(cfg.tracers.halo_mass_cut_msun)
+        self.lae_lbg_mass_cut = float(cfg.tracers.lae_lbg_mass_cut_msun)
         self.muv_cut = float(cfg.tracers.lbg_muv_cut)
 
         self.root_coeval = cfg.paths.coeval_root
@@ -155,6 +158,15 @@ class Stitcher:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Missing: {path}")
         box = np.load(path, mmap_mode="r")
+
+        if field_name == "density":
+            # hires_density.npy is saved on the DIM grid (finer than HII_DIM --
+            # e.g. 600 vs 300 in the fiducial config). get_slab() assumes every
+            # field it's given is already on the self.ngrid (HII_DIM) grid, so
+            # density must be block-averaged down BEFORE slicing, or get_slab
+            # silently reads a spatially wrong, mismatched sub-region (bug found
+            # during the Jul 2026 pixel-level validation requested by G. Kulkarni).
+            box = block_average_downsample(np.array(box), self.ngrid)
         if field_name == "vz":
             box = np.array(box) / (1 + z) * 3.086e19
         return box
@@ -184,21 +196,33 @@ class Stitcher:
     def load_lae_grid(self, seed: int, z: float, logger) -> np.ndarray:
         """
         Load LAE catalogue (external, Jahaan's pipeline -- see data/README.md).
-        `ids` index into the mass-cut halo coordinate subset (see
-        tracers.lae_lbg_mass_cut_msun in the config); format/path TBD until
-        the catalogues are handed over -- this raises FileNotFoundError
-        gracefully and returns an empty grid until then.
+        `ids` index into the mass-cut halo coordinate subset (tracers.lae_lbg_mass_cut_msun
+        in the config), NOT the full halo catalogue -- this must be applied before indexing,
+        or `ids` silently selects the wrong halos. Format/path TBD until the catalogues are
+        handed over -- this raises FileNotFoundError gracefully and returns an empty grid
+        until then.
+
+        IMPORTANT: this assumes ids index into the mass-cut subset (in ascending-coordinate-
+        array order after the cut). That assumption has NOT yet been verified against a real
+        catalogue from Jahaan's pipeline -- see the ID round-trip check in
+        tests/test_lae_id_convention.py (run it against real data as soon as it's available,
+        before trusting any LAE cross-correlation result).
         """
         idpath = os.path.join(self.root_lae, "halo_ids_obs", f"halo_ids_obs_z{z:.4f}_s{seed}.npy")
         if not os.path.exists(idpath):
             logger.warning(f"  LAE ids missing at z={z:.4f} seed={seed}, using empty grid")
             return np.zeros((self.ngrid,) * 3, dtype=np.float32)
         ids = np.load(idpath, mmap_mode="r")
-        coords, _ = self._halo_coords_masses(seed, z)
-        return self._bin_to_grid(coords[ids])
+        coords, masses = self._halo_coords_masses(seed, z)
+        mass_cut_coords = coords[masses > self.lae_lbg_mass_cut]
+        return self._bin_to_grid(mass_cut_coords[ids])
 
     def load_lbg_grid(self, seed: int, z: float, logger) -> np.ndarray:
-        """Load LBG catalogue (external, same source as LAE -- see data/README.md)."""
+        """
+        Load LBG catalogue (external, same source as LAE -- see data/README.md).
+        Same mass-cut-subset indexing convention as load_lae_grid -- see that
+        docstring's IMPORTANT note; same unverified-until-real-data caveat applies.
+        """
         idpath = os.path.join(self.root_lbg, "halo_ids_lbg", f"halo_ids_lbg_z{z:.4f}_s{seed}.npy")
         muvpath = os.path.join(self.root_lbg, "MUV_lbg", f"MUV_lbg_z{z:.4f}_s{seed}.npy")
         if not os.path.exists(idpath) or not os.path.exists(muvpath):
@@ -206,9 +230,10 @@ class Stitcher:
             return np.zeros((self.ngrid,) * 3, dtype=np.float32)
         ids = np.load(idpath, mmap_mode="r")
         muv = np.load(muvpath, mmap_mode="r")
-        coords, _ = self._halo_coords_masses(seed, z)
+        coords, masses = self._halo_coords_masses(seed, z)
+        mass_cut_coords = coords[masses > self.lae_lbg_mass_cut]
         bright = muv < self.muv_cut
-        return self._bin_to_grid(coords[ids[bright]])
+        return self._bin_to_grid(mass_cut_coords[ids[bright]])
 
     # -- stitching ----------------------------------------------------------
 

@@ -16,7 +16,7 @@ from scipy.interpolate import interp1d
 
 from ksz_lae_xcorr.correlation.power_spectra import make_ell
 from ksz_lae_xcorr.utils import constants
-from ksz_lae_xcorr.utils.cosmology import get_cosmology, little_h
+from ksz_lae_xcorr.utils.cosmology import get_cosmology
 
 
 def camb_cl_tt(cfg, ell_grid: np.ndarray) -> np.ndarray:
@@ -50,10 +50,9 @@ def kSZ_reion_from_sim(cfg, ell_grid, kg, auto_results_ksz: dict) -> np.ndarray:
     auto_results_ksz[seed] = (D_ell, D_err) in muK^2, at the reference z.
     """
     cosmo = get_cosmology(cfg)
-    h = little_h(cfg)
     z_ref = 0.5 * (cfg.box.z_min + cfg.box.z_max)
     chi_ref = cosmo.comoving_distance(z_ref).to_value("Mpc")
-    ell_sim = make_ell(kg.k_centers, chi_ref, h)
+    ell_sim = make_ell(kg.k_centers, chi_ref)
 
     D_seeds = [D for D, _ in auto_results_ksz.values()]
     D_med = np.nanmedian(np.array(D_seeds), axis=0)

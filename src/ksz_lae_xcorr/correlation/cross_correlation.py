@@ -22,7 +22,7 @@ from ksz_lae_xcorr.correlation.power_spectra import (
     to_Dell,
 )
 from ksz_lae_xcorr.utils import constants
-from ksz_lae_xcorr.utils.cosmology import get_cosmology, little_h
+from ksz_lae_xcorr.utils.cosmology import get_cosmology
 
 
 def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) -> dict:
@@ -37,7 +37,6 @@ def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) 
     omitted -- this does not require all configured tracers to be present).
     """
     cosmo = get_cosmology(cfg)
-    h = little_h(cfg)
     kg = KGrid(cfg)
 
     dz = cfg.correlation.dz_tracer_bin
@@ -81,7 +80,7 @@ def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) 
                 continue
 
             chi_c = cosmo.comoving_distance(z_c).to_value("Mpc")
-            ell_c = make_ell(kg.k_centers, chi_c, h)
+            ell_c = make_ell(kg.k_centers, chi_c)
 
             for t in available_tracers:
                 results[t][seed][z_c] = {}
@@ -96,7 +95,7 @@ def compute_cross_spectra(cfg, maps: dict, tracer_data: dict, seeds: list[int]) 
                 for t in available_tracers:
                     d = delta[t]
                     P, Pe, r = cross_power_2d(sig, d - d.mean(), kg)
-                    C, Ce = to_Cell(P, Pe, chi_c, h)
+                    C, Ce = to_Cell(P, Pe, chi_c)
                     D, De = to_Dell(ell_c, C, Ce, T_CMB_uK=T_cmb)
                     results[t][seed][z_c][signal_name] = {"ell": ell_c, "D_ell": D, "D_err": De, "r": r}
 

@@ -17,12 +17,11 @@ from ksz_lae_xcorr.correlation.power_spectra import (
     KGrid, cross_power_2d, make_ell, make_overdensity, to_Cell, to_Dell,
 )
 from ksz_lae_xcorr.utils import constants
-from ksz_lae_xcorr.utils.cosmology import get_cosmology, little_h
+from ksz_lae_xcorr.utils.cosmology import get_cosmology
 
 
 def build_filtered_kSZ2_maps(cfg, kg: KGrid, kSZ_maps: dict, filt: dict, seeds: list[int]) -> dict:
     """filtered_kSZ2[exp_name][seed] = (filtered kSZ)^2 real-space map."""
-    h = little_h(cfg)
     cosmo = get_cosmology(cfg)
     z_ref = 0.5 * (cfg.box.z_min + cfg.box.z_max)
     chi_ref = cosmo.comoving_distance(z_ref).to_value("Mpc")
@@ -32,7 +31,7 @@ def build_filtered_kSZ2_maps(cfg, kg: KGrid, kSZ_maps: dict, filt: dict, seeds: 
     kx = np.fft.fftfreq(n) * n * dk
     KX, KY = np.meshgrid(kx, kx)
     k2d = np.sqrt(KX**2 + KY**2)
-    ell2d_ref = make_ell(k2d, chi_ref, h)
+    ell2d_ref = make_ell(k2d, chi_ref)
     ell2d_ref[n // 2, n // 2] = 1e-6
 
     out = {}
@@ -54,7 +53,6 @@ def compute_lae_auto_power(cfg, kg: KGrid, tracer_data: dict, seeds: list[int],
                             z_edges, z_cents, ell_grid) -> dict:
     """C_ell^(delta_LAE delta_LAE) per z-bin, median over seeds, interpolated onto ell_grid."""
     cosmo = get_cosmology(cfg)
-    h = little_h(cfg)
     z_nodes_ref = tracer_data[seeds[0]]["z_nodes"]
 
     Cl_lae_auto = {}
@@ -64,7 +62,7 @@ def compute_lae_auto_power(cfg, kg: KGrid, tracer_data: dict, seeds: list[int],
         if zi_hi <= zi_lo:
             continue
         chi_c = cosmo.comoving_distance(z_c).to_value("Mpc")
-        ell_c = make_ell(kg.k_centers, chi_c, h)
+        ell_c = make_ell(kg.k_centers, chi_c)
 
         Cl_seeds = []
         for seed in seeds:
@@ -75,7 +73,7 @@ def compute_lae_auto_power(cfg, kg: KGrid, tracer_data: dict, seeds: list[int],
                 continue
             delta_g = make_overdensity(lae_proj)
             P, Pe, _ = cross_power_2d(delta_g - delta_g.mean(), delta_g - delta_g.mean(), kg)
-            C, _ = to_Cell(P, Pe, chi_c, h)
+            C, _ = to_Cell(P, Pe, chi_c)
             Cl_seeds.append(C)
 
         if not Cl_seeds:
@@ -93,7 +91,6 @@ def compute_filtered_signal(cfg, kg: KGrid, filtered_kSZ2: dict, tracer_data: di
                              seeds: list[int], z_edges, z_cents, ell_grid) -> dict:
     """C_ell^(T_f^2 x LAE) per experiment per z-bin (muK^2), median over seeds."""
     cosmo = get_cosmology(cfg)
-    h = little_h(cfg)
     z_nodes_ref = tracer_data[seeds[0]]["z_nodes"]
 
     Cl_signal = {name: {} for name in cfg.snr.experiments}
@@ -104,7 +101,7 @@ def compute_filtered_signal(cfg, kg: KGrid, filtered_kSZ2: dict, tracer_data: di
             if zi_hi <= zi_lo:
                 continue
             chi_c = cosmo.comoving_distance(z_c).to_value("Mpc")
-            ell_c = make_ell(kg.k_centers, chi_c, h)
+            ell_c = make_ell(kg.k_centers, chi_c)
 
             D_seeds = []
             for seed in seeds:
@@ -117,7 +114,7 @@ def compute_filtered_signal(cfg, kg: KGrid, filtered_kSZ2: dict, tracer_data: di
                 sig = filtered_kSZ2[name][seed].astype(np.float64)
                 sig = sig - sig.mean()
                 P, Pe, _ = cross_power_2d(sig, delta_lae - delta_lae.mean(), kg)
-                C, _ = to_Cell(P, Pe, chi_c, h)
+                C, _ = to_Cell(P, Pe, chi_c)
                 D, _ = to_Dell(ell_c, C, np.zeros_like(C), T_CMB_uK=constants.T_CMB_UK)
                 D_seeds.append(D)
 

@@ -26,9 +26,8 @@ def compute_auto_spectra(cfg, maps: dict, seeds: list[int]) -> dict:
     """
     kg = KGrid(cfg)
     z_ref = 0.5 * (cfg.box.z_min + cfg.box.z_max)
-    from ksz_lae_xcorr.utils.cosmology import get_cosmology, little_h
+    from ksz_lae_xcorr.utils.cosmology import get_cosmology
     cosmo = get_cosmology(cfg)
-    h = little_h(cfg)
     chi_ref = cosmo.comoving_distance(z_ref).to_value("Mpc")
     ell_c = ell_at_redshift(cfg, kg, z_ref)
 
@@ -42,7 +41,7 @@ def compute_auto_spectra(cfg, maps: dict, seeds: list[int]) -> dict:
             sig = sig - sig.mean()
             T_cmb = constants.T_CMB_UK if map_name == "kSZ" else None
             P, Pe, _ = cross_power_2d(sig, sig, kg)
-            C, Ce = to_Cell(P, Pe, chi_ref, h)
+            C, Ce = to_Cell(P, Pe, chi_ref)
             D, De = to_Dell(ell_c, C, Ce, T_CMB_uK=T_cmb)
             auto_results[map_name][seed] = (D, De)
     return auto_results
