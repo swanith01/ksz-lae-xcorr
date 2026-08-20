@@ -71,6 +71,47 @@ def plot_dell_vs_z(cross_results: dict, tracer: str, signal: str, ell_target: fl
     plt.close(fig)
 
 
+def plot_dell_vs_ell_median_sigma(cross_results: dict, tracer: str, signal: str, seeds: list,
+                                   out_dir: str, z_targets: list | None = None) -> None:
+    """
+    D_ell vs ell, median +/- 1 sigma across seeds, one curve+band per redshift
+    bin (rainbow over z) -- matches the paper draft's Figure 2 style
+    ("kSZ^2 x h, D_ell vs ell (N seeds, median +/-1 sigma)").
+
+    z_targets: optional list of z-bin centers to plot (subset); default plots
+    every z-bin available. With many z-bins, consider passing a subset --
+    plotting all of them on one panel gets crowded fast.
+    """
+    from ksz_lae_xcorr.correlation.seed_stats import aggregate_over_seeds
+
+    os.makedirs(out_dir, exist_ok=True)
+    agg = aggregate_over_seeds(cross_results, tracer, signal, seeds)
+    if not agg:
+        raise ValueError(f"No z-bins with >=2 seeds for tracer='{tracer}' signal='{signal}' -- "
+                          f"nothing to plot.")
+
+    z_list = z_targets if z_targets is not None else sorted(agg.keys())
+    z_list = [z for z in z_list if z in agg]
+    cmap = matplotlib.colormaps["rainbow"].resampled(max(len(z_list), 1))
+
+    fig, ax = plt.subplots(figsize=(8, 5.5), constrained_layout=True)
+    for i, z_c in enumerate(z_list):
+        d = agg[z_c]
+        color = cmap(i)
+        ax.plot(d["ell"], d["median"], color=color, lw=1.6,
+                label=f"z={z_c:.1f} (n={d['n_seeds']})" if i % max(len(z_list) // 8, 1) == 0 else None)
+        ax.fill_between(d["ell"], d["lower"], d["upper"], color=color, alpha=0.18, lw=0)
+
+    ax.set_xscale("log")
+    ax.set_xlabel(r"Multipole $\ell$")
+    ax.set_ylabel(r"$D_\ell$")
+    ax.set_title(f"{signal} $\\times$ {tracer}, {len(seeds)} seeds, median $\\pm1\\sigma$")
+    ax.legend(fontsize=7, ncol=2)
+    fig.savefig(os.path.join(out_dir, f"dell_vs_ell_median_sigma_{signal}_{tracer}.pdf"))
+    plt.close(fig)
+
+
+
 def plot_snr_vs_z(cfg, SN_results: dict, z_cents, out_dir: str) -> None:
     """S/N vs z, one line per CMB experiment. LAE-only (see snr/ module docstrings)."""
     os.makedirs(out_dir, exist_ok=True)
