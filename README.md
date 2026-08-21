@@ -42,6 +42,10 @@ Every script takes `--config configs/fiducial.yaml` by default; use
 `configs/variants/` for alternative box sizes, seed counts, or CMB
 experiment assumptions without touching the fiducial config.
 
+Scripts `07`/`08` extend this with realistic LAE survey selection — see
+"Realistic LAE survey selection" below; they're optional, not part of the
+core `01`-`06` chain above.
+
 ## Scope: LAE vs LBG
 
 Both LAE and LBG catalogues come from an external pipeline (see
