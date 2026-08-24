@@ -112,6 +112,89 @@ def plot_dell_vs_ell_median_sigma(cross_results: dict, tracer: str, signal: str,
 
 
 
+def plot_dell_vs_z_multi_ell(cross_results: dict, tracer: str, signal: str, seeds: list,
+                              out_dir: str, ell_targets: list | None = None,
+                              n_ell_targets: int = 8) -> None:
+    """
+    D_ell vs z, median +/- 1 sigma across seeds, one curve+band per fixed ell
+    value, colored by ell via a real colorbar (matches the paper draft's
+    Figure 3 style -- D_ell vs z at fixed ell -- generalized from 3 discrete
+    lines to a continuous colorbar).
+
+    IMPORTANT: ell = k*chi(z), so the actual ell value at a given k-bin INDEX
+    shifts between z-bins (chi(z) changes). This function interpolates each
+    z-bin's median/sigma curve (originally sampled on that z-bin's own ell
+    grid) onto the SAME set of target ell values before plotting vs z --
+    reading off a fixed k-bin index across z-bins would silently mix
+    different actual ell values together, which is wrong.
+
+    ell_targets: explicit list of ell values to plot. If None, auto-picks
+    n_ell_targets log-spaced values spanning the ell range common to most
+    z-bins (5th-95th percentile of each z-bin's ell range, to avoid picking
+    targets that require extrapolating far beyond what most z-bins cover).
+    """
+    from scipy.interpolate import interp1d
+
+    from ksz_lae_xcorr.correlation.seed_stats import aggregate_over_seeds
+
+    os.makedirs(out_dir, exist_ok=True)
+    agg = aggregate_over_seeds(cross_results, tracer, signal, seeds)
+    if not agg:
+        raise ValueError(f"No z-bins with >=2 seeds for tracer='{tracer}' signal='{signal}' -- "
+                          f"nothing to plot.")
+
+    z_list = sorted(agg.keys())
+
+    if ell_targets is None:
+        ell_los = [np.nanpercentile(agg[z]["ell"], 5) for z in z_list]
+        ell_his = [np.nanpercentile(agg[z]["ell"], 95) for z in z_list]
+        common_lo, common_hi = max(ell_los), min(ell_his)
+        if not (common_hi > common_lo > 0):
+            # z-bins don't share a common ell range (unusual) -- fall back to
+            # the overall min/max across all z-bins instead of failing.
+            common_lo = min(np.nanmin(agg[z]["ell"]) for z in z_list)
+            common_hi = max(np.nanmax(agg[z]["ell"]) for z in z_list)
+        ell_targets = np.geomspace(common_lo, common_hi, n_ell_targets)
+    else:
+        ell_targets = np.array(ell_targets)
+
+    # interpolate each z-bin's median/sigma onto the common ell_targets
+    median_vs_z = np.full((len(ell_targets), len(z_list)), np.nan)
+    sigma_vs_z = np.full((len(ell_targets), len(z_list)), np.nan)
+    for j, z_c in enumerate(z_list):
+        d = agg[z_c]
+        valid = np.isfinite(d["ell"]) & np.isfinite(d["median"])
+        if valid.sum() < 2:
+            continue
+        f_med = interp1d(d["ell"][valid], d["median"][valid], bounds_error=False, fill_value=np.nan)
+        f_sig = interp1d(d["ell"][valid], d["sigma"][valid], bounds_error=False, fill_value=np.nan)
+        median_vs_z[:, j] = f_med(ell_targets)
+        sigma_vs_z[:, j] = f_sig(ell_targets)
+
+    norm = matplotlib.colors.LogNorm(vmin=ell_targets.min(), vmax=ell_targets.max())
+    cmap = matplotlib.colormaps["viridis"]
+
+    fig, ax = plt.subplots(figsize=(8, 5.5), constrained_layout=True)
+    for i, ell in enumerate(ell_targets):
+        color = cmap(norm(ell))
+        med = median_vs_z[i, :]
+        sig = sigma_vs_z[i, :]
+        ax.plot(z_list, med, color=color, lw=1.6)
+        ax.fill_between(z_list, med - sig, med + sig, color=color, alpha=0.18, lw=0)
+
+    sm = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax)
+    cbar.set_label(r"Multipole $\ell$")
+
+    ax.set_xlabel(r"Redshift $z$")
+    ax.set_ylabel(r"$D_\ell$")
+    ax.set_title(f"{signal} $\\times$ {tracer}, {len(seeds)} seeds, median $\\pm1\\sigma$")
+    fig.savefig(os.path.join(out_dir, f"dell_vs_z_multi_ell_{signal}_{tracer}.pdf"))
+    plt.close(fig)
+
+
+
 def plot_snr_vs_z(cfg, SN_results: dict, z_cents, out_dir: str) -> None:
     """S/N vs z, one line per CMB experiment. LAE-only (see snr/ module docstrings)."""
     os.makedirs(out_dir, exist_ok=True)
