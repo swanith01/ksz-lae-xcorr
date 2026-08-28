@@ -105,5 +105,5 @@ paths:
   products_root: "data/products"                    # committed, small, final arrays
 
   # External inputs -- NOT part of this repo, see data/README.md
-  lae_catalogue_root: "TBD"   # Jahaan's obs_prop dir, format/path TBD on handover
-  lbg_catalogue_root: "TBD"   # Jahaan's int_prop dir, format/path TBD on handover
+  lae_catalogue_root: "/user1/jahaan/swanith/obs_prop"   # Jahaan's obs_prop dir -- access + convention confirmed Aug 2026, 2 snapshots (z=14.83, 15.80) still pending regeneration
+  lbg_catalogue_root: "/user1/jahaan/swanith/int_prop"   # Jahaan's int_prop dir -- access + convention confirmed Aug 2026

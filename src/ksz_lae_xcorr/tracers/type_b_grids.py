@@ -50,10 +50,14 @@ class TypeBBuilder(Stitcher):
         return occ, mval
 
     def build_lae_lum_grid(self, seed: int, z: float, logger):
-        idpath = os.path.join(self.root_lae, "halo_ids_obs", f"halo_ids_obs_z{z:.4f}_s{seed}.npy")
-        lumpath = os.path.join(self.root_lae, "lya_lum_obs", f"lya_lum_obs_z{z:.4f}_s{seed}.npy")
+        from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename
+
+        idpath = os.path.join(self.root_lae, "halo_ids_obs",
+                               external_catalogue_filename("halo_ids_obs", z, self.cfg, seed))
+        lumpath = os.path.join(self.root_lae, "lya_lum_obs",
+                                external_catalogue_filename("lya_lum_obs", z, self.cfg, seed))
         if not os.path.exists(idpath):
-            logger.warning(f"  LAE ids missing z={z:.4f} s{seed} -> empty grid")
+            logger.warning(f"  LAE ids missing z={z:.6f} s{seed} -> empty grid")
             return (np.zeros((self.ngrid,) * 3, dtype=np.float32),
                     np.zeros((self.ngrid,) * 3, dtype=np.float64))
         ids = np.load(idpath, mmap_mode="r")
@@ -74,10 +78,14 @@ class TypeBBuilder(Stitcher):
         return occ, lgrid
 
     def build_lbg_muv_grid(self, seed: int, z: float, logger):
-        idpath = os.path.join(self.root_lbg, "halo_ids_lbg", f"halo_ids_lbg_z{z:.4f}_s{seed}.npy")
-        muvpath = os.path.join(self.root_lbg, "MUV_lbg", f"MUV_lbg_z{z:.4f}_s{seed}.npy")
+        from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename
+
+        idpath = os.path.join(self.root_lbg, "halo_ids_lbg",
+                               external_catalogue_filename("halo_ids_lbg", z, self.cfg, seed))
+        muvpath = os.path.join(self.root_lbg, "MUV_lbg",
+                                external_catalogue_filename("MUV_lbg", z, self.cfg, seed))
         if not os.path.exists(idpath) or not os.path.exists(muvpath):
-            logger.warning(f"  LBG files missing z={z:.4f} s{seed} -> empty grid")
+            logger.warning(f"  LBG files missing z={z:.6f} s{seed} -> empty grid")
             return (np.zeros((self.ngrid,) * 3, dtype=np.float32),
                     np.zeros((self.ngrid,) * 3, dtype=np.float64))
         ids = np.load(idpath, mmap_mode="r")

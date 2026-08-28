@@ -205,44 +205,52 @@ class Stitcher:
     def load_lae_grid(self, seed: int, z: float, logger) -> np.ndarray:
         """
         Load LAE catalogue (external, Jahaan's pipeline -- see data/README.md).
-        `ids` index into the mass-cut halo coordinate subset (tracers.lae_lbg_mass_cut_msun
-        in the config), NOT the full halo catalogue -- this must be applied before indexing,
-        or `ids` silently selects the wrong halos. Format/path TBD until the catalogues are
-        handed over -- this raises FileNotFoundError gracefully and returns an empty grid
-        until then.
 
-        IMPORTANT: this assumes ids index into the mass-cut subset (in ascending-coordinate-
-        array order after the cut). That assumption has NOT yet been verified against a real
-        catalogue from Jahaan's pipeline -- see the ID round-trip check in
-        tests/test_lae_id_convention.py (run it against real data as soon as it's available,
-        before trusting any LAE cross-correlation result).
+        CONFIRMED (Aug 2026, against real 300 Mpc data): `ids` index the FULL
+        halo coordinate array, NOT a mass-cut subset. Verified directly:
+        at z=10.085533 seed=1, the mass-cut subset (>3.162e9 Msun) has only
+        350,749 halos, while LAE ids reach as high as 52,032,970 and LBG ids
+        as high as 73,224,724 -- both far exceed the mass-cut subset size but
+        fit exactly within the full catalogue (73,224,732 halos at that z).
+        An earlier version of this function applied the mass cut before
+        indexing, based on an unverified assumption -- see git history for
+        the correction once real data made this checkable
+        (tests/test_lae_id_convention.py).
+
+        Format/path TBD until the catalogues are handed over -- this raises
+        FileNotFoundError gracefully and returns an empty grid until then.
         """
-        idpath = os.path.join(self.root_lae, "halo_ids_obs", f"halo_ids_obs_z{z:.4f}_s{seed}.npy")
+        from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename
+
+        fname = external_catalogue_filename("halo_ids_obs", z, self.cfg, seed)
+        idpath = os.path.join(self.root_lae, "halo_ids_obs", fname)
         if not os.path.exists(idpath):
-            logger.warning(f"  LAE ids missing at z={z:.4f} seed={seed}, using empty grid")
+            logger.warning(f"  LAE ids missing at z={z:.6f} seed={seed}, using empty grid")
             return np.zeros((self.ngrid,) * 3, dtype=np.float32)
         ids = np.load(idpath, mmap_mode="r")
-        coords, masses = self._halo_coords_masses(seed, z)
-        mass_cut_coords = coords[masses > self.lae_lbg_mass_cut]
-        return self._bin_to_grid(mass_cut_coords[ids])
+        coords, _ = self._halo_coords_masses(seed, z)
+        return self._bin_to_grid(coords[ids])
 
     def load_lbg_grid(self, seed: int, z: float, logger) -> np.ndarray:
         """
         Load LBG catalogue (external, same source as LAE -- see data/README.md).
-        Same mass-cut-subset indexing convention as load_lae_grid -- see that
-        docstring's IMPORTANT note; same unverified-until-real-data caveat applies.
+        Same full-array indexing convention as load_lae_grid (confirmed, see
+        that docstring) -- ids index the FULL halo array, not a mass-cut subset.
         """
-        idpath = os.path.join(self.root_lbg, "halo_ids_lbg", f"halo_ids_lbg_z{z:.4f}_s{seed}.npy")
-        muvpath = os.path.join(self.root_lbg, "MUV_lbg", f"MUV_lbg_z{z:.4f}_s{seed}.npy")
+        from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename
+
+        id_fname = external_catalogue_filename("halo_ids_lbg", z, self.cfg, seed)
+        muv_fname = external_catalogue_filename("MUV_lbg", z, self.cfg, seed)
+        idpath = os.path.join(self.root_lbg, "halo_ids_lbg", id_fname)
+        muvpath = os.path.join(self.root_lbg, "MUV_lbg", muv_fname)
         if not os.path.exists(idpath) or not os.path.exists(muvpath):
-            logger.warning(f"  LBG files missing at z={z:.4f} seed={seed}, using empty grid")
+            logger.warning(f"  LBG files missing at z={z:.6f} seed={seed}, using empty grid")
             return np.zeros((self.ngrid,) * 3, dtype=np.float32)
         ids = np.load(idpath, mmap_mode="r")
         muv = np.load(muvpath, mmap_mode="r")
-        coords, masses = self._halo_coords_masses(seed, z)
-        mass_cut_coords = coords[masses > self.lae_lbg_mass_cut]
+        coords, _ = self._halo_coords_masses(seed, z)
         bright = muv < self.muv_cut
-        return self._bin_to_grid(mass_cut_coords[ids[bright]])
+        return self._bin_to_grid(coords[ids[bright]])
 
     # -- stitching ----------------------------------------------------------
 

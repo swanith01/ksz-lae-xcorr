@@ -1,29 +1,26 @@
 """
 tests/test_lae_id_convention.py
 =================================
-Validation requested by G. Kulkarni (Slack, Jul 2026): establish, for one
-seed and one redshift, exactly which array Jahaan's LAE/LBG `halo_ids_*`
-indices refer to -- the full halo catalogue, or the mass-cut
-(M_halo > tracers.lae_lbg_mass_cut_msun) subset -- and confirm the loader
-in lightcone/stitch.py follows that convention.
+Validation originally requested by G. Kulkarni (Slack, Jul 2026): establish
+which array Jahaan's LAE/LBG `halo_ids_*` indices refer to -- the full halo
+catalogue, or a mass-cut subset.
 
-This CANNOT run until real LAE/LBG catalogue files exist (paths.lae_catalogue_root
-/ lbg_catalogue_root are still "TBD" in configs/fiducial.yaml as of this writing).
-Run this as the very first thing once Jahaan hands over catalogues for even a
-single seed/redshift -- before trusting any LAE cross-correlation result.
+RESOLVED (Aug 2026, against real 300 Mpc data): ids index the FULL halo
+array. Verified directly at z=10.085533, seed=1: the mass-cut subset
+(>3.162e9 Msun) has only 350,749 halos, while LAE ids reach as high as
+52,032,970 and LBG ids as high as 73,224,724 -- both far exceed the
+mass-cut subset but fit exactly within the full catalogue (73,224,732
+halos at that z). lightcone/stitch.py's load_lae_grid/load_lbg_grid were
+corrected to match (see git history -- an earlier version incorrectly
+applied the mass cut before indexing, based on an unverified assumption).
 
-WHAT THIS CHECKS:
-1. Index-bounds discrimination: if max(ids) fits within the mass-cut subset's
-   length but NOT within a value that would make sense for the full array (or
-   vice versa), that alone is near-conclusive.
-2. Direct comparison against Jahaan's own output, IF he provides real-space
-   LAE positions (not just indices) for the same seed/redshift -- the
-   ultimate ground truth. Set --reference-positions if available.
-3. Reports candidate position arrays under BOTH conventions side by side so
-   a mismatch is immediately visible even without a ground-truth file.
+Kept as an ongoing regression check: run this against any new (seed, z)
+pair (e.g. once new snapshots are added, or missing ones are backfilled)
+to confirm the convention still holds and the loader is reading the
+correct array.
 
 Usage:
-    python tests/test_lae_id_convention.py --seed 1 --z 6.5 --config configs/fiducial.yaml
+    python tests/test_lae_id_convention.py --seed 1 --z 10.085533 --config configs/fiducial.yaml
 """
 
 from __future__ import annotations
@@ -37,18 +34,20 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from ksz_lae_xcorr.utils.config import load_config  # noqa: E402
+from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename  # noqa: E402
 
 
 def round_trip_check(cfg, seed: int, z: float, reference_positions_path: str | None = None):
     halo_dir = os.path.join(cfg.paths.halo_root, f"seed_{seed}", "halo_catalogs")
     coords_path = os.path.join(halo_dir, f"halo_coords_z{z:.6f}.npy")
     masses_path = os.path.join(halo_dir, f"halo_masses_z{z:.6f}.npy")
-    id_path = os.path.join(cfg.paths.lae_catalogue_root, "halo_ids_obs", f"halo_ids_obs_z{z:.4f}_s{seed}.npy")
+    id_fname = external_catalogue_filename("halo_ids_obs", z, cfg, seed)
+    id_path = os.path.join(cfg.paths.lae_catalogue_root, "halo_ids_obs", id_fname)
 
     for p, label in [(coords_path, "halo coords"), (masses_path, "halo masses"), (id_path, "LAE ids")]:
         if not os.path.exists(p):
             print(f"MISSING {label}: {p}")
-            print("Cannot run round-trip check yet -- this file doesn't exist.")
+            print("Cannot run round-trip check -- this file doesn't exist.")
             return
 
     coords = np.load(coords_path)
@@ -66,65 +65,36 @@ def round_trip_check(cfg, seed: int, z: float, reference_positions_path: str | N
           f"min={ids.min()}, max={ids.max()}")
     print()
 
-    # -- Bounds discrimination --------------------------------------------
     fits_full = ids.max() < len(coords)
     fits_mass_cut = ids.max() < len(mass_cut_coords)
-    print("Bounds check:")
+    print("Bounds check (expect: fits full=True, fits mass-cut=False):")
     print(f"  ids fit within full catalogue ({len(coords):,})?      {fits_full}")
     print(f"  ids fit within mass-cut subset ({len(mass_cut_coords):,})? {fits_mass_cut}")
-    if fits_mass_cut and not fits_full:
-        print("  -> inconclusive from bounds alone (mass-cut is smaller, so fitting")
-        print("     it doesn't rule out the full array too -- need position comparison below)")
-    elif fits_full and not fits_mass_cut:
-        print("  -> STRONG EVIDENCE: ids only fit the FULL array. The mass-cut assumption")
-        print("     in lightcone/stitch.py's load_lae_grid is WRONG for this data -- ids")
-        print("     must index the full halo catalogue, not the mass-cut subset.")
+    if fits_full and not fits_mass_cut:
+        print("  -> OK, matches the confirmed convention (full-array indexing).")
+    elif fits_mass_cut:
+        print("  -> UNEXPECTED: ids fit within the mass-cut subset too. Worth a closer look --")
+        print("     this doesn't match the previously-confirmed pattern for this dataset.")
+    else:
+        print("  -> UNEXPECTED: ids don't fit either array. Something else is going on --")
+        print("     check with Jahaan directly.")
     print()
 
-    # -- Candidate positions under both conventions ------------------------
     candidate_full = coords[ids]
-    candidate_mass_cut = mass_cut_coords[ids] if fits_mass_cut else None
-
-    print("Candidate LAE positions under each convention:")
-    print(f"  [A] ids -> full halo array      : N={len(candidate_full)}, "
+    print(f"Candidate LAE positions (full-array convention): N={len(candidate_full)}, "
           f"mean=({candidate_full[:,0].mean():.2f}, {candidate_full[:,1].mean():.2f}, "
           f"{candidate_full[:,2].mean():.2f})")
-    if candidate_mass_cut is not None:
-        print(f"  [B] ids -> mass-cut subset       : N={len(candidate_mass_cut)}, "
-              f"mean=({candidate_mass_cut[:,0].mean():.2f}, {candidate_mass_cut[:,1].mean():.2f}, "
-              f"{candidate_mass_cut[:,2].mean():.2f})")
-    else:
-        print("  [B] ids -> mass-cut subset       : ids out of bounds, not computable")
-    print()
 
-    # -- Ground truth comparison, if available ------------------------------
     if reference_positions_path and os.path.exists(reference_positions_path):
         ref = np.load(reference_positions_path)
-        match_A = np.allclose(np.sort(candidate_full, axis=0), np.sort(ref, axis=0), atol=1e-3)
-        match_B = (candidate_mass_cut is not None and
-                   np.allclose(np.sort(candidate_mass_cut, axis=0), np.sort(ref, axis=0), atol=1e-3))
-        print(f"Ground truth comparison against {reference_positions_path}:")
-        print(f"  [A] full-array convention matches ground truth? {match_A}")
-        print(f"  [B] mass-cut convention matches ground truth?   {match_B}")
-        if match_B and not match_A:
-            print("  CONCLUSION: mass-cut convention is correct. Current code (post-fix) is right.")
-        elif match_A and not match_B:
-            print("  CONCLUSION: full-array convention is correct. REVERT the mass-cut fix in")
-            print("  lightcone/stitch.py's load_lae_grid/load_lbg_grid.")
-        elif not match_A and not match_B:
-            print("  CONCLUSION: NEITHER convention matches. Something else is going on --")
-            print("  check ordering (sorted by mass? by original array position?) with Jahaan directly.")
-    else:
-        print("No ground-truth position file provided (--reference-positions).")
-        print("Ask Jahaan whether he can export real-space LAE positions for this exact")
-        print("seed/z alongside the ids, purely for this one-time validation -- that's the")
-        print("only way to fully resolve this without ambiguity.")
+        match = np.allclose(np.sort(candidate_full, axis=0), np.sort(ref, axis=0), atol=1e-3)
+        print(f"\nGround truth comparison against {reference_positions_path}: match={match}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, default=1)
-    parser.add_argument("--z", type=float, default=6.5)
+    parser.add_argument("--z", type=float, default=10.085533)
     parser.add_argument("--config", type=str, default="configs/fiducial.yaml")
     parser.add_argument("--reference-positions", type=str, default=None,
                          help="Path to Jahaan-provided ground-truth LAE positions, if available")

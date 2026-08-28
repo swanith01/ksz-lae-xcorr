@@ -47,24 +47,27 @@ class ValueFieldStitcher(Stitcher):
     def load_lae_value_grid(self, seed: int, z: float, value_field: str, logger):
         """
         Returns (occ_grid, val_grid), both full 3D (ngrid, ngrid, ngrid).
-        occ_grid is identical in construction to load_lae_grid (same mass-cut
-        + id convention -- see that docstring's IMPORTANT note, same caveat
-        applies here). val_grid holds the per-cell MEAN of value_field
-        (luminosity or REW) for cells with occ_grid > 0, else 0.
+        occ_grid uses the CONFIRMED full-array id convention (see
+        lightcone/stitch.py's load_lae_grid docstring) -- ids index the full
+        halo array, not a mass-cut subset. val_grid holds the per-cell MEAN
+        of value_field (luminosity or REW) for cells with occ_grid > 0, else 0.
         """
+        from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename
+
         spec = self.VALUE_SPECS[value_field]
-        idpath = os.path.join(self.root_lae, spec["id_subdir"], f"{spec['id_prefix']}_z{z:.4f}_s{seed}.npy")
-        valpath = os.path.join(self.root_lae, spec["val_subdir"], f"{spec['val_prefix']}_z{z:.4f}_s{seed}.npy")
+        idpath = os.path.join(self.root_lae, spec["id_subdir"],
+                               external_catalogue_filename(spec["id_prefix"], z, self.cfg, seed))
+        valpath = os.path.join(self.root_lae, spec["val_subdir"],
+                                external_catalogue_filename(spec["val_prefix"], z, self.cfg, seed))
         empty = np.zeros((self.ngrid,) * 3, dtype=np.float32)
         if not os.path.exists(idpath) or not os.path.exists(valpath):
-            logger.warning(f"  {value_field} inputs missing at z={z:.4f} seed={seed}, using empty grid")
+            logger.warning(f"  {value_field} inputs missing at z={z:.6f} seed={seed}, using empty grid")
             return empty, empty.astype(np.float64)
 
         ids = np.load(idpath, mmap_mode="r")
         vals = np.load(valpath, mmap_mode="r")
-        coords, masses = self._halo_coords_masses(seed, z)
-        mass_cut_coords = coords[masses > self.lae_lbg_mass_cut]
-        lae_coords = mass_cut_coords[ids]
+        coords, _ = self._halo_coords_masses(seed, z)
+        lae_coords = coords[ids]
 
         occ = np.zeros((self.ngrid,) * 3, dtype=np.float32)
         vgrid = np.zeros((self.ngrid,) * 3, dtype=np.float64)
