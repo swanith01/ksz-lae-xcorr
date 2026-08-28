@@ -40,3 +40,7 @@ __pycache__/
 # Figures generated locally (final paper figures should be added
 # explicitly with `git add -f` if you want them tracked)
 paper/figure_scripts/output/
+
+# Local result-pull directories (rsync'd from cluster for inspection/plotting) --
+# large binary lightcone/data files, never meant to be committed wholesale
+results_300Mpc*/

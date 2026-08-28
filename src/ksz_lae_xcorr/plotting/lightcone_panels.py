@@ -69,6 +69,40 @@ def plot_xhi_halo_overlay(cfg, lc_xHI: np.ndarray, lc_halo_count: np.ndarray, z_
     plt.close(fig)
 
 
+def plot_four_field_panels(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir, seed) -> None:
+    """
+    4-row figure: xHI, halos, LAE, LBG -- each field shown STANDALONE (own
+    colormap, own colorbar), no xHI-background overlay. Use this instead of
+    plot_four_tracer_panel at real (dense, high-resolution) data scale,
+    where scattering discrete-tracer points on top of an xHI background
+    would just be an unreadable solid blob.
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    fig, axes = plt.subplots(4, 1, figsize=(16, 15), constrained_layout=True, sharex=True)
+
+    im0 = axes[0].imshow(lc_xHI, cmap=XH_CMAP, aspect="auto", vmin=0, vmax=1, origin="lower")
+    _setup_axes(axes[0], cfg, z_arr)
+    fig.colorbar(im0, ax=axes[0], pad=0.01, fraction=0.025).set_label(r"$x_\mathrm{HI}$")
+    axes[0].set_title(f"Seed {seed} -- xHI")
+
+    for ax, field, cmap, label in [
+        (axes[1], lc_halos, "inferno", "Halo count"),
+        (axes[2], lc_lae, "viridis", "LAE count"),
+        (axes[3], lc_lbg, "cividis", "LBG count"),
+    ]:
+        vmax = max(field.max(), 1)  # avoid a degenerate 0-0 color range on empty fields
+        im = ax.imshow(field, cmap=cmap, aspect="auto", vmin=0, vmax=vmax, origin="lower")
+        _setup_axes(ax, cfg, z_arr)
+        fig.colorbar(im, ax=ax, pad=0.01, fraction=0.025).set_label(label)
+        ax.set_title(label)
+
+    axes[3].set_xlabel(r"Redshift $z$")
+    outpath = os.path.join(out_dir, f"lightcone_fields_seed{seed}.pdf")
+    fig.savefig(outpath, bbox_inches="tight")
+    plt.close(fig)
+
+
+
 def plot_four_tracer_panel(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir, seed) -> None:
     """4-row figure: xHI+all tracers, xHI+halos, xHI+LAEs, xHI+LBGs -- one seed."""
     os.makedirs(out_dir, exist_ok=True)
