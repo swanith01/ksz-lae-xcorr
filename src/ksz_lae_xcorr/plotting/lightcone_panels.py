@@ -76,6 +76,13 @@ def plot_four_field_panels(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir
     plot_four_tracer_panel at real (dense, high-resolution) data scale,
     where scattering discrete-tracer points on top of an xHI background
     would just be an unreadable solid blob.
+
+    Discrete tracer panels use a LOG color scale, not linear -- these fields
+    are extremely sparse count data (the overwhelming majority of nonzero
+    cells have count 1, with rare outlier cells reaching much higher). A
+    linear scale stretched to the single brightest pixel makes every count=1
+    cell look almost indistinguishable from true zero, hiding real structure
+    -- not because the data is actually empty.
     """
     os.makedirs(out_dir, exist_ok=True)
     fig, axes = plt.subplots(4, 1, figsize=(16, 15), constrained_layout=True, sharex=True)
@@ -90,11 +97,13 @@ def plot_four_field_panels(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir
         (axes[2], lc_lae, "viridis", "LAE count"),
         (axes[3], lc_lbg, "cividis", "LBG count"),
     ]:
-        vmax = max(field.max(), 1)  # avoid a degenerate 0-0 color range on empty fields
-        im = ax.imshow(field, cmap=cmap, aspect="auto", vmin=0, vmax=vmax, origin="lower")
+        vmax = max(field.max(), 1)
+        norm = mcolors.LogNorm(vmin=1, vmax=vmax, clip=True)
+        im = ax.imshow(field, cmap=cmap, aspect="auto", norm=norm, origin="lower")
         _setup_axes(ax, cfg, z_arr)
-        fig.colorbar(im, ax=ax, pad=0.01, fraction=0.025).set_label(label)
-        ax.set_title(label)
+        cbar = fig.colorbar(im, ax=ax, pad=0.01, fraction=0.025)
+        cbar.set_label(f"{label} (log scale; 0 shown as darkest)")
+        ax.set_title(f"{label}  (nonzero fraction: {np.count_nonzero(field)/field.size:.2%})")
 
     axes[3].set_xlabel(r"Redshift $z$")
     outpath = os.path.join(out_dir, f"lightcone_fields_seed{seed}.pdf")
