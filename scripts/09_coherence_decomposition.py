@@ -34,6 +34,7 @@ from ksz_lae_xcorr.correlation.coherence_decomposition import (
     group_slices_by_snapshot,
     random_shift_slices,
 )
+from ksz_lae_xcorr.correlation.seed_stats import aggregate_coherence_over_seeds
 from ksz_lae_xcorr.io.loaders import load_lightcone_products
 from ksz_lae_xcorr.lightcone.stitch import Stitcher, setup_logger
 from ksz_lae_xcorr.plotting.spectra_plots import plot_coherence_decomposition, plot_dchi_periodicity
@@ -118,6 +119,31 @@ def main():
     with open(out_path, "wb") as f:
         pickle.dump(results, f)
     print(f"\nSaved: {out_path}")
+
+    if len(results) >= 2:
+        print("\nSeed-aggregated summary (median +/- 1 sigma over seeds):")
+        agg_path = os.path.join(cfg.paths.products_root, "coherence_decomposition_seed_agg.pkl")
+        agg = {
+            field: aggregate_coherence_over_seeds(results, list(results.keys()), field=field)
+            for field in ("D_total", "D_diag", "D_off")
+        }
+        with open(agg_path, "wb") as f:
+            pickle.dump(agg, f)
+        print(f"  Saved: {agg_path}")
+
+        ell_agg = agg["D_diag"]["ell"]
+        i3000 = int(np.argmin(np.abs(ell_agg - 3000)))
+        d_tot = agg["D_total"]["median"][i3000]
+        d_diag = agg["D_diag"]["median"][i3000]
+        d_off = agg["D_off"]["median"][i3000]
+        frac = d_off / d_tot if d_tot != 0 else np.nan
+        print(f"  ell~{ell_agg[i3000]:.0f}, {agg['D_diag']['n_seeds']} seeds:")
+        print(f"    median D_total={d_tot:.4g}  D_diag={d_diag:.4g}  D_off={d_off:.4g}"
+              f"  ->  D_off/D_total = {frac:.2%}")
+    else:
+        print(f"\nOnly {len(results)} seed(s) with results -- skipping seed-aggregated "
+              f"summary (need >= 2 for a sigma).")
+
     print(f"Figures written to {args.out_dir}")
 
 

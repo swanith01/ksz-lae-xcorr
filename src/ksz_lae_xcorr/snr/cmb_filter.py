@@ -48,6 +48,13 @@ def kSZ_reion_from_sim(cfg, ell_grid, kg, auto_results_ksz: dict) -> np.ndarray:
     Reionization-era kSZ (linear Delta T/T auto-power), from this
     simulation's own kSZ auto-power spectrum, median over seeds.
     auto_results_ksz[seed] = (D_ell, D_err) in muK^2, at the reference z.
+
+    NOTE (2026-09-07): this uses the raw STITCHED D_ell, which may include
+    the box-periodicity artifact ksz-pipeline characterized (see
+    correlation/coherence_decomposition.py). See
+    kSZ_reion_from_sim_diag below for the periodicity-curbed alternative --
+    once scripts/09's real cluster numbers are in, run the SNR forecast
+    both ways and compare before deciding which one belongs in the paper.
     """
     cosmo = get_cosmology(cfg)
     z_ref = 0.5 * (cfg.box.z_min + cfg.box.z_max)
@@ -56,6 +63,42 @@ def kSZ_reion_from_sim(cfg, ell_grid, kg, auto_results_ksz: dict) -> np.ndarray:
 
     D_seeds = [D for D, _ in auto_results_ksz.values()]
     D_med = np.nanmedian(np.array(D_seeds), axis=0)
+    Cl_sim = D_med * 2 * np.pi / (ell_sim * (ell_sim + 1))
+
+    valid = np.isfinite(Cl_sim) & (ell_sim > 10) & (Cl_sim > 0)
+    Cl = interp1d(ell_sim[valid], Cl_sim[valid], bounds_error=False,
+                   fill_value="extrapolate")(ell_grid)
+    return np.clip(Cl, 0, None), ell_sim
+
+
+def kSZ_reion_from_sim_diag(cfg, ell_grid, coherence_results: dict) -> tuple:
+    """
+    Same role as kSZ_reion_from_sim (the reionization-era kSZ term that
+    goes into the CMB filter, Eq. 8/10 of La Plante+2022), but sourced
+    from correlation.coherence_decomposition's PERIODICITY-CURBED D_diag
+    instead of the raw stitched kSZ auto-power -- i.e. this is what the
+    filter would look like if the box-periodicity artifact were removed
+    from the "own kSZ" ingredient specifically.
+
+    coherence_results: as saved by scripts/09_coherence_decomposition.py
+    (results[seed] = {'ell', 'D_total', 'D_diag', 'D_off', ...}), or the
+    already seed-aggregated dict from
+    correlation.seed_stats.aggregate_coherence_over_seeds (either works --
+    detected by whether 'median' or per-seed D_diag arrays are present).
+
+    Returns (Cl, ell_sim) -- same shape/units contract as
+    kSZ_reion_from_sim, so callers can swap one for the other directly.
+    """
+    from ksz_lae_xcorr.correlation.seed_stats import aggregate_coherence_over_seeds
+
+    if "median" in coherence_results:
+        agg = coherence_results  # already aggregated
+    else:
+        seeds = sorted(coherence_results.keys())
+        agg = aggregate_coherence_over_seeds(coherence_results, seeds, field="D_diag")
+
+    ell_sim = agg["ell"]
+    D_med = agg["median"]
     Cl_sim = D_med * 2 * np.pi / (ell_sim * (ell_sim + 1))
 
     valid = np.isfinite(Cl_sim) & (ell_sim > 10) & (Cl_sim > 0)
