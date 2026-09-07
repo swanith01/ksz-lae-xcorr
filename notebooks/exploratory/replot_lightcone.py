@@ -2,6 +2,28 @@
 """
 replot_lightcone.py
 ====================
+DEFUNCT as of 2026-09-07 -- do not run, do not treat its old output
+(lc_panels_combined.png) as current/canonical. Two independent problems:
+
+1. DATA_PATH no longer exists on the cluster (confirmed:
+   `ls /user1/swanith/kSZ2_LAE_project_22Jun2026/quick_check/quick_lightcone_seed1.npz`
+   -> "No such file or directory"). This was an early one-off "quick_check"
+   dry-run file, not the real production lightcone -- it predates (and is
+   unrelated to) the current real 10-seed stitched output.
+2. Its halo panel used ax.scatter(xx, yy, s=clip(counts,1,20), alpha=0.6)
+   -- semi-transparent, fixed-size markers that visually merge into a
+   dense-looking field regardless of the array's true sparsity. This is
+   NOT a faithful rendering; do not port this pattern elsewhere. The
+   faithful replacement (exact per-pixel imshow, no scatter) lives in
+   src/ksz_lae_xcorr/plotting/lightcone_panels.py:plot_xhi_tracer_overlay
+   and plot_four_field_panels, wired into scripts/06_make_figures.py.
+
+Kept here only as historical reference per this directory's own
+convention (original pre-refactor scripts, reference only, don't add new
+logic here) -- not because it still works.
+
+Original docstring below, for context:
+----------------------------------------
 Re-plot the saved quick_lightcone_seed1.npz as 3 separate panels:
 halos alone, xHI alone, and the overlay (with better transparency so
 the xHI colormap is actually visible under the halo points).

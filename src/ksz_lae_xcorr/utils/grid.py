@@ -38,3 +38,27 @@ def block_average_downsample(box: np.ndarray, target_n: int) -> np.ndarray:
     factor = n_in // target_n
     reshaped = box.reshape(target_n, factor, target_n, factor, target_n, factor)
     return reshaped.mean(axis=(1, 3, 5))
+
+
+def aggregate_transverse(field_3d: np.ndarray, mode: str = "sum", axis: int = 1) -> np.ndarray:
+    """
+    Collapse a (Nx, Ny, Nz) lightcone cube across one transverse axis
+    (default axis=1) to a 2D (remaining-transverse, Nz) map, for plotting
+    or side-by-side comparison of multiple fields.
+
+    mode='sum' for discrete tracer counts (halo/LAE/LBG), mode='mean' for
+    continuous fields (xHI, density, ...). Use the SAME choice consistently
+    for every field shown together in one figure -- a full-transverse-width
+    *sum* of a sparse discrete field is not on the same footing as a thin
+    *slice* (or a mean) of a continuous one; mixing them makes panels look
+    inconsistently sparse/dense for reasons that have nothing to do with
+    the physics (see ksz-lae-xcorr_HANDOFF.md's lightcone visualization
+    note, and the lc_panels_combined.png vs lightcone_fields_seed1.pdf
+    mismatch that motivated writing this function explicitly rather than
+    re-deriving the aggregation ad hoc at each call site).
+    """
+    if mode == "sum":
+        return field_3d.sum(axis=axis)
+    if mode == "mean":
+        return field_3d.mean(axis=axis)
+    raise ValueError(f"Unknown aggregation mode: {mode!r} (use 'sum' or 'mean')")

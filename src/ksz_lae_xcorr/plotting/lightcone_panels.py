@@ -21,6 +21,14 @@ XH_CMAP = mcolors.LinearSegmentedColormap.from_list(
     "green_white", ["#00441b", "#1a7c3a", "#52b365", "#b7e0b1", "white"]
 )
 
+# Fixed per-tracer colors for the overlay plots below -- kept in one place
+# so a given tracer always reads the same color across every figure.
+TRACER_COLORS = {
+    "halo": (0.82, 0.10, 0.10),   # red
+    "lae": (1.00, 0.82, 0.00),    # yellow/gold
+    "lbg": (0.10, 0.30, 0.70),    # navy
+}
+
 
 def _setup_axes(ax, cfg, z_arr):
     n_lc_pix = len(z_arr)
@@ -37,34 +45,92 @@ def _setup_axes(ax, cfg, z_arr):
     ax.set_ylabel("cMpc")
 
 
-def plot_xhi_halo_overlay(cfg, lc_xHI: np.ndarray, lc_halo_count: np.ndarray, z_arr: np.ndarray,
-                           out_dir: str, seed: int) -> None:
-    """3-panel figure: xHI alone, halo positions alone, overlay -- one seed."""
+def _rgba_overlay_log(count: np.ndarray, rgb: tuple[float, float, float],
+                       max_alpha: float = 0.9) -> np.ndarray:
+    """
+    Build an (H, W, 4) RGBA layer for a discrete count field: fully
+    transparent where count==0, opaque `rgb` where count is at its max,
+    log-scaled alpha in between -- an EXACT, per-pixel-faithful rendering
+    of the array's own values.
+
+    Deliberately replaces the old scatter-based overlay (removed --
+    ax.scatter(xx, yy, s=clip(counts,1,20), alpha=0.6) drew a fixed-size,
+    semi-transparent dot per nonzero cell; overlapping dots visually merge
+    regardless of the array's real sparsity, so even ~genuinely-sparse
+    real data (see ksz-lae-xcorr_HANDOFF.md: halos ~0.6%, LAE ~0.02%
+    nonzero in a single slice) looked like a dense continuous field. An
+    imshow of this RGBA array can only show exactly what's in the array --
+    there is no marker-size or blending knob left to accidentally invent
+    density that isn't there.
+    """
+    count = np.asarray(count, dtype=np.float64)
+    vmax = float(count.max()) if count.size else 0.0
+    if vmax <= 0:
+        alpha = np.zeros_like(count)
+    else:
+        alpha = np.log1p(np.clip(count, 0, None)) / np.log1p(vmax)
+    rgba = np.zeros(count.shape + (4,), dtype=np.float64)
+    rgba[..., 0] = rgb[0]
+    rgba[..., 1] = rgb[1]
+    rgba[..., 2] = rgb[2]
+    rgba[..., 3] = np.clip(alpha, 0.0, 1.0) * max_alpha
+    return rgba
+
+
+def plot_xhi_tracer_overlay(cfg, lc_xHI: np.ndarray, tracers: dict[str, np.ndarray],
+                             z_arr: np.ndarray, out_dir: str, seed: int) -> None:
+    """
+    Faithful xHI + tracer overlay(s) -- one row per tracer in `tracers`
+    (e.g. {'halo': lc_halo_count} or {'halo': ..., 'lae': ..., 'lbg': ...}),
+    plus a combined row if more than one tracer is given. Each tracer is
+    drawn as an exact per-pixel log-alpha RGBA layer (_rgba_overlay_log)
+    on top of the xHI base image -- no scatter markers.
+
+    Replaces plot_xhi_halo_overlay and plot_four_tracer_panel (both
+    scatter-based, removed in the same change -- see git history and
+    ksz-lae-xcorr_HANDOFF.md's lightcone-image-mismatch note for why).
+
+    Aggregation is the CALLER's responsibility (pass already-2D arrays) --
+    use utils.grid.aggregate_transverse with a consistent mode ('sum' for
+    every discrete tracer here, since that's what these are) so this
+    figure and plot_four_field_panels agree on what "the data" looks like.
+    """
     os.makedirs(out_dir, exist_ok=True)
-    yy, xx = np.nonzero(lc_halo_count)
-    counts = lc_halo_count[yy, xx]
+    names = list(tracers.keys())
+    n_rows = len(names) + (1 if len(names) > 1 else 0)
+    fig, axes = plt.subplots(n_rows, 1, figsize=(16, 3.6 * n_rows), dpi=120,
+                              sharex=True, constrained_layout=True)
+    axes = np.atleast_1d(axes)
 
-    fig, axes = plt.subplots(3, 1, figsize=(16, 14), dpi=120, sharex=True, constrained_layout=True)
+    def _draw_base(ax):
+        im = ax.imshow(lc_xHI, cmap=XH_CMAP, aspect="auto", origin="lower", vmin=0, vmax=1)
+        _setup_axes(ax, cfg, z_arr)
+        fig.colorbar(im, ax=ax, pad=0.01, fraction=0.025).set_label(r"$x_\mathrm{HI}$")
 
-    im0 = axes[0].imshow(lc_xHI, cmap=XH_CMAP, aspect="auto", origin="lower", vmin=0, vmax=1)
-    _setup_axes(axes[0], cfg, z_arr)
-    fig.colorbar(im0, ax=axes[0], pad=0.01, fraction=0.025).set_label(r"$x_\mathrm{HI}$")
-    axes[0].set_title(f"Seed {seed} -- xHI only")
+    for row, name in enumerate(names):
+        ax = axes[row]
+        _draw_base(ax)
+        color = TRACER_COLORS.get(name, (0.8, 0.2, 0.8))
+        ax.imshow(_rgba_overlay_log(tracers[name], color), aspect="auto", origin="lower", zorder=3)
+        ax.set_title(f"Seed {seed} -- xHI + {name} (exact log-alpha overlay)")
 
-    axes[1].scatter(xx, yy, s=np.clip(counts, 1, 20), c="black", linewidths=0, alpha=0.6)
-    axes[1].set_xlim(0, len(z_arr))
-    axes[1].set_ylim(0, cfg.box.hii_dim)
-    _setup_axes(axes[1], cfg, z_arr)
-    axes[1].set_title("Halo positions only")
-
-    im2 = axes[2].imshow(lc_xHI, cmap=XH_CMAP, aspect="auto", origin="lower", vmin=0, vmax=1)
-    axes[2].scatter(xx, yy, s=np.clip(counts, 1, 15), c="red", linewidths=0, alpha=0.15, zorder=3)
-    _setup_axes(axes[2], cfg, z_arr)
-    fig.colorbar(im2, ax=axes[2], pad=0.01, fraction=0.025).set_label(r"$x_\mathrm{HI}$")
-    axes[2].set_title("Overlay")
+    if len(names) > 1:
+        ax = axes[-1]
+        _draw_base(ax)
+        for name in names:
+            color = TRACER_COLORS.get(name, (0.8, 0.2, 0.8))
+            ax.imshow(_rgba_overlay_log(tracers[name], color), aspect="auto", origin="lower", zorder=3)
+        handles = [
+            plt.Line2D([0], [0], marker="s", linestyle="none", markersize=10,
+                       markerfacecolor=TRACER_COLORS.get(n, (0.8, 0.2, 0.8)),
+                       markeredgewidth=0, label=n)
+            for n in names
+        ]
+        ax.legend(handles=handles, loc="upper right", framealpha=0.6)
+        ax.set_title(f"Seed {seed} -- xHI + all tracers (exact log-alpha overlay)")
 
     fig.suptitle(f"Seed {seed} -- {cfg.box.box_len_mpc:.0f} Mpc lightcone", fontsize=14)
-    outpath = os.path.join(out_dir, f"lc_panels_combined_seed{seed}.png")
+    outpath = os.path.join(out_dir, f"lc_tracer_overlay_seed{seed}.pdf")
     fig.savefig(outpath, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
@@ -72,10 +138,10 @@ def plot_xhi_halo_overlay(cfg, lc_xHI: np.ndarray, lc_halo_count: np.ndarray, z_
 def plot_four_field_panels(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir, seed) -> None:
     """
     4-row figure: xHI, halos, LAE, LBG -- each field shown STANDALONE (own
-    colormap, own colorbar), no xHI-background overlay. Use this instead of
-    plot_four_tracer_panel at real (dense, high-resolution) data scale,
-    where scattering discrete-tracer points on top of an xHI background
-    would just be an unreadable solid blob.
+    colormap, own colorbar), no xHI-background overlay. Use this alongside
+    plot_xhi_tracer_overlay: this one is best for seeing each field's own
+    structure/dynamic range in isolation, the overlay is best for seeing
+    where tracers sit relative to the ionization state.
 
     Discrete tracer panels use a LOG color scale, not linear -- these fields
     are extremely sparse count data (the overwhelming majority of nonzero
@@ -112,37 +178,9 @@ def plot_four_field_panels(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir
 
 
 
-def plot_four_tracer_panel(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir, seed) -> None:
-    """4-row figure: xHI+all tracers, xHI+halos, xHI+LAEs, xHI+LBGs -- one seed."""
-    os.makedirs(out_dir, exist_ok=True)
-    yy_h, xx_h = np.nonzero(lc_halos)
-    yy_l, xx_l = np.nonzero(lc_lae)
-    yy_b, xx_b = np.nonzero(lc_lbg)
-
-    fig, axes = plt.subplots(4, 1, figsize=(16, 14), dpi=100, constrained_layout=True, sharex=True)
-    for ax in axes:
-        _setup_axes(ax, cfg, z_arr)
-
-    s0 = axes[0].imshow(lc_xHI, cmap=XH_CMAP, aspect="auto", vmin=0, vmax=1, origin="lower")
-    axes[0].scatter(xx_h, yy_h, s=10, marker=".", c="red", linewidths=0, label="Halos", zorder=3)
-    axes[0].scatter(xx_l, yy_l, s=40, marker="*", c="yellow", linewidths=0, label="LAEs", zorder=4)
-    axes[0].scatter(xx_b, yy_b, s=15, marker="^", c="navy", linewidths=0, label="LBGs", zorder=4)
-    axes[0].legend(loc="upper right", markerscale=4, framealpha=0.6)
-    axes[0].set_title(f"Seed {seed}")
-    fig.colorbar(s0, ax=axes[0], pad=0.01, fraction=0.025).set_label(r"$x_\mathrm{HI}$")
-
-    for ax, yy, xx, color, marker, label in [
-        (axes[1], yy_h, xx_h, "red", ".", "Halos"),
-        (axes[2], yy_l, xx_l, "yellow", "*", "LAEs"),
-        (axes[3], yy_b, xx_b, "navy", "^", "LBGs"),
-    ]:
-        s = ax.imshow(lc_xHI, cmap=XH_CMAP, aspect="auto", vmin=0, vmax=1, origin="lower")
-        ax.scatter(xx, yy, s=6, marker=marker, c=color, linewidths=0, zorder=3)
-        ax.text(0.99, 0.97, label, transform=ax.transAxes, ha="right", va="top",
-                bbox=dict(fc="white", alpha=0.6, ec="none"))
-        fig.colorbar(s, ax=ax, pad=0.01, fraction=0.025).set_label(r"$x_\mathrm{HI}$")
-
-    axes[3].set_xlabel(r"$z$")
-    outpath = os.path.join(out_dir, f"lightcone_seed{seed}.pdf")
-    fig.savefig(outpath, bbox_inches="tight")
-    plt.close(fig)
+# plot_four_tracer_panel (scatter-based xHI+halos/LAEs/LBGs overlay) was
+# removed here -- superseded by plot_xhi_tracer_overlay above, which does
+# the same job (xHI + each tracer, plus a combined panel) with an exact
+# per-pixel RGBA overlay instead of scatter markers. Call
+# plot_xhi_tracer_overlay(cfg, lc_xHI, {"halo": ..., "lae": ..., "lbg": ...},
+# z_arr, out_dir, seed) for the equivalent figure.

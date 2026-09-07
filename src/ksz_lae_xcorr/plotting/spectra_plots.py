@@ -221,3 +221,70 @@ def plot_snr_vs_z(cfg, SN_results: dict, z_cents, out_dir: str) -> None:
     ax.legend(fontsize=11)
     fig.savefig(os.path.join(out_dir, "SNR_vs_z_LAE_filtered.pdf"), dpi=300)
     plt.close(fig)
+
+
+def plot_coherence_decomposition(cfg, ell, D_total, D_diag, D_off, seed: int, out_dir: str) -> None:
+    """
+    D_ell(total)/D_ell(diag)/D_ell(off) for one seed's own kSZ auto-power,
+    from correlation.coherence_decomposition. D_diag is the periodicity-
+    curbed number (compare against any independent coeval-direct
+    calculation); D_off is the periodicity-artifact residual (D_total -
+    D_diag) and CAN be negative -- plotted with abs() and a distinct
+    marker/linestyle so a negative-going D_off doesn't look like a plot bug.
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(7, 5), constrained_layout=True)
+
+    ax.plot(ell, D_total, color="black", lw=2, label=r"$D_\ell^{\rm total}$ (current stitched)")
+    ax.plot(ell, D_diag, color="steelblue", lw=2, ls="--", label=r"$D_\ell^{\rm diag}$ (periodicity-curbed)")
+
+    D_off = np.asarray(D_off)
+    pos = D_off > 0
+    neg = ~pos
+    if np.any(pos):
+        ax.plot(ell[pos], D_off[pos], "o", color="firebrick", ms=4, label=r"$D_\ell^{\rm off}>0$")
+    if np.any(neg):
+        ax.plot(ell[neg], -D_off[neg], "o", mfc="none", mec="firebrick", ms=4,
+                 label=r"$|D_\ell^{\rm off}|$, off$<0$")
+
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel(r"$\ell$")
+    ax.set_ylabel(r"$D_\ell$ [$\mu K^2$]")
+    ax.set_title(f"kSZ auto-power coherence decomposition -- seed {seed}\n"
+                 f"({cfg.box.box_len_mpc:.0f} Mpc box)")
+    ax.legend(fontsize=9)
+    fig.savefig(os.path.join(out_dir, f"coherence_decomposition_seed{seed}.pdf"), dpi=300)
+    plt.close(fig)
+
+
+def plot_dchi_periodicity(cfg, dchi_centers, cross_mean, cross_std, seed: int, out_dir: str) -> None:
+    """
+    Real-space cross-power vs Delta-chi (correlation.coherence_decomposition.
+    cross_power_by_dchi), with vertical guides at integer multiples of
+    box_len_mpc -- the literal signature of box-periodicity stitching: real
+    correlated power peaking at separations equal to the box's own comoving
+    depth (and its multiples), which a genuinely independent-slice
+    (Limber) treatment could never produce.
+    """
+    os.makedirs(out_dir, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(7, 5), constrained_layout=True)
+
+    valid = np.isfinite(cross_mean)
+    ax.errorbar(dchi_centers[valid], cross_mean[valid], yerr=cross_std[valid],
+                fmt="o-", color="darkorange", ms=4, capsize=2)
+    ax.axhline(0, color="gray", lw=0.8)
+
+    n_reps = int(np.ceil(dchi_centers[valid].max() / cfg.box.box_len_mpc)) if valid.any() else 0
+    for n in range(1, n_reps + 1):
+        ax.axvline(n * cfg.box.box_len_mpc, color="red", ls=":", lw=1,
+                   label=(r"multiples of $L_{\rm box}$" if n == 1 else None))
+
+    ax.set_xlabel(r"$|\Delta\chi|$ [Mpc]")
+    ax.set_ylabel(r"pairwise cross-power [arb. units]")
+    ax.set_title(f"Delta-chi periodicity check -- seed {seed}\n"
+                 f"({cfg.box.box_len_mpc:.0f} Mpc box)")
+    if n_reps > 0:
+        ax.legend(fontsize=9)
+    fig.savefig(os.path.join(out_dir, f"dchi_periodicity_seed{seed}.pdf"), dpi=300)
+    plt.close(fig)
