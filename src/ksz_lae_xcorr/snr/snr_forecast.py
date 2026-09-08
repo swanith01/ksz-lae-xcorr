@@ -1,11 +1,16 @@
 """
 snr/snr_forecast.py
 =====================
-Filters the kSZ maps per experiment, computes the filtered kSZ^2 x LAE
+Filters the kSZ maps per experiment, computes the filtered kSZ^2 x tracer
 cross-power per redshift bin, and forecasts S/N via the discrete-ell-sum
 estimator (La Plante+2022 Eq. 13). Direct refactor of notebook Cells 9b-9c.
 
-LAE only -- do not pass LBG maps into this module (see cmb_filter.py docstring).
+Tracer-generic as of 2026-09-08 (was LAE-only): every function takes a
+tracer_key defaulting to 'lae_count_lc', so scripts/05's production
+forecast is byte-for-byte unchanged. Pass tracer_key='lbg_count_lc' for
+the Stage 1 La Plante+2022 benchmark (Roman HLS Lyman-break galaxies --
+that paper's actual tracer, not LAEs) -- see
+scripts/10_stage1_lbg_benchmark.py.
 """
 
 from __future__ import annotations
@@ -50,8 +55,18 @@ def build_filtered_kSZ2_maps(cfg, kg: KGrid, kSZ_maps: dict, filt: dict, seeds: 
 
 
 def compute_lae_auto_power(cfg, kg: KGrid, tracer_data: dict, seeds: list[int],
-                            z_edges, z_cents, ell_grid) -> dict:
-    """C_ell^(delta_LAE delta_LAE) per z-bin, median over seeds, interpolated onto ell_grid."""
+                            z_edges, z_cents, ell_grid, tracer_key: str = "lae_count_lc") -> dict:
+    """
+    C_ell^(delta_g delta_g) per z-bin, median over seeds, interpolated onto ell_grid.
+
+    tracer_key selects which stitched count field to use (default
+    'lae_count_lc', preserving every existing call site's behavior
+    unchanged). Pass 'lbg_count_lc' for the Stage 1 La Plante+2022
+    benchmark (Roman HLS Lyman-break galaxies, not LAEs) -- see
+    scripts/10_stage1_lbg_benchmark.py. Name kept as compute_lae_auto_power
+    rather than renamed, so the many existing positional-arg call sites
+    (scripts/05, scripts/08) don't need touching.
+    """
     cosmo = get_cosmology(cfg)
     z_nodes_ref = tracer_data[seeds[0]]["z_nodes"]
 
@@ -66,9 +81,9 @@ def compute_lae_auto_power(cfg, kg: KGrid, tracer_data: dict, seeds: list[int],
 
         Cl_seeds = []
         for seed in seeds:
-            if seed not in tracer_data:
+            if seed not in tracer_data or tracer_key not in tracer_data[seed]:
                 continue
-            lae_proj = tracer_data[seed]["lae_count_lc"][:, :, zi_lo:zi_hi].sum(axis=2)
+            lae_proj = tracer_data[seed][tracer_key][:, :, zi_lo:zi_hi].sum(axis=2)
             if lae_proj.sum() == 0:
                 continue
             delta_g = make_overdensity(lae_proj)
@@ -88,8 +103,14 @@ def compute_lae_auto_power(cfg, kg: KGrid, tracer_data: dict, seeds: list[int],
 
 
 def compute_filtered_signal(cfg, kg: KGrid, filtered_kSZ2: dict, tracer_data: dict,
-                             seeds: list[int], z_edges, z_cents, ell_grid) -> dict:
-    """C_ell^(T_f^2 x LAE) per experiment per z-bin (muK^2), median over seeds."""
+                             seeds: list[int], z_edges, z_cents, ell_grid,
+                             tracer_key: str = "lae_count_lc") -> dict:
+    """
+    C_ell^(T_f^2 x tracer) per experiment per z-bin (muK^2), median over seeds.
+
+    tracer_key: see compute_lae_auto_power above -- same default, same
+    Stage-1 LBG override.
+    """
     cosmo = get_cosmology(cfg)
     z_nodes_ref = tracer_data[seeds[0]]["z_nodes"]
 
@@ -107,7 +128,9 @@ def compute_filtered_signal(cfg, kg: KGrid, filtered_kSZ2: dict, tracer_data: di
             for seed in seeds:
                 if seed not in filtered_kSZ2[name] or seed not in tracer_data:
                     continue
-                lae_proj = tracer_data[seed]["lae_count_lc"][:, :, zi_lo:zi_hi].sum(axis=2)
+                if tracer_key not in tracer_data[seed]:
+                    continue
+                lae_proj = tracer_data[seed][tracer_key][:, :, zi_lo:zi_hi].sum(axis=2)
                 if lae_proj.sum() == 0:
                     continue
                 delta_lae = make_overdensity(lae_proj)
@@ -157,10 +180,15 @@ def compute_snr_vs_z(cfg, filt: dict, Cl_signal: dict, Cl_lae_auto: dict, z_cent
 
 
 def run_snr_pipeline(cfg, kg: KGrid, kSZ_maps: dict, tracer_data: dict, seeds: list[int],
-                      auto_results_ksz: dict) -> dict:
+                      auto_results_ksz: dict, tracer_key: str = "lae_count_lc") -> dict:
     """
-    Full LAE-only SNR pipeline: CMB filter -> filtered kSZ^2 maps ->
-    filtered signal x LAE auto -> S/N vs z, per experiment.
+    Full SNR pipeline: CMB filter -> filtered kSZ^2 maps -> filtered signal
+    x tracer auto -> S/N vs z, per experiment.
+
+    tracer_key defaults to 'lae_count_lc' (unchanged behavior for
+    scripts/05's production LAE forecast). Pass 'lbg_count_lc' for the
+    Stage 1 La Plante+2022 benchmark (Roman HLS LBGs) -- see
+    scripts/10_stage1_lbg_benchmark.py.
     """
     from ksz_lae_xcorr.snr.cmb_filter import build_cmb_filter_ingredients
 
@@ -170,8 +198,10 @@ def run_snr_pipeline(cfg, kg: KGrid, kSZ_maps: dict, tracer_data: dict, seeds: l
 
     filt = build_cmb_filter_ingredients(cfg, kg, auto_results_ksz)
     filtered_kSZ2 = build_filtered_kSZ2_maps(cfg, kg, kSZ_maps, filt, seeds)
-    Cl_lae_auto = compute_lae_auto_power(cfg, kg, tracer_data, seeds, z_edges, z_cents, filt["ell_grid"])
-    Cl_signal = compute_filtered_signal(cfg, kg, filtered_kSZ2, tracer_data, seeds, z_edges, z_cents, filt["ell_grid"])
+    Cl_lae_auto = compute_lae_auto_power(cfg, kg, tracer_data, seeds, z_edges, z_cents,
+                                          filt["ell_grid"], tracer_key=tracer_key)
+    Cl_signal = compute_filtered_signal(cfg, kg, filtered_kSZ2, tracer_data, seeds, z_edges,
+                                         z_cents, filt["ell_grid"], tracer_key=tracer_key)
     SN_results = compute_snr_vs_z(cfg, filt, Cl_signal, Cl_lae_auto, z_cents)
 
     return {"filt": filt, "Cl_lae_auto": Cl_lae_auto, "Cl_signal": Cl_signal,

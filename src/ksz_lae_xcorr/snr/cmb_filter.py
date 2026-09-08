@@ -140,7 +140,10 @@ def filtered_noise_power(cfg, ell_grid, Cl_TT, Cl_kSZ_reion, Cl_kSZ_late, Nl, fl
         total = Cl_TT + Cl_kSZ_reion + Cl_kSZ_late + Nl[name]
         Cl_TT_f[name] = fl[name] ** 2 * total
         integrand = ell_grid * Cl_TT_f[name] ** 2 / (2 * np.pi)
-        integral = np.trapz(integrand, ell_grid)
+        # Manual trapezoidal rule -- np.trapz was removed in newer NumPy
+        # (renamed np.trapezoid in 2.0+), and this needs to work whichever
+        # NumPy version happens to be in whatever conda env runs it.
+        integral = np.sum(0.5 * (integrand[:-1] + integrand[1:]) * np.diff(ell_grid))
         Cl_T2T2_f[name] = 2.0 * integral * np.ones_like(ell_grid)
     return Cl_TT_f, Cl_T2T2_f
 
