@@ -147,3 +147,27 @@ def compute_bias_weighted_cross_power(cfg, kg: KGrid, filtered_kSZ2_seed: np.nda
     C, Ce = to_Cell(P, Pe, chi_c)
     D, De = to_Dell(ell_c, C, Ce, T_CMB_uK=constants.T_CMB_UK)
     return {"ell": ell_c, "D_ell": D, "D_err": De, "z0": z0, "dz": dz, "chi_c": chi_c}
+
+
+def compute_volume_averaged_xHI(field_data_seed: dict, z0: float, dz: float) -> float:
+    """
+    Volume-averaged neutral fraction over the SAME top-hat window
+    (z0, dz) used for the galaxy field above -- so a reported x_HI value
+    is directly comparable to whichever (z0, dz) point produced a given
+    D_ell, same pairing the paper's own Figure 5 upper x-axis provides
+    (their zreion model's x_HII(z); this is OUR simulation's own x_HI(z),
+    not assumed to match theirs).
+
+    Same window-finding logic as build_bias_weighted_galaxy_field --
+    raises under the same condition (empty window).
+    """
+    z_lc = field_data_seed["z_lc"]
+    z_lo, z_hi = z0 - dz / 2, z0 + dz / 2
+    zi_lo = int(np.searchsorted(z_lc, z_lo))
+    zi_hi = int(np.searchsorted(z_lc, z_hi))
+    if zi_hi <= zi_lo:
+        raise ValueError(
+            f"Window [{z_lo:.3f}, {z_hi:.3f}] contains no LOS pixels in this "
+            f"seed's z_lc grid (range [{z_lc.min():.3f}, {z_lc.max():.3f}])."
+        )
+    return float(np.mean(field_data_seed["xHI_lc"][:, :, zi_lo:zi_hi]))

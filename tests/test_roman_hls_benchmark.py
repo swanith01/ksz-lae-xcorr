@@ -21,6 +21,7 @@ from ksz_lae_xcorr.snr.roman_hls_benchmark import (
     build_bias_weighted_galaxy_field,
     bluetides_bias_gz,
     compute_bias_weighted_cross_power,
+    compute_volume_averaged_xHI,
 )
 from ksz_lae_xcorr.utils.config import Config
 
@@ -65,7 +66,9 @@ def _fake_field_data(seed=0):
     rng = np.random.default_rng(seed)
     z_lc = np.linspace(Z_MIN, Z_MAX, NPIX)
     density_lc = 1.0 + rng.normal(0, 0.3, size=(NGRID, NGRID, NPIX))
-    return {"z_lc": z_lc, "density_lc": density_lc}
+    xHI_lc = np.clip(0.05 + 0.9 * (z_lc - Z_MIN) / (Z_MAX - Z_MIN), 0.02, 0.98)
+    xHI_lc = np.broadcast_to(xHI_lc[None, None, :], (NGRID, NGRID, NPIX)).copy()
+    return {"z_lc": z_lc, "density_lc": density_lc, "xHI_lc": xHI_lc}
 
 
 def test_uniform_bias_and_window_reduces_to_plain_mean():
@@ -115,3 +118,20 @@ def test_compute_bias_weighted_cross_power_runs_end_to_end():
     assert len(result["ell"]) > 0
     assert np.all(np.isfinite(result["D_ell"]))
     assert result["z0"] == 9.0 and result["dz"] == 1.0
+
+
+def test_compute_volume_averaged_xHI_matches_direct_mean():
+    fd = _fake_field_data(seed=4)
+    z0, dz = 8.0, 2.0
+    x_hi = compute_volume_averaged_xHI(fd, z0, dz)
+
+    z_lc = fd["z_lc"]
+    mask = (z_lc >= z0 - dz / 2) & (z_lc < z0 + dz / 2)
+    expected = np.mean(fd["xHI_lc"][:, :, mask])
+    assert x_hi == pytest.approx(expected)
+
+
+def test_compute_volume_averaged_xHI_empty_window_raises():
+    fd = _fake_field_data()
+    with pytest.raises(ValueError, match="no LOS pixels"):
+        compute_volume_averaged_xHI(fd, z0=100.0, dz=0.1)
