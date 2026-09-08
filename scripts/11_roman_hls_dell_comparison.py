@@ -103,6 +103,17 @@ def main():
         print("No results for any experiment -- nothing to plot.")
         return 1
 
+    # Dump the raw points/error bars, not just the plot -- for pulling
+    # into a table, a different plotting tool, or handing numbers
+    # directly to Girish rather than only a PDF.
+    csv_path = os.path.join(args.out_dir, f"stage1_dell_points_z{args.z0:.1f}.csv")
+    with open(csv_path, "w") as f:
+        f.write("experiment,ell,D_ell_uK2,D_err_uK2,n_seeds\n")
+        for name, r in results_per_exp.items():
+            for ell_i, D_i, err_i in zip(r["ell"], r["D_med"], r["D_std"]):
+                f.write(f"{name},{ell_i:.6f},{D_i:.6e},{err_i:.6e},{r['n_seeds']}\n")
+    print(f"Saved: {csv_path}")
+
     fig, (ax, ax_norm) = plt.subplots(1, 2, figsize=(13, 5.5), constrained_layout=True)
     for name, r in results_per_exp.items():
         ax.errorbar(r["ell"], r["D_med"], yerr=r["D_std"],
