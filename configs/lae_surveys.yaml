@@ -67,6 +67,22 @@ surveys:
     has_flux_cut: true
     cut_type: L_only                    # uses roman_grism_flux_cut, no REW
     note: "Future -- luminosity-only cut (grism)"
+  JADES:
+    area_deg2: 0.05
+    z_range: [5.8, 8.0]
+    has_flux_cut: false                  # TODO: Kageura+25 (ApJS 278, 33) Table 2/3
+                                          # has the Schechter LF fit needed for an
+                                          # L_min(z) cut like SILVERRUSH's -- not yet
+                                          # pulled into this file, so JADES currently
+                                          # runs "optimistic" (no flux-cut correction)
+                                          # same as PFS-SSP, not because it's actually
+                                          # depth-unlimited.
+    cut_type: none
+    note: >-
+      JWST/NIRSpec+NIRCam -- area/z-range from Maitra+2025 (arXiv:2505.17188)
+      Table 1. Small pencil-beam footprint (0.05 deg^2), not comparable in
+      sky coverage to the ground-based surveys above -- shot noise will
+      dominate any forecast using this row.
 
 # -----------------------------------------------------------------------------
 # Path to the "2D companion" Type-B lightcone products (occupancy + mean
