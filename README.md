@@ -50,10 +50,19 @@ core `01`-`06` chain above.
 
 Both LAE and LBG catalogues come from an external pipeline (see
 `data/README.md`) and both are cross-correlated with the kSZ² signal
-(`src/ksz_lae_xcorr/correlation/`). However, the S/N forecast
-(`src/ksz_lae_xcorr/snr/`) is deliberately LAE-only — `configs/fiducial.yaml`'s
-`snr.tracer: lae` is the single place this is set. LBG cross-power figures
-are for the paper's physics discussion, not the headline detectability claim.
+(`src/ksz_lae_xcorr/correlation/`). The production S/N forecast
+(`src/ksz_lae_xcorr/snr/`) defaults to LAE — `configs/fiducial.yaml`'s
+`snr.tracer: lae` is the single place this default is set, and
+`scripts/05_compute_snr.py` is the LAE-only headline-forecast entry point.
+
+As of the Stage 1 literature-benchmark work (see below), the SNR module
+itself is **tracer-generic**: `snr_forecast.py`'s `run_snr_pipeline` and
+friends take a `tracer_key` argument (default `'lae_count_lc'`, so
+`scripts/05`'s behavior is unchanged) and also work with
+`'lbg_count_lc'`. `scripts/10_stage1_lbg_benchmark.py` uses this to run
+the same estimator against the real LBG catalogue. LBG cross-power
+figures from `scripts/06` remain for the paper's physics discussion, not
+the headline LAE detectability claim — that hasn't changed.
 
 ## Realistic LAE survey selection (extension)
 
@@ -89,6 +98,76 @@ parameters, not simulation parameters.
 `src/ksz_lae_xcorr/snr/survey_selection.py` implements this generically --
 one code path reused across every named survey, rather than duplicated
 per-survey blocks as in the original notebook.
+
+## Periodicity diagnostic (P_diag/P_off)
+
+`stitch.py`'s lightcone construction repeats the same finite 300 Mpc box
+periodically along the line of sight to cover the full z=5-20 range --
+the same mechanism the companion `ksz-pipeline` repo found inflates their
+stitched kSZ auto-power spectrum relative to an independent direct/Limber
+calculation. `scripts/09_coherence_decomposition.py` (backed by
+`src/ksz_lae_xcorr/correlation/coherence_decomposition.py`) checks for
+this here, WITHOUT needing a second independent calculation: it
+decomposes the existing stitched kSZ map's power into P_diag (sum of each
+LOS pixel's own auto-power -- periodicity-curbed) and P_off (the
+cross-pixel term -- P_total minus P_diag, the periodicity artifact
+itself). Measured result on the real 10-seed fiducial run: median
+D_off/D_total = 68% at ell~3000 (10/10 seeds agree, range 64-75%),
+i.e. stitched shows roughly D_total/D_diag ~ 3x more power than the
+periodicity-curbed estimate at that scale -- worse than the companion
+repo's 2.3x at their larger 800 Mpc box, consistent with their own
+finding that the artifact's amplitude grows as the box shrinks.
+
+This decomposes the kSZ AUTO-power only (the ingredient feeding
+`snr/cmb_filter.py`'s `kSZ_reion_from_sim`, for which
+`kSZ_reion_from_sim_diag` is the periodicity-curbed drop-in alternative)
+-- not the kSZ2 x tracer CROSS-power itself, which is a different
+(bispectrum-type) statistic this decomposition doesn't directly address.
+See the module docstrings for the full reasoning and caveats.
+
+```
+scripts/09_coherence_decomposition.py    P_diag/P_off per seed + Delta-chi
+            |                            periodicity check, from real data
+            |                            already on disk (no new sim needed)
+scripts/12_plot_coherence_summary.py     one seed-averaged summary plot
+                                          (reads the seed_agg pickle 09 saves)
+```
+
+## Stage 1 literature benchmark (La Plante, Sipple & Lidz 2022)
+
+Before trusting this repo's kSZ2 x galaxy cross-correlation for the
+paper's own LAE forecast, `scripts/10`/`11` reproduce La Plante, Sipple &
+Lidz 2022 (ApJ 928, 162; arXiv:2111.13717) as closely as this simulation
+allows, as a pass/fail sanity check on the estimator itself:
+
+```
+scripts/10_stage1_lbg_benchmark.py       runs the existing SNR pipeline
+            |                            (tracer_key='lbg_count_lc') against
+            |                            this repo's REAL LBG catalogue --
+            |                            the paper's actual target population
+            |                            (Roman HLS Lyman-break galaxies),
+            |                            not LAEs
+scripts/11_roman_hls_dell_comparison.py  builds the galaxy field the SAME
+                                          way the paper does (Eq.6-7: a
+                                          linear-bias-weighted density
+                                          field, bg(z)=2.1(1+z)-5.3 from
+                                          Waters et al. 2016), decoupling
+                                          the check from this repo's own
+                                          (separately evolving) LBG
+                                          catalogue, and plots D_ell
+                                          against a hand-read reference
+                                          point from the paper's Figure 4
+```
+
+Both live in `src/ksz_lae_xcorr/snr/roman_hls_benchmark.py` +
+`snr_forecast.py`'s tracer-generic refactor above. Known, stated
+limitations (see that module's docstring): the bias curve and box
+periodicity caveat above both apply; shot noise is not yet included
+(compare against the paper's own "without shot noise" Table 2 column);
+and this repo's `instrument_noise()` implements the paper's Eq. 11 (naive
+instrument-only noise), not their post-ILC residual-foreground model --
+compare against Table 2's "Instrument Noise" column specifically, not
+the abstract's headline sigma (that's the "ILC Noise" column).
 
 ## Cosmology
 
@@ -139,8 +218,10 @@ src/ksz_lae_xcorr/
   halos/         py21cmfast coeval + two-pass halo catalog generation
   lightcone/     3D lightcone stitching
   tracers/       physical-value (mass/luminosity/MUV) grids for diagnostics
-  correlation/   projected maps, cross-power, auto-power (halo/LAE/LBG)
-  snr/           CMB filter + S/N forecast (LAE only)
+  correlation/   projected maps, cross-power, auto-power (halo/LAE/LBG),
+                 periodicity decomposition (coherence_decomposition.py)
+  snr/           CMB filter + S/N forecast (LAE-default, tracer-generic),
+                 Stage 1 literature benchmark (roman_hls_benchmark.py)
   io/            product loaders
   plotting/      all figure-generating code
   utils/         config loader, cosmology, physical constants
@@ -243,6 +324,10 @@ examples, or just ask.
 - **`matplotlib.cm.get_cmap` was removed** in newer matplotlib --
   `matplotlib.colormaps["name"].resampled(n)` is the current API, used in
   `plotting/spectra_plots.py`.
+- **`np.trapz` was removed** in newer NumPy (renamed `np.trapezoid` in
+  2.0+) -- `snr/cmb_filter.py`'s `filtered_noise_power` uses a manual
+  trapezoidal sum instead, so it works regardless of which NumPy version
+  a given conda env happens to have.
 - 21cmFAST's exact installed build matters more than usual right now (see
   environment setup above) -- check the two function names before
   assuming any dev/beta build matches this repo's API.
