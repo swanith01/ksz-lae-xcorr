@@ -56,6 +56,16 @@ def test_bias_clipped_below_z6():
     assert bluetides_bias_gz(6.0) == pytest.approx(9.4)
 
 
+def test_bias_clipped_above_z12():
+    """Neither Waters+2016 nor La Plante+2022 discuss this bias beyond
+    z~12 -- left unclipped, the linear formula runs away unboundedly
+    (this was a real bug: it produced an unphysical 'peak' at z~17-18,
+    x_HI~1.0 in scripts/13's D_ell-vs-z sweep before this fix)."""
+    assert bluetides_bias_gz(15.0) == bluetides_bias_gz(12.0)
+    assert bluetides_bias_gz(20.0) == bluetides_bias_gz(12.0)
+    assert bluetides_bias_gz(12.0) == pytest.approx(22.0)
+
+
 def test_bias_monotonic_increasing_in_range():
     z = np.linspace(6, 12, 20)
     bg = bluetides_bias_gz(z)

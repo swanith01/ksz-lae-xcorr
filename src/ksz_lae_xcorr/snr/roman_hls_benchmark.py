@@ -73,13 +73,22 @@ def bluetides_bias_gz(z):
     fit (not an interpolation) -- it independently checks against the two
     anchor points La Plante+2022's text quotes (bg~9 at z=6: 2.1*7-5.3=9.4;
     bg~20 at z=12: 2.1*13-5.3=22.0), confirming this is the same curve
-    they're citing. Clipped flat below z=6 -- Waters+2016 doesn't fit the
-    relation below the WFIRST HLS's z=8-15 focus, and this repo's box
-    covers z=5-20.3, so z<6 would otherwise silently extrapolate past
-    where the fit was calibrated.
+    they're citing.
+
+    Clipped flat OUTSIDE [6, 12] on BOTH ends -- not just below z=6.
+    Neither Waters+2016 nor La Plante+2022 discuss this bias beyond z~12
+    (their own text stops quoting it there); left unclipped above, the
+    linear formula grows without bound (bg~32 by z=17!) with nothing
+    behind it -- caught via scripts/13's D_ell-vs-z sweep producing an
+    unphysical "peak" at z~17-18, x_HI~1.0 (fully neutral, where genuine
+    kSZ signal should be near zero, not maximal) that turned out to be
+    this runaway extrapolation, not a real reionization feature. Fixed
+    2026-09-08 -- if re-deriving this from a fuller Waters+2016 digitization
+    later, re-check whether a real (not just flat-clipped) high-z falloff
+    is more appropriate.
     """
     z = np.asarray(z, dtype=np.float64)
-    z_clipped = np.clip(z, 6.0, None)
+    z_clipped = np.clip(z, 6.0, 12.0)
     return 2.1 * (1.0 + z_clipped) - 5.3
 
 
