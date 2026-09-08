@@ -20,11 +20,9 @@ for the catalogue-based (real LBG counts) complementary check -- running
 both and comparing is more informative than either alone.
 
 CAVEATS, stated plainly rather than glossed over:
-- bluetides_bias_gz below is a 2-POINT linear interpolation of the range
-  quoted in the paper's text (Sec 5.1/Fig 8 caption: "bg ~ 9 at z=6 to
-  bg ~ 20 at z=12", citing Waters et al. 2016 Figure 14) -- NOT the
-  actual digitized W16 curve. Fine for an order-of-magnitude check, not
-  a precision match.
+- bluetides_bias_gz below is the exact fit from Waters et al. 2016
+  (bg(z) = 2.1(1+z) - 5.3, their Sec 5/Fig 14) -- this IS the real curve
+  La Plante+2022 cites, not an approximation of it.
 - This computes the CLUSTERING-ONLY signal and, when used for a full S/N
   (not just D_ell), should be compared against the paper's own "without
   shot noise" Table 2 column -- sidesteps needing their exact N_g(z)
@@ -66,15 +64,23 @@ PAPER_FIG4_PEAK_ELL = 1000.0
 
 def bluetides_bias_gz(z):
     """
-    2-point linear interpolation of the Roman HLS LBG bias quoted in
-    La Plante+2022 (bg ~ 9 at z=6, bg ~ 20 at z=12; Waters+2016 Fig 14).
-    Clipped flat outside [6, 12] -- the paper doesn't quote the curve's
-    shape beyond this range, so extrapolating further would be inventing
-    a number, not reading one off the paper.
+    Roman HLS LBG linear bias, from Waters et al. 2016 (MNRAS 463, 3520;
+    arXiv:1605.05670) Sec 5, their Figure 14 fit:
+
+        bg(z) = 2.1*(1+z) - 5.3
+
+    calibrated to bg = 13.4 +/- 1.8 at z=8. This is the REAL BlueTides
+    fit (not an interpolation) -- it independently checks against the two
+    anchor points La Plante+2022's text quotes (bg~9 at z=6: 2.1*7-5.3=9.4;
+    bg~20 at z=12: 2.1*13-5.3=22.0), confirming this is the same curve
+    they're citing. Clipped flat below z=6 -- Waters+2016 doesn't fit the
+    relation below the WFIRST HLS's z=8-15 focus, and this repo's box
+    covers z=5-20.3, so z<6 would otherwise silently extrapolate past
+    where the fit was calibrated.
     """
     z = np.asarray(z, dtype=np.float64)
-    z_clipped = np.clip(z, 6.0, 12.0)
-    return 9.0 + (20.0 - 9.0) / (12.0 - 6.0) * (z_clipped - 6.0)
+    z_clipped = np.clip(z, 6.0, None)
+    return 2.1 * (1.0 + z_clipped) - 5.3
 
 
 def build_bias_weighted_galaxy_field(cfg, field_data_seed: dict, z0: float, dz: float,

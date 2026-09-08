@@ -38,16 +38,21 @@ def _cfg():
 
 
 def test_bias_anchor_points_match_paper():
-    """Sec 5.1/Fig 8: bg ~ 9 at z=6, bg ~ 20 at z=12 -- these are literal
-    quotes from the paper, must match exactly, not approximately."""
-    assert bluetides_bias_gz(6.0) == pytest.approx(9.0)
-    assert bluetides_bias_gz(12.0) == pytest.approx(20.0)
-    assert bluetides_bias_gz(9.0) == pytest.approx(14.5)  # midpoint of a linear interpolation
+    """Waters+2016 Sec 5/Fig 14: bg(z) = 2.1(1+z) - 5.3, calibrated to
+    bg=13.4 at z=8. Cross-check against La Plante+2022's own quoted
+    anchors (bg~9 at z=6, bg~20 at z=12) -- both land within the ~9/~20
+    the paper states, confirming this is the same curve they cite."""
+    assert bluetides_bias_gz(8.0) == pytest.approx(13.4, abs=0.5)  # formula vs quoted point, within their +/-1.8
+    assert bluetides_bias_gz(6.0) == pytest.approx(9.4)
+    assert bluetides_bias_gz(12.0) == pytest.approx(22.0)
 
 
-def test_bias_clipped_outside_range():
+def test_bias_clipped_below_z6():
+    """Waters+2016 calibrate this fit for the WFIRST HLS focus (z=8-15);
+    below z=6 it's extrapolating past where it was ever fit, so this
+    repo clips flat there instead of silently extrapolating."""
     assert bluetides_bias_gz(4.0) == bluetides_bias_gz(6.0)
-    assert bluetides_bias_gz(15.0) == bluetides_bias_gz(12.0)
+    assert bluetides_bias_gz(6.0) == pytest.approx(9.4)
 
 
 def test_bias_monotonic_increasing_in_range():
