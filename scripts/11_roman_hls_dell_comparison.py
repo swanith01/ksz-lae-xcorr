@@ -103,7 +103,7 @@ def main():
         print("No results for any experiment -- nothing to plot.")
         return 1
 
-    fig, ax = plt.subplots(figsize=(8, 6), constrained_layout=True)
+    fig, (ax, ax_norm) = plt.subplots(1, 2, figsize=(13, 5.5), constrained_layout=True)
     for name, r in results_per_exp.items():
         ax.errorbar(r["ell"], r["D_med"], yerr=r["D_std"],
                      marker="o", ms=4, capsize=2, label=f"Ours -- {name} filter ({r['n_seeds']} seeds)")
@@ -111,11 +111,35 @@ def main():
                label=r"La Plante+2022 Fig.4 peak ($\approx$" + f"{PAPER_FIG4_PEAK_DELL_UK2}" + r" $\mu K^2$, hand-read)")
     ax.axvline(PAPER_FIG4_PEAK_ELL, color="gray", ls=":", lw=1)
     ax.set_xscale("log")
+    ax.set_yscale("log")
     ax.set_xlabel(r"$\ell$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$]")
-    ax.set_title(f"Stage 1 comparison -- z0={args.z0}, dz={args.dz}\n"
-                 f"({cfg.box.box_len_mpc:.0f} Mpc box vs paper's 2 Gpc/h -- shape/order-of-magnitude only)")
-    ax.legend(fontsize=8)
+    ax.set_title("Absolute amplitude")
+    ax.legend(fontsize=7)
+
+    # Shape-only comparison: normalize each curve to its own peak, so a
+    # large overall amplitude mismatch (units, bias-model breakdown at
+    # small non-linear scales, periodicity in the filter's own
+    # normalization -- see script docstring) doesn't hide whether the
+    # ELL-DEPENDENCE (where it peaks, how fast it falls off) looks like
+    # the paper's Fig 4 at all. Not a substitute for getting the
+    # amplitude right eventually -- a separate, complementary check.
+    for name, r in results_per_exp.items():
+        peak = np.nanmax(np.abs(r["D_med"]))
+        if peak > 0:
+            ax_norm.plot(r["ell"], r["D_med"] / peak, marker="o", ms=4,
+                         label=f"Ours -- {name} (peak at $\\ell$={r['ell'][np.nanargmax(np.abs(r['D_med']))]:.0f})")
+    ax_norm.axvline(PAPER_FIG4_PEAK_ELL, color="black", ls="--", lw=1.2,
+                     label=f"Paper's peak ($\\ell\\approx${PAPER_FIG4_PEAK_ELL:.0f})")
+    ax_norm.axhline(0, color="gray", lw=0.5)
+    ax_norm.set_xscale("log")
+    ax_norm.set_xlabel(r"$\ell$")
+    ax_norm.set_ylabel(r"$D_\ell$ / (own peak)")
+    ax_norm.set_title("Shape only -- each curve normalized to its own peak")
+    ax_norm.legend(fontsize=7)
+
+    fig.suptitle(f"Stage 1 comparison -- z0={args.z0}, dz={args.dz}\n"
+                 f"({cfg.box.box_len_mpc:.0f} Mpc box vs paper's 2 Gpc/h -- amplitude not yet reconciled, see docstring)")
     outpath = os.path.join(args.out_dir, f"stage1_dell_comparison_z{args.z0:.1f}.pdf")
     fig.savefig(outpath, dpi=200)
     plt.close(fig)
