@@ -54,7 +54,10 @@ from ksz_lae_xcorr.correlation.direct_bispectrum import (
     limber_sum_snapshots,
 )
 from ksz_lae_xcorr.lightcone.stitch import Stitcher, setup_logger
-from ksz_lae_xcorr.snr.roman_hls_benchmark import bluetides_bias_gz
+from ksz_lae_xcorr.snr.roman_hls_benchmark import (
+    PAPER_FIG4_PEAK_DELL_UK2,
+    bluetides_bias_gz,
+)
 from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.config import load_config
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
@@ -179,12 +182,15 @@ def main():
             w.writerow([f"{e:.6f}", f"{d:.6e}"])
     print(f"Saved: {csv_path}")
 
-    fig, ax = plt.subplots(figsize=(8, 6), constrained_layout=True)
+    fig, (ax, ax_norm) = plt.subplots(1, 2, figsize=(13, 5.5), constrained_layout=True)
+
     ax.plot(ell_direct, D_direct, "o-", color="darkgreen", label=f"Direct/coeval (seed {seed}, no stitching)")
+    ax.axhline(PAPER_FIG4_PEAK_DELL_UK2, color="black", ls="--", lw=1,
+               label=f"La Plante+2022 Fig 4 peak (~{PAPER_FIG4_PEAK_DELL_UK2} $\\mu K^2$, hand-read)")
 
     stitched_csv = args.stitched_csv or os.path.join(args.out_dir, f"stage1_dell_points_z{args.z0:.1f}.csv")
+    ell_s, D_s = [], []
     if os.path.exists(stitched_csv):
-        ell_s, D_s = [], []
         with open(stitched_csv) as f:
             for row in csv.DictReader(f):
                 if row["experiment"] == "SO":
@@ -199,9 +205,32 @@ def main():
     ax.set_xscale("log")
     ax.set_xlabel(r"$\ell$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$]")
-    ax.set_title(f"Direct/coeval vs stitched -- seed {seed}, z0={args.z0}, dz={args.dz}\n"
-                 f"({cfg.box.box_len_mpc:.0f} Mpc box; same bias model, same window, both methods)")
-    ax.legend(fontsize=9)
+    ax.set_title(f"Absolute amplitude -- seed {seed}, z0={args.z0}, dz={args.dz}")
+    ax.legend(fontsize=8)
+
+    # Shape-only comparison -- each curve normalized to its own peak, so a
+    # shape match is visible even while the absolute amplitude is still off.
+    # Only the POSITIVE part of D_direct is meaningful to peak-normalize
+    # (matches scripts/11's convention for the same reason).
+    pos = D_direct > 0
+    if np.any(pos):
+        D_direct_norm = D_direct / D_direct[pos].max()
+        ax_norm.plot(ell_direct, D_direct_norm, "o-", color="darkgreen", label="Direct/coeval (shape only)")
+    if ell_s:
+        D_s_arr = np.array(D_s)
+        pos_s = D_s_arr > 0
+        if np.any(pos_s):
+            ax_norm.plot(ell_s, D_s_arr / D_s_arr[pos_s].max(), "s--", color="firebrick", alpha=0.7,
+                         label="Stitched (shape only)")
+    ax_norm.axhline(0, color="gray", lw=0.5)
+    ax_norm.set_xscale("log")
+    ax_norm.set_xlabel(r"$\ell$")
+    ax_norm.set_ylabel(r"$D_\ell / D_\ell^{\rm peak}$ (each curve normalized to its own peak)")
+    ax_norm.set_title("Shape only -- peak-normalized")
+    ax_norm.legend(fontsize=8)
+
+    fig.suptitle(f"Direct/coeval vs stitched vs La Plante+2022 -- {cfg.box.box_len_mpc:.0f} Mpc box, "
+                 f"same bias model, same window", fontsize=12)
     outpath = os.path.join(args.out_dir, f"direct_vs_stitched_seed{seed}_z{args.z0:.1f}.pdf")
     fig.savefig(outpath, dpi=200)
     plt.close(fig)
