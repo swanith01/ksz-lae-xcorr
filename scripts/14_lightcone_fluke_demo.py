@@ -45,6 +45,7 @@ import matplotlib.pyplot as plt
 from ksz_lae_xcorr.io.loaders import load_lightcone_products
 from ksz_lae_xcorr.plotting.lightcone_panels import XH_CMAP, TRACER_COLORS, _rgba_overlay_log, _setup_axes
 from ksz_lae_xcorr.utils.config import load_config
+from ksz_lae_xcorr.utils.figio import save_fig
 from ksz_lae_xcorr.utils.grid import aggregate_transverse
 
 
@@ -127,9 +128,9 @@ def main():
     fig.suptitle(f"{args.tracer} tracer -- faithful rendering at four aggregation levels ({cfg.box.box_len_mpc:.0f} Mpc box)",
                  fontsize=13)
     outpath1 = os.path.join(args.out_dir, f"lightcone_aggregation_levels_{args.tracer}_seed{seed0}.pdf")
-    fig.savefig(outpath1, dpi=150, bbox_inches="tight")
+    save_fig(fig, outpath1, dpi=150)
     plt.close(fig)
-    print(f"Saved: {outpath1}")
+    print(f"Saved: {outpath1} (+ .png)")
 
     nonzero_frac_slice = np.mean(count_slice_s0 > 0)
     fig2, (ax_old, ax_new) = plt.subplots(2, 1, figsize=(16, 9), dpi=110, constrained_layout=True, sharex=True)
@@ -147,9 +148,9 @@ def main():
                   f"(the top panel is what made the old lightcone look dense; it is the SAME "
                   f"{nonzero_frac_slice:.3%}-nonzero array as the bottom panel)", fontsize=12)
     outpath2 = os.path.join(args.out_dir, f"lightcone_fluke_reveal_{args.tracer}_seed{seed0}.pdf")
-    fig2.savefig(outpath2, dpi=150, bbox_inches="tight")
+    save_fig(fig2, outpath2, dpi=150)
     plt.close(fig2)
-    print(f"Saved: {outpath2}")
+    print(f"Saved: {outpath2} (+ .png)")
     return 0
 
 

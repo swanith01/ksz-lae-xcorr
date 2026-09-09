@@ -61,6 +61,7 @@ from ksz_lae_xcorr.snr.roman_hls_benchmark import (
 from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.config import load_config
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
+from ksz_lae_xcorr.utils.figio import save_fig
 
 
 def build_tau_history(cfg, stitcher, seed, all_snap_z, logger):
@@ -232,9 +233,9 @@ def main():
     fig.suptitle(f"Direct/coeval vs stitched vs La Plante+2022 -- {cfg.box.box_len_mpc:.0f} Mpc box, "
                  f"same bias model, same window", fontsize=12)
     outpath = os.path.join(args.out_dir, f"direct_vs_stitched_seed{seed}_z{args.z0:.1f}.pdf")
-    fig.savefig(outpath, dpi=200)
+    save_fig(fig, outpath)
     plt.close(fig)
-    print(f"Saved: {outpath}")
+    print(f"Saved: {outpath} (+ .png)")
     return 0
 
 

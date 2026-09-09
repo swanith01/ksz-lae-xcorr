@@ -17,6 +17,8 @@ import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from ksz_lae_xcorr.utils.figio import save_fig
+
 XH_CMAP = mcolors.LinearSegmentedColormap.from_list(
     "green_white", ["#00441b", "#1a7c3a", "#52b365", "#b7e0b1", "white"]
 )
@@ -131,7 +133,7 @@ def plot_xhi_tracer_overlay(cfg, lc_xHI: np.ndarray, tracers: dict[str, np.ndarr
 
     fig.suptitle(f"Seed {seed} -- {cfg.box.box_len_mpc:.0f} Mpc lightcone", fontsize=14)
     outpath = os.path.join(out_dir, f"lc_tracer_overlay_seed{seed}.pdf")
-    fig.savefig(outpath, dpi=150, bbox_inches="tight")
+    save_fig(fig, outpath, dpi=150)
     plt.close(fig)
 
 
@@ -173,7 +175,7 @@ def plot_four_field_panels(cfg, lc_xHI, lc_halos, lc_lae, lc_lbg, z_arr, out_dir
 
     axes[3].set_xlabel(r"Redshift $z$")
     outpath = os.path.join(out_dir, f"lightcone_fields_seed{seed}.pdf")
-    fig.savefig(outpath, bbox_inches="tight")
+    save_fig(fig, outpath)
     plt.close(fig)
 
 
