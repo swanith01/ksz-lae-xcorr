@@ -54,10 +54,8 @@ from ksz_lae_xcorr.correlation.direct_bispectrum import (
     limber_sum_snapshots,
 )
 from ksz_lae_xcorr.lightcone.stitch import Stitcher, setup_logger
-from ksz_lae_xcorr.snr.roman_hls_benchmark import (
-    PAPER_FIG4_PEAK_DELL_UK2,
-    bluetides_bias_gz,
-)
+from ksz_lae_xcorr.io.la_plante_reference import load_dell_vs_ell_band
+from ksz_lae_xcorr.snr.roman_hls_benchmark import bluetides_bias_gz
 from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.config import load_config
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
@@ -186,8 +184,12 @@ def main():
     fig, (ax, ax_norm) = plt.subplots(1, 2, figsize=(13, 5.5), constrained_layout=True)
 
     ax.plot(ell_direct, D_direct, "o-", color="darkgreen", label=f"Direct/coeval (seed {seed}, no stitching)")
-    ax.axhline(PAPER_FIG4_PEAK_DELL_UK2, color="black", ls="--", lw=1,
-               label=f"La Plante+2022 Fig 4 peak (~{PAPER_FIG4_PEAK_DELL_UK2} $\\mu K^2$, hand-read)")
+
+    lp_band = load_dell_vs_ell_band()
+    ax.fill_between(lp_band["ell_lo"], lp_band["lo"],
+                     np.interp(lp_band["ell_lo"], lp_band["ell_hi"], lp_band["hi"]),
+                     color="black", alpha=0.15,
+                     label="La Plante+2022 band (digitized, x_HII~0.43)")
 
     stitched_csv = args.stitched_csv or os.path.join(args.out_dir, f"stage1_dell_points_z{args.z0:.1f}.csv")
     ell_s, D_s = [], []
@@ -217,6 +219,10 @@ def main():
     if np.any(pos):
         D_direct_norm = D_direct / D_direct[pos].max()
         ax_norm.plot(ell_direct, D_direct_norm, "o-", color="darkgreen", label="Direct/coeval (shape only)")
+    lp_hi_peak = lp_band["hi"].max()
+    ax_norm.fill_between(lp_band["ell_lo"], lp_band["lo"] / lp_hi_peak,
+                          np.interp(lp_band["ell_lo"], lp_band["ell_hi"], lp_band["hi"]) / lp_hi_peak,
+                          color="black", alpha=0.15, label="La Plante+2022 band (shape only)")
     if ell_s:
         D_s_arr = np.array(D_s)
         pos_s = D_s_arr > 0
