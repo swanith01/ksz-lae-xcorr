@@ -235,7 +235,23 @@ class Stitcher:
             # during the Jul 2026 pixel-level validation requested by G. Kulkarni).
             box = block_average_downsample(np.array(box), self.ngrid)
         if field_name == "vz":
-            box = np.array(box) / (1 + z) * 3.086e19
+            # FIXED 2026-09-09, CONFIRMED via first-principles physics on
+            # real data (correlation/velocity_convention_check.py,
+            # scripts/17, job 1715931): raw velocity_z, with NO conversion
+            # applied at all, matches the linear-theory continuity-equation
+            # prediction P_v(k)=(1/3)(faH/k)^2 P_delta(k) to within ~20%
+            # across k=0.025-0.5 Mpc^-1 (correction_factor_mpc_s = 0.78-0.90),
+            # only drifting upward at k>0.7 Mpc^-1 -- exactly where linear
+            # theory is expected to break down from real nonlinear growth,
+            # not a sign of a wrong unit. The previous /(1+z)*3.086e19
+            # formula was definitively wrong: no unit reinterpretation
+            # rescues a correction factor of ~2.5e19 (checked the same way).
+            # velocity_z_to_mpc_per_s (the v3-style Zel'dovich D(z)f(z)H(z)
+            # reconstruction) is ALSO not used here, for the same reason --
+            # py21cmfast v4's coeval velocity_z is not the raw displacement
+            # field that formula was designed to convert; it's already a
+            # genuine comoving peculiar velocity in Mpc/s.
+            box = np.array(box)
         return box
 
     def _halo_coords_masses(self, seed: int, z: float):
