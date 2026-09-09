@@ -83,7 +83,10 @@ def _fake_field_data(seed=0):
     density_lc = 1.0 + rng.normal(0, 0.3, size=(NGRID, NGRID, NPIX))
     xHI_lc = np.clip(0.05 + 0.9 * (z_lc - Z_MIN) / (Z_MAX - Z_MIN), 0.02, 0.98)
     xHI_lc = np.broadcast_to(xHI_lc[None, None, :], (NGRID, NGRID, NPIX)).copy()
-    return {"z_lc": z_lc, "density_lc": density_lc, "xHI_lc": xHI_lc}
+    velocity_lc = rng.normal(0, 1e-3, size=(NGRID, NGRID, NPIX))  # Mpc/s, needed by
+                                                                   # chi_eff_power_weighted
+                                                                   # (via compute_ksz_slices)
+    return {"z_lc": z_lc, "density_lc": density_lc, "xHI_lc": xHI_lc, "velocity_lc": velocity_lc}
 
 
 def test_uniform_bias_and_window_reduces_to_plain_mean():
@@ -215,7 +218,6 @@ def test_chi_eff_lies_within_window_bounds():
     computed weighted average satisfies."""
     cfg = _cfg()
     fd = _fake_field_data(seed=7)
-    fd["velocity_lc"] = np.random.default_rng(7).normal(0, 1e-3, size=fd["density_lc"].shape)
 
     z_lo, z_hi = 7.0, 9.0
     chi_eff = chi_eff_power_weighted(cfg, fd, z_lo, z_hi)
@@ -230,6 +232,24 @@ def test_chi_eff_lies_within_window_bounds():
 def test_chi_eff_raises_on_too_narrow_window():
     cfg = _cfg()
     fd = _fake_field_data(seed=8)
-    fd["velocity_lc"] = np.random.default_rng(8).normal(0, 1e-3, size=fd["density_lc"].shape)
     with pytest.raises(ValueError, match="LOS pixels|Zero total weight"):
         chi_eff_power_weighted(cfg, fd, z_lo=100.0, z_hi=100.001)
+
+
+def test_cross_power_use_chi_eff_actually_changes_result():
+    """The whole point of wiring this in: use_chi_eff=True must give a
+    DIFFERENT chi_c (hence different ell grid) than use_chi_eff=False --
+    if this ever passes with identical output, the flag is being ignored."""
+    cfg = _cfg()
+    kg = KGrid(cfg)
+    fd = _fake_field_data(seed=9)
+    rng = np.random.default_rng(10)
+    filtered_kSZ2 = rng.normal(0, 1, size=(NGRID, NGRID)) ** 2
+
+    r_eff = compute_bias_weighted_cross_power(cfg, kg, filtered_kSZ2, fd, z0=9.0, dz=1.0,
+                                               use_chi_eff=True)
+    r_naive = compute_bias_weighted_cross_power(cfg, kg, filtered_kSZ2, fd, z0=9.0, dz=1.0,
+                                                 use_chi_eff=False)
+    assert r_eff["chi_eff_used"] is True
+    assert r_naive["chi_eff_used"] is False
+    assert r_eff["chi_c"] != pytest.approx(r_naive["chi_c"])

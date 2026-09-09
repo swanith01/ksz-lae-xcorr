@@ -271,19 +271,46 @@ def build_bias_weighted_galaxy_field(cfg, field_data_seed: dict, z0: float, dz: 
 
 def compute_bias_weighted_cross_power(cfg, kg: KGrid, filtered_kSZ2_seed: np.ndarray,
                                        field_data_seed: dict, z0: float, dz: float,
-                                       bias_fn=bluetides_bias_gz) -> dict:
+                                       bias_fn=bluetides_bias_gz, clamp_to_patchy: bool = True,
+                                       use_chi_eff: bool = True) -> dict:
     """
     One seed's D_ell for filtered-kSZ^2 x (bias-weighted matter field) --
     the quantity to compare against the paper's own Figure 4/5.
     filtered_kSZ2_seed: one entry of
     snr.snr_forecast.build_filtered_kSZ2_maps[experiment][seed].
 
-    Returns {'ell', 'D_ell', 'D_err', 'z0', 'dz', 'chi_c'}.
+    clamp_to_patchy (default True): see build_bias_weighted_galaxy_field --
+    passed through so the galaxy field and the chi used for the ell=k*chi
+    conversion below correspond to the SAME actual window (clamp is
+    deterministic given the same inputs, so computing it here and inside
+    build_bias_weighted_galaxy_field independently still gives identical
+    bounds -- no state needs threading through).
+
+    use_chi_eff (default True): use the power-weighted chi_eff
+    (chi_eff_power_weighted, ported from ksz-pipeline's validated
+    definition) for the ell=k*chi conversion, instead of the cruder
+    single-z chi=comoving_distance(z0) used before this was added. Pass
+    False to reproduce the earlier (pre-chi_eff) behavior exactly, e.g.
+    for an apples-to-apples comparison against older results.
+
+    Returns {'ell', 'D_ell', 'D_err', 'z0', 'dz', 'chi_c', 'chi_eff_used'}.
     """
     cosmo = get_cosmology(cfg)
-    delta_g = build_bias_weighted_galaxy_field(cfg, field_data_seed, z0, dz, bias_fn=bias_fn)
+    z_lc = field_data_seed["z_lc"]
 
-    chi_c = cosmo.comoving_distance(z0).to_value("Mpc")
+    if clamp_to_patchy:
+        z_lo, z_hi = clamp_window_to_patchy_regime(z0, dz, z_lc, field_data_seed["xHI_lc"])
+    else:
+        z_lo, z_hi = z0 - dz / 2, z0 + dz / 2
+
+    delta_g = build_bias_weighted_galaxy_field(cfg, field_data_seed, z0, dz,
+                                                bias_fn=bias_fn, clamp_to_patchy=clamp_to_patchy)
+
+    if use_chi_eff:
+        chi_c = chi_eff_power_weighted(cfg, field_data_seed, z_lo, z_hi)
+    else:
+        chi_c = cosmo.comoving_distance(z0).to_value("Mpc")
+
     ell_c = make_ell(kg.k_centers, chi_c)
 
     sig = filtered_kSZ2_seed.astype(np.float64)
@@ -291,7 +318,8 @@ def compute_bias_weighted_cross_power(cfg, kg: KGrid, filtered_kSZ2_seed: np.nda
     P, Pe, _ = cross_power_2d(sig, delta_g - delta_g.mean(), kg)
     C, Ce = to_Cell(P, Pe, chi_c)
     D, De = to_Dell(ell_c, C, Ce, T_CMB_uK=constants.T_CMB_UK)
-    return {"ell": ell_c, "D_ell": D, "D_err": De, "z0": z0, "dz": dz, "chi_c": chi_c}
+    return {"ell": ell_c, "D_ell": D, "D_err": De, "z0": z0, "dz": dz,
+            "chi_c": chi_c, "chi_eff_used": use_chi_eff}
 
 
 def compute_volume_averaged_xHI(field_data_seed: dict, z0: float, dz: float,
