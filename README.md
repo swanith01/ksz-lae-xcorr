@@ -9,6 +9,43 @@ interpretation (comparing how the kSZ² signal correlates with a different,
 UV-selected tracer population) — but the S/N forecast itself is **LAE-only**.
 See "Scope: LAE vs LBG" below.
 
+## Start here: current status (2026-09-09)
+
+**Trusted right now:**
+- Lightcone construction and tracer counting (halo/LAE/LBG spatial
+  distributions relative to xHI) — real, correctly-populated data
+  confirmed for seed 1 (LAE max count 3, LBG max count 15, both
+  nonzero); re-stitch for the remaining 9 seeds was in progress as of
+  this writing (see the checkpoint gotcha below for why this needed
+  fixing at all) — confirm all 10 landed before citing this as fully done.
+- The velocity field feeding the kSZ construction — fixed today (see
+  "Velocity conversion" below), verified with a first-principles physics
+  check on real data, not just an eyeball sanity check.
+- The **direct/coeval** kSZ² × galaxy estimator (`correlation/direct_bispectrum.py`,
+  `scripts/15`/`18`) — first real-data results land within ~15-20x of
+  La Plante et al. 2022's published amplitude (down from ~1000-8000x
+  before today's velocity fix). Not a validated match, but the most
+  trustworthy number this repo currently has for the cross-correlation.
+
+**Known broken, actively being investigated:**
+- The **stitched** kSZ² × galaxy pathway (`scripts/11`/`13`, feeding off
+  `scripts/04`'s `cross_results.pkl`) currently returns numbers
+  indistinguishable from zero after today's velocity fix, even though
+  the underlying velocity data itself checks out fine and the *direct*
+  method (same corrected velocity, no stitching) works. This points to a
+  bug specific to the stitching/interpolation step itself — separate
+  from, and discovered only after, today's velocity-conversion fix.
+  Don't trust `scripts/11`/`13`'s output until this is resolved.
+
+**Not yet done:**
+- `scripts/05` (the actual production LAE S/N forecast) has not been run
+  with today's fixes.
+- Stage 2 (realistic LAE survey selection replacing the Roman-HLS LBG
+  proxy, `scripts/07`/`08`) — untouched, blocked on Stage 1 settling first.
+
+See "Velocity conversion", "Direct/coeval kSZ2 x galaxy estimator", and
+"Known gotchas" below for the full story on each of these.
+
 ## Pipeline
 
 ```
@@ -111,12 +148,22 @@ this here, WITHOUT needing a second independent calculation: it
 decomposes the existing stitched kSZ map's power into P_diag (sum of each
 LOS pixel's own auto-power -- periodicity-curbed) and P_off (the
 cross-pixel term -- P_total minus P_diag, the periodicity artifact
-itself). Measured result on the real 10-seed fiducial run: median
-D_off/D_total = 68% at ell~3000 (10/10 seeds agree, range 64-75%),
-i.e. stitched shows roughly D_total/D_diag ~ 3x more power than the
-periodicity-curbed estimate at that scale -- worse than the companion
-repo's 2.3x at their larger 800 Mpc box, consistent with their own
-finding that the artifact's amplitude grows as the box shrinks.
+itself). Measured result on the real 10-seed fiducial run, post
+velocity-conversion-fix (2026-09-09): median D_off/D_total = 72% at
+ell~3000 (10/10 seeds agree, range 64-78%) -- consistent with, though not
+identical to, the pre-fix figure (68%), since the RATIO is dimensionless
+and largely insensitive to the overall velocity scaling that changed.
+Worse than the companion repo's 2.3x (equivalent framing) at their larger
+800 Mpc box, consistent with their own finding that the artifact's
+amplitude grows as the box shrinks.
+
+CAVEAT as of today's velocity fix: while the D_off/D_total RATIO above
+remains meaningful, the ABSOLUTE D_total/D_diag values from this same
+pathway are currently NOT trustworthy -- they come out numerically
+consistent with zero, tied to the broader stitched-pathway bug described
+in "Start here" above. Only the fractional ratio is currently reliable
+from this diagnostic; don't cite the absolute D_ell numbers from
+`scripts/09`'s current output.
 
 This decomposes the kSZ AUTO-power only (the ingredient feeding
 `snr/cmb_filter.py`'s `kSZ_reion_from_sim`, for which
@@ -169,6 +216,118 @@ instrument-only noise), not their post-ILC residual-foreground model --
 compare against Table 2's "Instrument Noise" column specifically, not
 the abstract's headline sigma (that's the "ILC Noise" column).
 
+## Velocity conversion (fixed 2026-09-09)
+
+`lightcone/stitch.py`'s handling of the raw `velocity_z` field from
+py21cmfast coeval boxes was wrong, and had been wrong all along --
+found while chasing the (still partially open) Stage 1 amplitude
+mismatch. The fix and the reasoning behind it:
+
+`halos/coeval_pipeline.py` saves `velocity_z` completely raw --
+`coeval.perturbed_field.get("velocity_z")`, no conversion at save time.
+The stitching step used to apply `box/(1+z)*3.086e19`, a formula carried
+over from the companion `ksz-pipeline` repo, where it's correct: that
+repo runs **py21cmfast v3**, whose raw velocity field really is an
+unconverted linear-theory Zel'dovich *displacement*, needing a full
+`D(z)*f(z)*H(z)/(1+z)` reconstruction (their own validated formula) to
+become a genuine velocity.
+
+This repo runs **py21cmfast v4**. Its coeval `velocity_z` is *already* a
+genuine comoving peculiar velocity in Mpc/s -- confirmed two ways: (1)
+raw `velocity_z`, used completely as-is, gives $v/c \sim 4\times10^{-3}$,
+squarely physical; (2) a rigorous check --
+`correlation/velocity_convention_check.py`, comparing the raw field's own
+power spectrum against the density field's via the linear-theory
+continuity equation $P_v(k) = \frac{1}{3}(faH/k)^2 P_\delta(k)$ on the
+same real snapshot -- gives a correction factor of ~0.8-0.9 across nearly
+two decades of $k$ (only drifting at $k>0.7\,{\rm Mpc}^{-1}$, exactly
+where linear theory is expected to break down), vs ~$10^{19}$ for the old
+formula, which no unit reinterpretation could rescue.
+
+**Fix**: `Stitcher.load_field_box`'s `vz` case now returns the raw value
+completely unconverted. `velocity_z_to_mpc_per_s` (the v3-style
+Zel'dovich reconstruction, kept for reference/comparison) is **not**
+used anywhere in this repo's live pipeline.
+
+**Consequence, not yet fully resolved**: this changes every kSZ-dependent
+number in the repo. The direct/coeval estimator (below) improved
+dramatically once re-run with the fix. The stitched pathway did not --
+see "Start here" above.
+
+```
+scripts/16_velocity_conversion_check.py           cheap (one file load) --
+            |                                     old vs new conversion,
+            |                                     side by side, on real data
+scripts/17_velocity_convention_definitive_check.py the rigorous version --
+                                                    continuity-equation
+                                                    physics check (see
+                                                    correlation/velocity_convention_check.py),
+                                                    real compute (3D FFTs),
+                                                    needs qsub
+```
+
+## Lightcone rendering diagnostics
+
+`scripts/14_lightcone_fluke_demo.py` -- two things, per `--tracer`
+(halo/lae/lbg): (1) the same tracer at four aggregation levels (single
+seed/slice through fully averaged/summed), confirming the faithful
+rendering behaves sensibly at every level; (2) the actual point --
+today's faithful `imshow`-based rendering next to the OLD (removed)
+scatter-based rendering, on IDENTICAL data, demonstrating directly that
+an earlier apparent "the lightcone looks suspiciously dense" concern was
+a rendering artifact of the old plotting code, not real structure. The
+old-rendering function is deliberately kept ONLY inside this script, not
+restored to `plotting/lightcone_panels.py`, so it can't accidentally
+find its way back into the real pipeline.
+
+## Direct/coeval kSZ2 x galaxy estimator (bypasses stitching entirely)
+
+`correlation/direct_bispectrum.py` + `scripts/15`/`18` implement the
+kSZ2 x galaxy cross-power the way La Plante+2022's own Eq. 12 reduces to
+in the squeezed-triangle limit (essentially all the real S/N, per their
+own Fig. 10): filter -> square -> cross-correlate, applied PER COEVAL
+SNAPSHOT directly (no lightcone stitching, no periodicity risk) and
+summed across snapshots with the proper Limber/visibility weighting.
+Built and synthetic-tested earlier; first touched real data 2026-09-09,
+same day as the velocity fix above.
+
+```
+scripts/15_direct_bispectrum_vs_stitched.py   D_ell vs ell at one (z0,dz)
+            |                                 window, real La Plante+2022
+            |                                 band overlaid (digitized,
+            |                                 see below), plus the
+            |                                 stitched-pathway number
+            |                                 for direct comparison
+scripts/18_direct_dell_vs_z0.py               D_ell vs z0 sweep at three
+                                               fixed ell (500/1000/3000,
+                                               matching the digitized
+                                               La Plante band exactly),
+                                               non-overlapping windows so
+                                               no snapshot's expensive
+                                               FFT work repeats
+```
+
+Both are real compute (per-snapshot 3D FFTs) -- run via `qsub`, not
+interactively; `scripts/18` in particular sweeps this cost across many
+z0 windows.
+
+First real result (seed 1, z0=9.5, dz=1.0, post-velocity-fix): D_ell ~
+0.0003-0.0004 uK^2 across ell=400-5000, vs the paper's ~0.02 uK^2 at
+ell~1000 -- roughly 15-20x too high. Substantially better than the
+stitched pathway's pre-fix ~1000-8000x, though not (yet) a validated
+match -- treat as the current best-available number for this
+cross-correlation, not a settled result.
+
+## Digitized La Plante+2022 reference data
+
+`data/reference/la_plante_2022/` + `io/la_plante_reference.py` --
+real digitized points from the paper's own published figures (their
+Fig. 4/5 uncertainty bands, and their reionization-history figure),
+not a single hand-read peak value. See that directory's own README.md
+for exact provenance (manually digitized vs. automated pixel-extraction,
+which files are which, and known digitization uncertainty). Loaded
+directly into `scripts/15`/`18`'s overlay plots.
+
 ## Cosmology
 
 This repo standardizes on the **21cmFAST-default cosmology**
@@ -214,17 +373,25 @@ where each product lives (not committed to GitHub — see `.gitignore`).
 
 ```
 configs/         box/cosmology/path parameters -- single source of truth
+data/reference/  digitized La Plante+2022 reference data (see its own README)
 src/ksz_lae_xcorr/
   halos/         py21cmfast coeval + two-pass halo catalog generation
   lightcone/     3D lightcone stitching
   tracers/       physical-value (mass/luminosity/MUV) grids for diagnostics
   correlation/   projected maps, cross-power, auto-power (halo/LAE/LBG),
-                 periodicity decomposition (coherence_decomposition.py)
+                 periodicity decomposition (coherence_decomposition.py),
+                 direct/coeval bispectrum estimator (direct_bispectrum.py),
+                 velocity unit-convention check (velocity_convention_check.py)
   snr/           CMB filter + S/N forecast (LAE-default, tracer-generic),
-                 Stage 1 literature benchmark (roman_hls_benchmark.py)
-  io/            product loaders
+                 Stage 1 literature benchmark (roman_hls_benchmark.py,
+                 now with chi_eff and patchy-window clamping, ported
+                 from ksz-pipeline)
+  io/            product loaders + digitized reference data loader
+                 (la_plante_reference.py)
   plotting/      all figure-generating code
-  utils/         config loader, cosmology, physical constants
+  utils/         config loader, cosmology, physical constants,
+                 figio.py (save_fig: PDF+PNG together, every plot script
+                 should use this rather than calling fig.savefig directly)
 scripts/         numbered, executable pipeline steps (see above)
 notebooks/exploratory/   the original analysis notebook, kept for reference
 paper/figure_scripts/    output figures for the paper live here
@@ -315,6 +482,22 @@ examples, or just ask.
 
 ### Known gotchas hit during this validation (fixed, but worth knowing)
 
+- **Per-field checkpointing in `scripts/02` doesn't know when underlying
+  code or data changed.** `Stitcher` writes one `.done` checkpoint file
+  per (seed, field) at `{lightcone_root}/checkpoints/seed_{N}_{field}.done`
+  and silently SKIPS re-stitching that field if the checkpoint exists --
+  regardless of whether the code that builds it has since changed. Hit
+  THREE separate times in one session (2026-09-09): after the velocity
+  conversion fix above, after clearing only the `vz` checkpoint the fix
+  had no effect until that was found; separately, LAE and LBG tracer
+  grids sat all-zero across every seed for most of the same session,
+  traced to `tracers/type_b_grids.py` silently returning an empty grid
+  whenever the external catalogue file is missing (only a `logger.warning`,
+  easy to miss) -- combined with the SAME stale-checkpoint issue, meaning
+  the code path that would have surfaced the warning had never actually
+  run. **Any time a fix touches something `scripts/02` stitches, manually
+  delete the relevant `seed_*_{field}.done` checkpoint files before
+  re-running** -- `scripts/02` will not detect the need on its own.
 - **PyYAML silently turns unsigned scientific notation into a string.**
   `1.0e10` parses as the string `'1.0e10'`, not the float `1e10` --
   `1.0e+10` (explicit sign) is required. All configs in this repo use the
