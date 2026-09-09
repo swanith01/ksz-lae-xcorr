@@ -50,6 +50,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from ksz_lae_xcorr.correlation.direct_bispectrum import (
+    build_tau_history,
     compute_snapshot_bispectrum_contribution,
     limber_sum_snapshots,
 )
@@ -60,29 +61,6 @@ from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.config import load_config
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
 from ksz_lae_xcorr.utils.figio import save_fig
-
-
-def build_tau_history(cfg, stitcher, seed, all_snap_z, logger):
-    """
-    Cumulative optical depth tau(z) from z_min up to every snapshot,
-    needed for g(chi) = tau_prefactor * x_e_mean * (1+z)^2 * e^{-tau(chi)}
-    (same formula as correlation.coherence_decomposition.compute_ksz_slices,
-    kept consistent with the rest of this repo's kSZ construction).
-    Only needs x_e_mean(z) per snapshot, not the full 3D field.
-    """
-    z_sorted = np.sort(all_snap_z)
-    x_e_mean = np.zeros_like(z_sorted)
-    for i, z in enumerate(z_sorted):
-        xHI = stitcher.load_field_box(seed, z, "xH")
-        x_e_mean[i] = 1.0 - float(np.mean(xHI))
-
-    cosmo = get_cosmology(cfg)
-    chi = np.array([cosmo.comoving_distance(z).to_value("Mpc") for z in z_sorted])
-    ds = np.abs(np.gradient(chi))
-    tau_pref = constants.tau_prefactor(cfg)
-    dtau = tau_pref * x_e_mean * (1.0 + z_sorted) ** 2 * ds
-    tau_cumulative = np.cumsum(dtau)
-    return z_sorted, chi, tau_cumulative, x_e_mean
 
 
 def main():

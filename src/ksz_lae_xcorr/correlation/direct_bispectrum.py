@@ -228,3 +228,33 @@ def limber_sum_snapshots(per_snapshot_results: list[dict], chi_list: np.ndarray,
         stacked = stacked + weight * contribution
 
     return {"k_centers": k_centers_ref, "P_cross_summed": stacked}
+
+
+def build_tau_history(cfg, stitcher, seed: int, all_snap_z: np.ndarray, logger):
+    """
+    Cumulative optical depth tau(z) from z_min up to every snapshot,
+    needed for g(chi) = tau_prefactor * x_e_mean * (1+z)^2 * e^{-tau(chi)}
+    (same formula as correlation.coherence_decomposition.compute_ksz_slices,
+    kept consistent with the rest of this repo's kSZ construction).
+    Only needs x_e_mean(z) per snapshot, not the full 3D field.
+
+    Moved here from scripts/15 (2026-09-09) so scripts/18 (D_ell vs z0,
+    direct method) can reuse it too -- this is real work (one xHI load per
+    snapshot) that shouldn't be duplicated or re-derived per script.
+    """
+    z_sorted = np.sort(all_snap_z)
+    x_e_mean = np.zeros_like(z_sorted)
+    for i, z in enumerate(z_sorted):
+        xHI = stitcher.load_field_box(seed, z, "xH")
+        x_e_mean[i] = 1.0 - float(np.mean(xHI))
+
+    from ksz_lae_xcorr.utils import constants
+    from ksz_lae_xcorr.utils.cosmology import get_cosmology
+
+    cosmo = get_cosmology(cfg)
+    chi = np.array([cosmo.comoving_distance(z).to_value("Mpc") for z in z_sorted])
+    ds = np.abs(np.gradient(chi))
+    tau_pref = constants.tau_prefactor(cfg)
+    dtau = tau_pref * x_e_mean * (1.0 + z_sorted) ** 2 * ds
+    tau_cumulative = np.cumsum(dtau)
+    return z_sorted, chi, tau_cumulative, x_e_mean
