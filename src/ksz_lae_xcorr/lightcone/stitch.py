@@ -33,8 +33,66 @@ import astropy.units as u
 import numpy as np
 from scipy.interpolate import interp1d
 
+from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
 from ksz_lae_xcorr.utils.grid import block_average_downsample
+
+
+def _linear_growth_factor(cosmo, z: float) -> float:
+    """
+    D(z), normalized D(0)=1, via quadrature (not a fitting formula) --
+    same physical definition ksz-pipeline's own validated velocity
+    conversion uses (their validation_table.md, 'Velocity: raw box units
+    and Zel'dovich conversion'). D(z) = H(z) * INT_z^inf (1+z')/H(z')^3 dz',
+    normalized by D(0).
+    """
+    from scipy.integrate import quad
+
+    def integrand(zp):
+        return (1.0 + zp) / cosmo.H(zp).to_value("km/s/Mpc") ** 3
+
+    def D_unnorm(zval):
+        integral, _ = quad(integrand, zval, np.inf, limit=200)
+        return cosmo.H(zval).to_value("km/s/Mpc") * integral
+
+    return D_unnorm(z) / D_unnorm(0.0)
+
+
+def _growth_rate_linder(cosmo, z: float) -> float:
+    """f(z) = dlnD/dlna ~ Om(z)^0.55 (Linder 2005 fit, ~1% accurate for
+    flat LCDM) -- same fit ksz-pipeline's velocity conversion uses."""
+    return cosmo.Om(z) ** 0.55
+
+
+def velocity_z_to_mpc_per_s(cfg, raw_velocity_z: np.ndarray, z: float) -> np.ndarray:
+    """
+    Convert py21cmfast's raw velocity_z (a linear-theory Zel'dovich
+    DISPLACEMENT field, NOT yet a velocity -- see
+    halos/coeval_pipeline.py's save-time comment: saved completely
+    unconverted, box = coeval.perturbed_field.get('velocity_z')) into a
+    genuine comoving peculiar velocity in Mpc/s.
+
+    Matches ksz-pipeline's own validated conversion (their
+    validation_table.md): v_comoving [km/s] = Psi * D(z) * f(z) * H(z) / (1+z).
+    Uses THIS repo's own cosmology (get_cosmology(cfg), 21cmFAST-default,
+    per this repo's documented convention) rather than ksz-pipeline's
+    astropy Planck18 -- same physics/formula, this repo's cosmology.
+
+    THIS IS A NEW, NOT-YET-WIRED-IN FUNCTION as of 2026-09-09 -- see
+    scripts/16_velocity_conversion_check.py to compare against the
+    CURRENT LIVE Stitcher.load_field_box formula
+    (box/(1+z)*3.086e19 -- no D(z)/f(z)/H(z) at all) on real data BEFORE
+    replacing it. That live formula is suspected of being the root cause
+    of this repo's kSZ auto-power sitting ~150x above the ~1 uK^2
+    literature benchmark all session, and of the 2026-09-09
+    direct-bispectrum blowup -- suspected, not yet confirmed on real data.
+    """
+    cosmo = get_cosmology(cfg)
+    D = _linear_growth_factor(cosmo, z)
+    f = _growth_rate_linder(cosmo, z)
+    H = cosmo.H(z).to_value("km/s/Mpc")
+    v_kms = raw_velocity_z * D * f * H / (1.0 + z)
+    return v_kms * constants.MPC_PER_KM_S_TO_S
 
 
 def setup_logger(seed: int, out_root: str) -> logging.Logger:
