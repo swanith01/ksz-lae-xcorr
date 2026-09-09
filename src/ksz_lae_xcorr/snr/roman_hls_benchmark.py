@@ -61,6 +61,132 @@ from ksz_lae_xcorr.utils.cosmology import get_cosmology
 PAPER_FIG4_PEAK_DELL_UK2 = 0.02
 PAPER_FIG4_PEAK_ELL = 1000.0
 
+# Patchy-regime window convention, ported from ksz-pipeline's
+# scripts/14_closure_test.py (XHI_MIN_PATCHY/XHI_MAX_PATCHY): exclude any
+# z where the volume-averaged x_HI is outside this range -- i.e. either
+# already fully ionized (x_HI < XHI_MIN_PATCHY, no patchiness left to
+# source a kSZ signal) or reionization hasn't meaningfully started yet
+# (x_HI > XHI_MAX_PATCHY, x_e negligible). Same values as ksz-pipeline
+# uses, since this is a definitional choice, not something tied to their
+# specific simulation.
+XHI_MIN_PATCHY = 1.0e-4
+XHI_MAX_PATCHY = 1.0 - 1.0e-4
+
+# La Plante+2022 Fig 9 discussion: "we truncate the window to have a
+# minimum value of z=6, both for the signal and noise components of the
+# S/N" -- avoids double-counting/contaminating the reionization-era
+# signal with post-reionization (z<6) contributions. Applied as a hard
+# floor below, same as the paper does.
+Z_FLOOR_REIONIZATION = 6.0
+
+
+def clamp_window_to_patchy_regime(z0: float, dz: float, z_lc: np.ndarray,
+                                   xHI_lc: np.ndarray) -> tuple[float, float]:
+    """
+    Adjust a requested (z0, dz) top-hat window to:
+      (a) never dip below Z_FLOOR_REIONIZATION (La Plante+2022 Fig 9's
+          explicit z>=6 truncation), and
+      (b) exclude any z where this seed's own volume-averaged x_HI falls
+          outside [XHI_MIN_PATCHY, XHI_MAX_PATCHY] (ksz-pipeline's patchy-
+          regime convention, ported as-is).
+
+    Returns (z_lo_clamped, z_hi_clamped) -- the actual bounds to use,
+    generally narrower than the naive (z0-dz/2, z0+dz/2). Deterministic
+    given the same inputs, so calling this independently from multiple
+    places (e.g. once for the galaxy field, once for an x_HI report) gives
+    consistent bounds without needing to thread extra state around.
+
+    Raises if nothing in the requested window survives both constraints
+    -- a real "this window doesn't correspond to any patchy-era data"
+    condition, not something to silently paper over.
+    """
+    z_lo_req, z_hi_req = z0 - dz / 2, z0 + dz / 2
+    z_lo_floor = max(z_lo_req, Z_FLOOR_REIONIZATION)
+    if z_lo_floor >= z_hi_req:
+        raise ValueError(
+            f"Requested window [{z_lo_req:.3f}, {z_hi_req:.3f}] lies entirely "
+            f"below the z>={Z_FLOOR_REIONIZATION} reionization floor -- "
+            f"nothing left after clamping."
+        )
+
+    xHI_mean_z = xHI_lc.mean(axis=(0, 1))
+    in_patchy = (xHI_mean_z >= XHI_MIN_PATCHY) & (xHI_mean_z <= XHI_MAX_PATCHY)
+    # Exclusive upper bound, matching the (>=lo, <hi) convention used
+    # everywhere else in this module (build_bias_weighted_galaxy_field,
+    # compute_volume_averaged_xHI) -- an inconsistent inclusive '<=' here
+    # caused a real off-by-one mismatch against those functions, caught
+    # by test_uniform_bias_and_window_reduces_to_plain_mean.
+    in_window = (z_lc >= z_lo_floor) & (z_lc < z_hi_req)
+    combined = in_patchy & in_window
+    if not np.any(combined):
+        raise ValueError(
+            f"No z in [{z_lo_floor:.3f}, {z_hi_req:.3f}] falls in the patchy "
+            f"regime (x_HI in [{XHI_MIN_PATCHY}, {XHI_MAX_PATCHY}]) for this "
+            f"seed -- widen the window, or this seed's ionization history "
+            f"doesn't overlap the requested range at all."
+        )
+    z_survive = z_lc[combined]
+    # +epsilon on the upper edge: z_survive.max() is an exact z_lc grid
+    # value, and downstream callers use searchsorted+exclusive-slice
+    # (z_lc[zi_lo:zi_hi]) -- passing z_hi as an exact grid point would
+    # have searchsorted find that point's own index and the slice would
+    # then EXCLUDE it. The tiny epsilon ensures the true max surviving
+    # point is actually included, not silently dropped by an off-by-one.
+    return float(z_survive.min()), float(z_survive.max()) + 1e-9
+
+
+def chi_eff_power_weighted(cfg, field_data_seed: dict, z_lo: float, z_hi: float) -> float:
+    """
+    Power-weighted mean comoving distance over [z_lo, z_hi], matching
+    ksz-pipeline's validated definition (their
+    scripts/14_closure_test.py::chi_eff_power_weighted):
+
+        chi_eff = INT w(z)^2 chi(z) dz / INT w(z)^2 dz
+
+    where w(z) is the RMS (over transverse pixels) of the per-slice kSZ
+    integrand. REUSES
+    correlation.coherence_decomposition.compute_ksz_slices for that
+    integrand -- this repo's own trusted, tested kSZ construction
+    (verified bit-for-bit against build_projected_maps) -- rather than
+    reimplementing a separate visibility/patchy-mask formula that could
+    drift from it.
+
+    Replaces the single-z reference chi=comoving_distance(z0) used
+    elsewhere in roman_hls_benchmark.py -- a cruder approximation, see
+    this module's earlier docstring note and
+    coherence_decomposition.py's own caveat about the single-chi
+    approximation.
+    """
+    from ksz_lae_xcorr.correlation.coherence_decomposition import compute_ksz_slices
+
+    theta_slices, chi_mpc, z_arr = compute_ksz_slices(cfg, field_data_seed)
+    window_mask = (z_arr >= z_lo) & (z_arr <= z_hi)
+    if window_mask.sum() < 2:
+        raise ValueError(
+            f"Window [{z_lo:.3f}, {z_hi:.3f}] contains <2 LOS pixels in this "
+            f"seed's kSZ integrand grid -- cannot compute chi_eff."
+        )
+
+    w_z = np.sqrt(np.mean(theta_slices[:, :, window_mask] ** 2, axis=(0, 1)))
+    chi_z = chi_mpc[window_mask]
+    z_z = z_arr[window_mask]
+
+    # Manual trapezoidal rule -- np.trapz was removed in newer NumPy
+    # (renamed np.trapezoid in 2.0+, see the same fix already applied in
+    # snr/cmb_filter.py), needs to work regardless of NumPy version.
+    def _trapz(y, x):
+        return np.sum(0.5 * (y[:-1] + y[1:]) * np.diff(x))
+
+    num = _trapz(w_z**2 * chi_z, z_z)
+    den = _trapz(w_z**2, z_z)
+    if den == 0:
+        raise ValueError(
+            "Zero total weight in the chi_eff window -- the kSZ integrand "
+            "is uniformly zero there (e.g. x_e=0 everywhere), so a power-"
+            "weighted mean chi is undefined."
+        )
+    return float(num / den)
+
 
 def bluetides_bias_gz(z):
     """
@@ -93,7 +219,7 @@ def bluetides_bias_gz(z):
 
 
 def build_bias_weighted_galaxy_field(cfg, field_data_seed: dict, z0: float, dz: float,
-                                      bias_fn=bluetides_bias_gz) -> np.ndarray:
+                                      bias_fn=bluetides_bias_gz, clamp_to_patchy: bool = True) -> np.ndarray:
     """
     Eq. 6-7 of La Plante+2022: delta_g = INT dz Wg(z) bg(z) delta_m(chi(z) nhat, chi(z)),
     Wg a top-hat of width dz centered at z0, normalized so INT dz Wg(z) = 1.
@@ -105,10 +231,20 @@ def build_bias_weighted_galaxy_field(cfg, field_data_seed: dict, z0: float, dz: 
     unevenly-spaced z_lc grid is handled correctly rather than assuming
     uniform pixel spacing.
 
+    clamp_to_patchy (default True): adjusts the requested (z0, dz) window
+    via clamp_window_to_patchy_regime before building the field -- floors
+    at z=6 (La Plante+2022 Fig 9) and excludes x_HI outside
+    [XHI_MIN_PATCHY, XHI_MAX_PATCHY] (ksz-pipeline's patchy-regime
+    convention). Pass False to get the raw, unclamped (z0-dz/2, z0+dz/2)
+    window (e.g. for reproducing earlier, pre-clamp results).
+
     Returns a 2D (Nx, Ny) field -- NOT mean-subtracted (caller's choice).
     """
     z_lc = field_data_seed["z_lc"]
-    z_lo, z_hi = z0 - dz / 2, z0 + dz / 2
+    if clamp_to_patchy:
+        z_lo, z_hi = clamp_window_to_patchy_regime(z0, dz, z_lc, field_data_seed["xHI_lc"])
+    else:
+        z_lo, z_hi = z0 - dz / 2, z0 + dz / 2
 
     zi_lo = int(np.searchsorted(z_lc, z_lo))
     zi_hi = int(np.searchsorted(z_lc, z_hi))
@@ -158,7 +294,8 @@ def compute_bias_weighted_cross_power(cfg, kg: KGrid, filtered_kSZ2_seed: np.nda
     return {"ell": ell_c, "D_ell": D, "D_err": De, "z0": z0, "dz": dz, "chi_c": chi_c}
 
 
-def compute_volume_averaged_xHI(field_data_seed: dict, z0: float, dz: float) -> float:
+def compute_volume_averaged_xHI(field_data_seed: dict, z0: float, dz: float,
+                                 clamp_to_patchy: bool = True) -> float:
     """
     Volume-averaged neutral fraction over the SAME top-hat window
     (z0, dz) used for the galaxy field above -- so a reported x_HI value
@@ -167,11 +304,18 @@ def compute_volume_averaged_xHI(field_data_seed: dict, z0: float, dz: float) -> 
     (their zreion model's x_HII(z); this is OUR simulation's own x_HI(z),
     not assumed to match theirs).
 
-    Same window-finding logic as build_bias_weighted_galaxy_field --
-    raises under the same condition (empty window).
+    clamp_to_patchy (default True): same clamping as
+    build_bias_weighted_galaxy_field -- pass the SAME value to both calls
+    for a given (z0, dz) so the reported x_HI actually corresponds to the
+    window the galaxy field was built on. clamp_window_to_patchy_regime
+    is deterministic given the same (z0, dz, z_lc, xHI_lc), so this stays
+    consistent automatically as long as both calls use the same field_data_seed.
     """
     z_lc = field_data_seed["z_lc"]
-    z_lo, z_hi = z0 - dz / 2, z0 + dz / 2
+    if clamp_to_patchy:
+        z_lo, z_hi = clamp_window_to_patchy_regime(z0, dz, z_lc, field_data_seed["xHI_lc"])
+    else:
+        z_lo, z_hi = z0 - dz / 2, z0 + dz / 2
     zi_lo = int(np.searchsorted(z_lc, z_lo))
     zi_hi = int(np.searchsorted(z_lc, z_hi))
     if zi_hi <= zi_lo:
