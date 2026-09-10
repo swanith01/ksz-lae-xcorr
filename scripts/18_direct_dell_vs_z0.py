@@ -186,42 +186,67 @@ def main():
     lp_bands = load_dell_vs_z0_bands()
     colors = {500.0: "tab:blue", 1000.0: "tab:orange", 3000.0: "tab:green"}
 
-    fig, ax = plt.subplots(figsize=(9, 6.5), constrained_layout=True)
+    fig, (ax, ax_norm) = plt.subplots(1, 2, figsize=(16, 6.5), constrained_layout=True)
     for ell in TARGET_ELLS:
         ax.plot(z0_used, D_at_ell[ell], "o-", color=colors[ell],
                  label=f"Direct/coeval, ell={ell:.0f}")
         lp = lp_bands[int(ell)]
-        ax.fill_between(lp["z0_lo"], lp["lo"],
-                          np.interp(lp["z0_lo"], lp["z0_hi"], lp["hi"]),
+        lp_hi_interp = np.interp(lp["z0_lo"], lp["z0_hi"], lp["hi"])
+        ax.fill_between(lp["z0_lo"], lp["lo"], lp_hi_interp,
                           color=colors[ell], alpha=0.15,
                           label=f"La Plante+2022 (digitized), ell={ell:.0f}")
 
     ax.axhline(0, color="gray", lw=0.5)
     ax.set_xlabel(r"$z_0$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$]")
-    ax.set_title(f"D_ell vs z0, direct/coeval method -- seed {args.seed}, dz={args.dz}", pad=30)
+    ax.set_title(f"Absolute amplitude -- seed {args.seed}, dz={args.dz}", pad=30)
     ax.text(0.02, 0.02, f"{cfg.box.box_len_mpc:.0f} Mpc box vs paper's larger box -- amplitude "
             f"not expected to match,\nshape/z0-dependence is the comparison",
             transform=ax.transAxes, fontsize=7, style="italic", va="bottom", alpha=0.7)
     ax.legend(fontsize=8, ncol=2)
 
-    order = np.argsort(z0_used)
-    z_sorted_ax, x_sorted_ax = z0_used[order], np.array(x_hii_used)[order]
-    if np.all(np.diff(x_sorted_ax) <= 0) or np.all(np.diff(x_sorted_ax) >= 0):
-        from scipy.interpolate import interp1d
-        z_to_x = interp1d(z_sorted_ax, x_sorted_ax, bounds_error=False,
-                           fill_value=(x_sorted_ax[0], x_sorted_ax[-1]))
-        x_to_z = interp1d(x_sorted_ax, z_sorted_ax, bounds_error=False,
-                           fill_value=(z_sorted_ax[0], z_sorted_ax[-1])) \
-            if x_sorted_ax[0] < x_sorted_ax[-1] else \
-            interp1d(x_sorted_ax[::-1], z_sorted_ax[::-1], bounds_error=False,
-                     fill_value=(z_sorted_ax[-1], z_sorted_ax[0]))
-        try:
-            secax = ax.secondary_xaxis("top", functions=(z_to_x, x_to_z))
-            secax.set_xlabel(r"$x_{\rm HI}$ (this simulation)")
-        except Exception as e:
-            print(f"  (secondary x_HI axis skipped: {e})")
+    # Shape-only comparison -- each curve (and each La Plante band) normalized
+    # to its OWN peak, same convention as scripts/15's shape panel, so the
+    # z0-dependence (where the hump sits, how sharply it rises/falls) is
+    # directly comparable without the absolute-amplitude gap in the way.
+    for ell in TARGET_ELLS:
+        D_arr = np.array(D_at_ell[ell])
+        pos = D_arr > 0
+        if np.any(pos):
+            ax_norm.plot(z0_used, D_arr / D_arr[pos].max(), "o-", color=colors[ell],
+                         label=f"Direct/coeval, ell={ell:.0f} (shape only)")
+        lp = lp_bands[int(ell)]
+        lp_hi_interp = np.interp(lp["z0_lo"], lp["z0_hi"], lp["hi"])
+        peak = lp_hi_interp.max()
+        ax_norm.fill_between(lp["z0_lo"], lp["lo"] / peak, lp_hi_interp / peak,
+                              color=colors[ell], alpha=0.15,
+                              label=f"La Plante+2022, ell={ell:.0f} (shape only)")
 
+    ax_norm.axhline(0, color="gray", lw=0.5)
+    ax_norm.set_xlabel(r"$z_0$")
+    ax_norm.set_ylabel(r"$D_\ell / D_\ell^{\rm peak}$ (each curve normalized to its own peak)")
+    ax_norm.set_title("Shape only -- peak-normalized", pad=30)
+    ax_norm.legend(fontsize=7, ncol=2)
+
+    for this_ax in (ax, ax_norm):
+        order = np.argsort(z0_used)
+        z_sorted_ax, x_sorted_ax = z0_used[order], np.array(x_hii_used)[order]
+        if np.all(np.diff(x_sorted_ax) <= 0) or np.all(np.diff(x_sorted_ax) >= 0):
+            from scipy.interpolate import interp1d
+            z_to_x = interp1d(z_sorted_ax, x_sorted_ax, bounds_error=False,
+                               fill_value=(x_sorted_ax[0], x_sorted_ax[-1]))
+            x_to_z = interp1d(x_sorted_ax, z_sorted_ax, bounds_error=False,
+                               fill_value=(z_sorted_ax[0], z_sorted_ax[-1])) \
+                if x_sorted_ax[0] < x_sorted_ax[-1] else \
+                interp1d(x_sorted_ax[::-1], z_sorted_ax[::-1], bounds_error=False,
+                         fill_value=(z_sorted_ax[-1], z_sorted_ax[0]))
+            try:
+                secax = this_ax.secondary_xaxis("top", functions=(z_to_x, x_to_z))
+                secax.set_xlabel(r"$x_{\rm HI}$ (this simulation)")
+            except Exception as e:
+                print(f"  (secondary x_HI axis skipped: {e})")
+
+    fig.suptitle(f"D_ell vs z0, direct/coeval method vs La Plante+2022", fontsize=13)
     outpath = os.path.join(args.out_dir, f"direct_dell_vs_z0_seed{args.seed}.pdf")
     save_fig(fig, outpath)
     plt.close(fig)
