@@ -40,6 +40,7 @@ from ksz_lae_xcorr.snr.roman_hls_benchmark import (
 )
 from ksz_lae_xcorr.snr.snr_forecast import build_filtered_kSZ2_maps
 from ksz_lae_xcorr.utils.config import load_config
+from ksz_lae_xcorr.utils.figio import save_fig
 
 
 def main():
@@ -123,6 +124,16 @@ def main():
             print(f"  ell={ell:.0f}: peak D_ell={arr[i_peak]:.4g} uK^2 at z0={z0_used[i_peak]:.2f} "
                   f"(x_HI~{x_hi_vals[i_peak]:.2f})")
 
+    csv_path = os.path.join(args.out_dir, f"dell_vs_z_multiell_{args.experiment}.csv")
+    with open(csv_path, "w", newline="") as f:
+        import csv
+        w = csv.writer(f)
+        w.writerow(["ell", "z0", "D_ell_uK2", "x_HI"])
+        for ell in target_ells:
+            for z0, D, x in zip(z0_used, D_at_ell[ell], x_hi_vals):
+                w.writerow([ell, f"{z0:.4f}", f"{D:.6e}", f"{x:.4f}"])
+    print(f"Saved: {csv_path}")
+
     fig, ax = plt.subplots(figsize=(8, 6), constrained_layout=True)
     for ell in target_ells:
         ax.plot(z0_used, D_at_ell[ell], marker="o", ms=4, label=f"$\\ell$={ell:.0f}")
@@ -152,9 +163,9 @@ def main():
         print("  (secondary x_HI axis skipped: x_HI(z0) not monotonic over this range)")
 
     outpath = os.path.join(args.out_dir, f"dell_vs_z_multiell_{args.experiment}.pdf")
-    fig.savefig(outpath, dpi=200)
+    save_fig(fig, outpath, dpi=200)
     plt.close(fig)
-    print(f"\nSaved: {outpath}")
+    print(f"\nSaved: {outpath} (+ .png)")
     return 0
 
 

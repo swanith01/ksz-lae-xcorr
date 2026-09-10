@@ -24,6 +24,12 @@ cumulative tau(z), then only builds the full 3D momentum/bispectrum
 machinery for snapshots actually inside the z0+-dz/2 window being
 analyzed.
 
+MULTI-SEED (2026-09-10): --seeds accepts multiple seeds (default: all of
+cfg.box.seeds). Each seed is computed fully independently (its own
+optical-depth history, its own per-snapshot bispectrum contributions),
+then aggregated as mean +/- std across seeds at each ell. This is real,
+multiplicative compute cost -- N seeds = N times the work of one.
+
 HONEST STATUS: this is the first time correlation/direct_bispectrum.py
 has touched real data. Every piece (loader reuse, g(chi) construction,
 k_hard/k_soft mapping, bg(z) reuse from roman_hls_benchmark.py) is
@@ -35,7 +41,7 @@ happens, don't assume it's already right.
 
 Usage:
     python scripts/15_direct_bispectrum_vs_stitched.py
-    python scripts/15_direct_bispectrum_vs_stitched.py --seed 1 --z0 9.5 --dz 1.0
+    python scripts/15_direct_bispectrum_vs_stitched.py --seeds 1 2 3 --z0 9.5 --dz 1.0
 """
 
 import argparse
@@ -63,10 +69,65 @@ from ksz_lae_xcorr.utils.cosmology import get_cosmology
 from ksz_lae_xcorr.utils.figio import save_fig
 
 
+def compute_direct_dell_one_seed(cfg, stitcher, seed, z0, dz, ell_peak_filter, ell_edges, ell_centers):
+    """One seed's D_ell(ell) at the given (z0, dz) window. Returns
+    (ell_direct, D_direct) or None if the window is empty for this seed."""
+    logger = setup_logger(seed, cfg.paths.lightcone_root)
+    all_snap_z = stitcher.get_snapshot_redshifts(seed, logger)
+    z_sorted, chi_sorted, tau_cumulative, x_e_mean = build_tau_history(cfg, stitcher, seed, all_snap_z, logger)
+
+    in_window = (z_sorted >= z0 - dz / 2) & (z_sorted < z0 + dz / 2)
+    z_window = z_sorted[in_window]
+    if len(z_window) == 0:
+        print(f"  seed {seed}: NO snapshots in window z0={z0}, dz={dz} -- skipping this seed.")
+        return None
+    print(f"  seed {seed}: {len(z_window)} snapshots inside window: z={z_window.min():.3f}-{z_window.max():.3f}")
+
+    c_mpc_s = constants.c_mpc_per_s()
+    tau_pref = constants.tau_prefactor(cfg)
+
+    per_snapshot_results = []
+    chi_list, g_chi_list, bg_list, dchi_list = [], [], [], []
+
+    for z in z_window:
+        i = np.searchsorted(z_sorted, z)
+        chi_z = chi_sorted[i]
+        tau_z = tau_cumulative[i]
+        g_chi = tau_pref * x_e_mean[i] * (1.0 + z) ** 2 * np.exp(-tau_z)
+
+        density = np.asarray(stitcher.load_field_box(seed, z, "density"))
+        xHI = np.asarray(stitcher.load_field_box(seed, z, "xH"))
+        v_los = np.asarray(stitcher.load_field_box(seed, z, "vz"))
+
+        bg_z = float(bluetides_bias_gz(z))
+        delta_g = bg_z * (density - 1.0)
+
+        k_hard = ell_peak_filter / chi_z
+        k_soft_edges = ell_edges / chi_z
+        result = compute_snapshot_bispectrum_contribution(
+            density, xHI, v_los, delta_g, cfg.box.box_len_mpc, c_mpc_s, k_hard, k_soft_edges
+        )
+        result["k_centers"] = ell_centers
+        per_snapshot_results.append(result)
+
+        dchi = float(np.abs(np.gradient(chi_sorted))[i])
+        chi_list.append(chi_z)
+        g_chi_list.append(g_chi)
+        bg_list.append(1.0)
+        dchi_list.append(dchi)
+
+    summed = limber_sum_snapshots(per_snapshot_results, np.array(chi_list), np.array(g_chi_list),
+                                    np.array(bg_list), np.array(dchi_list))
+    ell_direct = summed["k_centers"]
+    D_direct = ell_direct * (ell_direct + 1) * summed["P_cross_summed"] * constants.T_CMB_UK**2 / (2 * np.pi)
+    return ell_direct, D_direct
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=str, default="configs/fiducial.yaml")
-    parser.add_argument("--seed", type=int, default=None, help="Single seed to run (default: first in cfg.box.seeds)")
+    parser.add_argument("--seeds", type=int, nargs="+", default=None,
+                         help="Seeds to average over (default: all of cfg.box.seeds)")
     parser.add_argument("--z0", type=float, default=9.5)
     parser.add_argument("--dz", type=float, default=1.0)
     parser.add_argument("--ell-peak-filter", type=float, default=3500.0,
@@ -83,85 +144,48 @@ def main():
     args = parser.parse_args()
 
     cfg = load_config(args.config)
-    seed = args.seed if args.seed is not None else cfg.box.seeds[0]
+    seeds = args.seeds if args.seeds is not None else cfg.box.seeds
     os.makedirs(args.out_dir, exist_ok=True)
 
     stitcher = Stitcher(cfg)
-    logger = setup_logger(seed, cfg.paths.lightcone_root)
-    print(f"Seed {seed}: finding real coeval snapshot redshifts...")
-    all_snap_z = stitcher.get_snapshot_redshifts(seed, logger)
-    print(f"  Found {len(all_snap_z)} snapshots: z={all_snap_z.min():.4f} -> {all_snap_z.max():.4f}")
-
-    print("Building full optical-depth history (needs x_e_mean at EVERY snapshot, not just the window)...")
-    z_sorted, chi_sorted, tau_cumulative, x_e_mean = build_tau_history(cfg, stitcher, seed, all_snap_z, logger)
-
-    in_window = (z_sorted >= args.z0 - args.dz / 2) & (z_sorted < args.z0 + args.dz / 2)
-    z_window = z_sorted[in_window]
-    if len(z_window) == 0:
-        print(f"  NO snapshots in window z0={args.z0}, dz={args.dz} -- widen dz or move z0.")
-        return 1
-    print(f"  {len(z_window)} snapshots inside window: z={z_window.min():.3f}-{z_window.max():.3f}")
-
     ell_edges = np.geomspace(args.ell_min, args.ell_max, args.n_ell + 1)
     ell_centers = np.sqrt(ell_edges[:-1] * ell_edges[1:])
-    c_mpc_s = constants.c_mpc_per_s()
-    tau_pref = constants.tau_prefactor(cfg)
 
-    per_snapshot_results = []
-    chi_list, g_chi_list, bg_list, dchi_list = [], [], [], []
+    print(f"Running {len(seeds)} seed(s): {seeds}")
+    per_seed_D = []
+    for seed in seeds:
+        res = compute_direct_dell_one_seed(cfg, stitcher, seed, args.z0, args.dz,
+                                            args.ell_peak_filter, ell_edges, ell_centers)
+        if res is not None:
+            per_seed_D.append(res[1])
 
-    for z in z_window:
-        i = np.searchsorted(z_sorted, z)
-        chi_z = chi_sorted[i]
-        tau_z = tau_cumulative[i]
-        g_chi = tau_pref * x_e_mean[i] * (1.0 + z) ** 2 * np.exp(-tau_z)
+    if not per_seed_D:
+        print("No seeds produced usable data -- nothing to plot.")
+        return 1
 
-        density = np.asarray(stitcher.load_field_box(seed, z, "density"))  # (1+delta_m), HII_DIM^3
-        xHI = np.asarray(stitcher.load_field_box(seed, z, "xH"))
-        v_los = np.asarray(stitcher.load_field_box(seed, z, "vz"))         # Mpc/s
+    stacked = np.array(per_seed_D)
+    ell_direct = ell_centers
+    D_mean = np.mean(stacked, axis=0)
+    D_std = np.std(stacked, axis=0) if len(per_seed_D) > 1 else np.zeros_like(D_mean)
+    n_used = len(per_seed_D)
 
-        bg_z = float(bluetides_bias_gz(z))
-        delta_g = bg_z * (density - 1.0)
+    print(f"\nDirect/coeval result (mean +/- std over {n_used} seed(s)):")
+    for e, d, s in zip(ell_direct, D_mean, D_std):
+        print(f"  ell={e:.0f}: D_ell={d:.4g} +/- {s:.4g} uK^2")
 
-        k_hard = args.ell_peak_filter / chi_z
-        k_soft_edges = ell_edges / chi_z
-        result = compute_snapshot_bispectrum_contribution(
-            density, xHI, v_los, delta_g, cfg.box.box_len_mpc, c_mpc_s, k_hard, k_soft_edges
-        )
-        # Relabel onto the SHARED ell grid (identical across every
-        # snapshot by construction, since k_soft_edges = ell_edges/chi(z)
-        # scales linearly) -- limber_sum_snapshots only requires matching
-        # 'k_centers' across snapshots, which ell_centers satisfies exactly.
-        result["k_centers"] = ell_centers
-        per_snapshot_results.append(result)
-
-        dchi = float(np.abs(np.gradient(chi_sorted))[i])
-        chi_list.append(chi_z)
-        g_chi_list.append(g_chi)
-        bg_list.append(1.0)  # bg already folded into delta_g above -- don't double-apply
-        dchi_list.append(dchi)
-        print(f"  z={z:.4f}  chi={chi_z:.1f} Mpc  bg={bg_z:.2f}  g(chi)={g_chi:.4g}  k_hard={k_hard:.4f} Mpc^-1")
-
-    summed = limber_sum_snapshots(per_snapshot_results, np.array(chi_list), np.array(g_chi_list),
-                                    np.array(bg_list), np.array(dchi_list))
-    ell_direct = summed["k_centers"]  # actually ell, see relabeling note above
-    D_direct = ell_direct * (ell_direct + 1) * summed["P_cross_summed"] * constants.T_CMB_UK**2 / (2 * np.pi)
-
-    print("\nDirect/coeval result (this window, this seed):")
-    for e, d in zip(ell_direct, D_direct):
-        print(f"  ell={e:.0f}: D_ell={d:.4g} uK^2")
-
-    csv_path = os.path.join(args.out_dir, f"direct_bispectrum_seed{seed}_z{args.z0:.1f}.csv")
+    seed_tag = f"{n_used}seeds" if n_used > 1 else f"seed{seeds[0]}"
+    csv_path = os.path.join(args.out_dir, f"direct_bispectrum_{seed_tag}_z{args.z0:.1f}.csv")
     with open(csv_path, "w", newline="") as f:
         w = csv.writer(f)
-        w.writerow(["ell", "D_ell_uK2"])
-        for e, d in zip(ell_direct, D_direct):
-            w.writerow([f"{e:.6f}", f"{d:.6e}"])
+        w.writerow(["ell", "D_ell_mean_uK2", "D_ell_std_uK2", "n_seeds"])
+        for e, d, s in zip(ell_direct, D_mean, D_std):
+            w.writerow([f"{e:.6f}", f"{d:.6e}", f"{s:.6e}", n_used])
     print(f"Saved: {csv_path}")
 
     fig, (ax, ax_norm) = plt.subplots(1, 2, figsize=(13, 5.5), constrained_layout=True)
 
-    ax.plot(ell_direct, D_direct, "o-", color="darkgreen", label=f"Direct/coeval (seed {seed}, no stitching)")
+    ax.errorbar(ell_direct, D_mean, yerr=D_std, fmt="o-", color="darkgreen", capsize=3,
+                label=f"Direct/coeval (mean +/- std, {n_used} seed{'s' if n_used > 1 else ''}, no stitching)")
 
     lp_band = load_dell_vs_ell_band()
     ax.fill_between(lp_band["ell_lo"], lp_band["lo"],
@@ -186,17 +210,19 @@ def main():
     ax.set_xscale("log")
     ax.set_xlabel(r"$\ell$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$]")
-    ax.set_title(f"Absolute amplitude -- seed {seed}, z0={args.z0}, dz={args.dz}")
+    ax.set_title(f"Absolute amplitude -- {n_used} seed{'s' if n_used > 1 else ''}, z0={args.z0}, dz={args.dz}")
     ax.legend(fontsize=8)
 
     # Shape-only comparison -- each curve normalized to its own peak, so a
     # shape match is visible even while the absolute amplitude is still off.
-    # Only the POSITIVE part of D_direct is meaningful to peak-normalize
-    # (matches scripts/11's convention for the same reason).
-    pos = D_direct > 0
+    # Only the POSITIVE part of D_mean is meaningful to peak-normalize
+    # (matches scripts/11's convention for the same reason). Error bars
+    # scaled by the same normalization factor as the central value.
+    pos = D_mean > 0
     if np.any(pos):
-        D_direct_norm = D_direct / D_direct[pos].max()
-        ax_norm.plot(ell_direct, D_direct_norm, "o-", color="darkgreen", label="Direct/coeval (shape only)")
+        peak = D_mean[pos].max()
+        ax_norm.errorbar(ell_direct, D_mean / peak, yerr=D_std / peak, fmt="o-", color="darkgreen",
+                          capsize=3, label="Direct/coeval (shape only)")
     lp_hi_peak = lp_band["hi"].max()
     ax_norm.fill_between(lp_band["ell_lo"], lp_band["lo"] / lp_hi_peak,
                           np.interp(lp_band["ell_lo"], lp_band["ell_hi"], lp_band["hi"]) / lp_hi_peak,
@@ -216,7 +242,7 @@ def main():
 
     fig.suptitle(f"Direct/coeval vs stitched vs La Plante+2022 -- {cfg.box.box_len_mpc:.0f} Mpc box, "
                  f"same bias model, same window", fontsize=12)
-    outpath = os.path.join(args.out_dir, f"direct_vs_stitched_seed{seed}_z{args.z0:.1f}.pdf")
+    outpath = os.path.join(args.out_dir, f"direct_vs_stitched_{seed_tag}_z{args.z0:.1f}.pdf")
     save_fig(fig, outpath)
     plt.close(fig)
     print(f"Saved: {outpath} (+ .png)")
