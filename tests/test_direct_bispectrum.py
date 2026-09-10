@@ -188,3 +188,50 @@ def test_limber_sum_snapshots_rejects_length_mismatch():
         assert False, "should have raised on length mismatch"
     except ValueError:
         pass
+
+
+class _FakeStitcher:
+    """Returns a fixed, KNOWN xHI value per snapshot z -- lets the test
+    assert exactly what build_tau_history's x_e_mean SHOULD be, in a
+    single obvious direction, rather than just checking it runs."""
+    def __init__(self, xhi_by_z):
+        self.xhi_by_z = xhi_by_z
+
+    def load_field_box(self, seed, z, field_name):
+        assert field_name == "xH"
+        return np.full((4, 4, 4), self.xhi_by_z[z])
+
+
+def test_build_tau_history_x_e_mean_is_ionized_fraction_not_neutral():
+    """
+    THE regression test for a real bug caught 2026-09-10: an earlier
+    version of scripts/18 computed 1.0 - x_e_mean AGAIN after getting
+    x_e_mean from this function, silently reporting the NEUTRAL
+    fraction while labeling it x_HII. Pin down the actual semantics
+    here so that mistake can't quietly reappear: x_e_mean must be the
+    IONIZED fraction, meaning it INCREASES as z DECREASES (more
+    reionized at later times), not the reverse.
+    """
+    from ksz_lae_xcorr.correlation.direct_bispectrum import build_tau_history
+    from ksz_lae_xcorr.utils.config import Config
+
+    cfg = Config({"cosmology": Config({"H0": 67.77, "Om0": 0.3086, "Ob0": 0.0489, "ns": 0.9665})})
+    # Realistic reionization history: mostly ionized at low z, mostly
+    # neutral at high z (xHI -- neutral fraction -- goes 0.1 -> 0.9).
+    z_vals = np.array([6.0, 10.0, 15.0])
+    xhi_by_z = {6.0: 0.1, 10.0: 0.5, 15.0: 0.9}
+    stitcher = _FakeStitcher(xhi_by_z)
+
+    z_sorted, chi, tau_cum, x_e_mean = build_tau_history(cfg, stitcher, seed=1,
+                                                          all_snap_z=z_vals, logger=None)
+
+    # x_e_mean (ionized fraction) must DECREASE as z increases (less
+    # ionized further in the past) -- the opposite of neutral fraction.
+    assert np.all(np.diff(x_e_mean) < 0), (
+        f"x_e_mean should decrease with increasing z (less ionized further "
+        f"back in time); got {list(zip(z_sorted, x_e_mean))} -- if this is "
+        f"increasing instead, x_e_mean is being reported as neutral "
+        f"fraction, not ionized fraction."
+    )
+    # Exact values: x_e_mean = 1 - xHI at each z.
+    np.testing.assert_allclose(x_e_mean, [0.9, 0.5, 0.1], atol=1e-9)

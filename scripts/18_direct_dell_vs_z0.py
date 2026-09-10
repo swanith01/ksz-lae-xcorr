@@ -77,7 +77,15 @@ def compute_dell_at_target_ells(cfg, stitcher, seed, z0, dz, chi_sorted, tau_cum
         chi_z = chi_sorted[i]
         tau_z = tau_cumulative[i]
         g_chi = tau_pref * x_e_mean[i] * (1.0 + z) ** 2 * np.exp(-tau_z)
-        x_hii_window.append(1.0 - x_e_mean[i])
+        x_hii_window.append(x_e_mean[i])  # x_e_mean IS the ionized fraction already
+                                            # (see build_tau_history) -- do NOT flip it
+                                            # again here. An earlier version of this line
+                                            # did `1.0 - x_e_mean[i]`, silently reporting
+                                            # the NEUTRAL fraction while labeling it
+                                            # x_HII -- caught 2026-09-10 when the reported
+                                            # "x_HII" rose toward 1.0 at HIGH z, backwards
+                                            # from real physics (x_HII should fall toward 0
+                                            # going to higher z, before reionization).
 
         density = np.asarray(stitcher.load_field_box(seed, z, "density"))
         xHI = np.asarray(stitcher.load_field_box(seed, z, "xH"))
@@ -117,7 +125,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=str, default="configs/fiducial.yaml")
     parser.add_argument("--seed", type=int, default=1)
-    parser.add_argument("--z0-min", type=float, default=7.0)
+    parser.add_argument("--z0-min", type=float, default=5.0)
     parser.add_argument("--z0-max", type=float, default=16.0)
     parser.add_argument("--dz", type=float, default=1.5, help="Window width -- z0 step matches this "
                          "exactly, giving non-overlapping windows (no repeated snapshot compute)")
