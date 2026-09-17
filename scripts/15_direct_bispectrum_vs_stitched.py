@@ -182,7 +182,7 @@ def main():
             w.writerow([f"{e:.6f}", f"{d:.6e}", f"{s:.6e}", n_used])
     print(f"Saved: {csv_path}")
 
-    fig, (ax, ax_norm) = plt.subplots(1, 2, figsize=(13, 5.5), constrained_layout=True)
+    fig, ax = plt.subplots(figsize=(9, 6.5), constrained_layout=True)
 
     ax.errorbar(ell_direct, D_mean, yerr=D_std, fmt="o-", color="darkgreen", capsize=3,
                 label=f"Direct/coeval (mean +/- std, {n_used} seed{'s' if n_used > 1 else ''}, no stitching)")
@@ -206,42 +206,24 @@ def main():
     else:
         print(f"  (no stitched comparison overlay -- {stitched_csv} not found; run scripts/11 first for that)")
 
+    # symlog, not log: these values can be legitimately negative
+    # (noise-dominated bins), and a plain log axis would silently drop
+    # every negative point rather than showing it -- symlog keeps a
+    # linear region near zero and goes log-scale for larger magnitudes
+    # on both sides, so nothing gets hidden.
+    all_pos_vals = np.abs(np.concatenate([D_mean[D_mean != 0], lp_band["hi"][lp_band["hi"] != 0]]))
+    linthresh = max(np.percentile(all_pos_vals, 5), 1e-30) if len(all_pos_vals) else 1e-6
+
     ax.axhline(0, color="gray", lw=0.5)
     ax.set_xscale("log")
+    ax.set_yscale("symlog", linthresh=linthresh)
     ax.set_xlabel(r"$\ell$")
-    ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$]")
-    ax.set_title(f"Absolute amplitude -- {n_used} seed{'s' if n_used > 1 else ''}, z0={args.z0}, dz={args.dz}")
+    ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$] (symlog)")
+    ax.set_title(f"Direct/coeval vs stitched vs La Plante+2022 -- {n_used} seed{'s' if n_used > 1 else ''}, "
+                 f"z0={args.z0}, dz={args.dz}\n({cfg.box.box_len_mpc:.0f} Mpc box vs paper's larger box -- "
+                 f"trend/amplitude both shown, nothing normalized away", fontsize=11)
     ax.legend(fontsize=8)
 
-    # Shape-only comparison -- each curve normalized to its own peak, so a
-    # shape match is visible even while the absolute amplitude is still off.
-    # Only the POSITIVE part of D_mean is meaningful to peak-normalize
-    # (matches scripts/11's convention for the same reason). Error bars
-    # scaled by the same normalization factor as the central value.
-    pos = D_mean > 0
-    if np.any(pos):
-        peak = D_mean[pos].max()
-        ax_norm.errorbar(ell_direct, D_mean / peak, yerr=D_std / peak, fmt="o-", color="darkgreen",
-                          capsize=3, label="Direct/coeval (shape only)")
-    lp_hi_peak = lp_band["hi"].max()
-    ax_norm.fill_between(lp_band["ell_lo"], lp_band["lo"] / lp_hi_peak,
-                          np.interp(lp_band["ell_lo"], lp_band["ell_hi"], lp_band["hi"]) / lp_hi_peak,
-                          color="black", alpha=0.15, label="La Plante+2022 band (shape only)")
-    if ell_s:
-        D_s_arr = np.array(D_s)
-        pos_s = D_s_arr > 0
-        if np.any(pos_s):
-            ax_norm.plot(ell_s, D_s_arr / D_s_arr[pos_s].max(), "s--", color="firebrick", alpha=0.7,
-                         label="Stitched (shape only)")
-    ax_norm.axhline(0, color="gray", lw=0.5)
-    ax_norm.set_xscale("log")
-    ax_norm.set_xlabel(r"$\ell$")
-    ax_norm.set_ylabel(r"$D_\ell / D_\ell^{\rm peak}$ (each curve normalized to its own peak)")
-    ax_norm.set_title("Shape only -- peak-normalized")
-    ax_norm.legend(fontsize=8)
-
-    fig.suptitle(f"Direct/coeval vs stitched vs La Plante+2022 -- {cfg.box.box_len_mpc:.0f} Mpc box, "
-                 f"same bias model, same window", fontsize=12)
     outpath = os.path.join(args.out_dir, f"direct_vs_stitched_{seed_tag}_z{args.z0:.1f}.pdf")
     save_fig(fig, outpath)
     plt.close(fig)
