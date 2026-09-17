@@ -49,6 +49,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from ksz_lae_xcorr.correlation.direct_bispectrum import (
+    build_delta_g_field,
     build_tau_history,
     compute_snapshot_bispectrum_contribution,
     limber_sum_snapshots,
@@ -65,9 +66,13 @@ TARGET_ELLS = [500.0, 1000.0, 3000.0]
 
 def compute_dell_at_target_ells(cfg, stitcher, seed, z0, dz, chi_sorted, tau_cumulative,
                                  x_e_mean, z_sorted, ell_peak_filter, n_ell_grid,
-                                 ell_min_grid, ell_max_grid):
+                                 ell_min_grid, ell_max_grid, tracer="density_proxy"):
     """One z0 window's D_ell at TARGET_ELLS, via the same
-    filter->square->cross-correlate->Limber-sum machinery as scripts/15."""
+    filter->square->cross-correlate->Limber-sum machinery as scripts/15.
+
+    tracer: 'density_proxy' (default), 'lae', or 'lbg' -- see
+    correlation.direct_bispectrum.build_delta_g_field's docstring for the
+    honest sparsity caveat on real LAE/LBG counts."""
     in_window = (z_sorted >= z0 - dz / 2) & (z_sorted < z0 + dz / 2)
     z_window = z_sorted[in_window]
     if len(z_window) == 0:
@@ -77,10 +82,12 @@ def compute_dell_at_target_ells(cfg, stitcher, seed, z0, dz, chi_sorted, tau_cum
     ell_centers = np.sqrt(ell_edges[:-1] * ell_edges[1:])
     c_mpc_s = constants.c_mpc_per_s()
     tau_pref = constants.tau_prefactor(cfg)
+    logger = setup_logger(seed, cfg.paths.lightcone_root)
 
     per_snapshot_results = []
     chi_list, g_chi_list, bg_list, dchi_list = [], [], [], []
     x_hii_window = []
+    n_skipped_empty = 0
 
     for z in z_window:
         i = np.searchsorted(z_sorted, z)
@@ -93,8 +100,11 @@ def compute_dell_at_target_ells(cfg, stitcher, seed, z0, dz, chi_sorted, tau_cum
         xHI = np.asarray(stitcher.load_field_box(seed, z, "xH"))
         v_los = np.asarray(stitcher.load_field_box(seed, z, "vz"))
 
-        bg_z = float(bluetides_bias_gz(z))
-        delta_g = bg_z * (density - 1.0)
+        delta_g = build_delta_g_field(stitcher, seed, z, tracer, logger,
+                                       bias_fn=bluetides_bias_gz, density=density)
+        if delta_g is None:
+            n_skipped_empty += 1
+            continue
 
         k_hard = ell_peak_filter / chi_z
         k_soft_edges = ell_edges / chi_z
@@ -110,6 +120,11 @@ def compute_dell_at_target_ells(cfg, stitcher, seed, z0, dz, chi_sorted, tau_cum
         bg_list.append(1.0)
         dchi_list.append(dchi)
 
+    if n_skipped_empty:
+        print(f"    {n_skipped_empty}/{len(z_window)} snapshots skipped (all-zero {tracer} counts)")
+    if not per_snapshot_results:
+        return None
+
     summed = limber_sum_snapshots(per_snapshot_results, np.array(chi_list), np.array(g_chi_list),
                                     np.array(bg_list), np.array(dchi_list))
     ell_direct = summed["k_centers"]
@@ -124,7 +139,7 @@ def compute_dell_at_target_ells(cfg, stitcher, seed, z0, dz, chi_sorted, tau_cum
 
 
 def run_one_seed(cfg, stitcher, seed, z0_grid, dz, ell_peak_filter, n_ell_grid,
-                  ell_min_grid, ell_max_grid):
+                  ell_min_grid, ell_max_grid, tracer="density_proxy"):
     """Full z0 sweep for one seed. Returns {z0: {'D': {ell: val}, 'x_hii': val}}."""
     logger = setup_logger(seed, cfg.paths.lightcone_root)
     print(f"Seed {seed}: finding real coeval snapshot redshifts...")
@@ -139,10 +154,10 @@ def run_one_seed(cfg, stitcher, seed, z0_grid, dz, ell_peak_filter, n_ell_grid,
         print(f"\n  seed {seed}, z0={z0:.3f} (window +-{dz/2:.2f}):")
         res = compute_dell_at_target_ells(
             cfg, stitcher, seed, z0, dz, chi_sorted, tau_cumulative, x_e_mean, z_sorted,
-            ell_peak_filter, n_ell_grid, ell_min_grid, ell_max_grid
+            ell_peak_filter, n_ell_grid, ell_min_grid, ell_max_grid, tracer=tracer
         )
         if res is None:
-            print("    no snapshots in this window -- skipping")
+            print("    no snapshots in this window (or all-zero tracer counts) -- skipping")
             continue
         out[z0] = {"D": dict(zip(TARGET_ELLS, res["D_at_targets"])), "x_hii": res["x_hii"]}
         print(f"    {res['n_snapshots']} snapshots, x_HII~{res['x_hii']:.3f}, D_ell={out[z0]['D']}")
@@ -162,6 +177,11 @@ def main():
     parser.add_argument("--n-ell-grid", type=int, default=8)
     parser.add_argument("--ell-min-grid", type=float, default=300.0)
     parser.add_argument("--ell-max-grid", type=float, default=5000.0)
+    parser.add_argument("--tracer", type=str, default="density_proxy",
+                         choices=["density_proxy", "lae", "lbg"],
+                         help="Galaxy field: La Plante+2022 bias-weighted density proxy (default), "
+                              "or real LAE/LBG tracer counts (see build_delta_g_field's docstring "
+                              "for the sparsity caveat on real counts)")
     parser.add_argument("--stitched-csv", type=str, default=None,
                          help="Path to scripts/13's dell_vs_z_multiell CSV, to overlay "
                               "(default: guess from --out-dir/SO)")
@@ -175,11 +195,12 @@ def main():
     stitcher = Stitcher(cfg)
     z0_grid = np.arange(args.z0_min, args.z0_max + 1e-6, args.dz) + args.dz / 2
 
-    print(f"Running {len(seeds)} seed(s): {seeds}")
+    print(f"Running {len(seeds)} seed(s): {seeds}, tracer={args.tracer}")
     per_seed_out = {}
     for seed in seeds:
         per_seed_out[seed] = run_one_seed(cfg, stitcher, seed, z0_grid, args.dz, args.ell_peak_filter,
-                                           args.n_ell_grid, args.ell_min_grid, args.ell_max_grid)
+                                           args.n_ell_grid, args.ell_min_grid, args.ell_max_grid,
+                                           tracer=args.tracer)
 
     z0_common = sorted(set.intersection(*(set(d.keys()) for d in per_seed_out.values())))
     if not z0_common:
@@ -196,7 +217,8 @@ def main():
         D_std_at_ell[ell] = vals.std(axis=1) if n_used > 1 else np.zeros(len(z0_common))
 
     seed_tag = f"{n_used}seeds" if n_used > 1 else f"seed{seeds[0]}"
-    csv_path = os.path.join(args.out_dir, f"direct_dell_vs_z0_{seed_tag}.csv")
+    tracer_tag = "" if args.tracer == "density_proxy" else f"_{args.tracer}"
+    csv_path = os.path.join(args.out_dir, f"direct_dell_vs_z0_{seed_tag}{tracer_tag}.csv")
     with open(csv_path, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["ell", "z0", "D_ell_mean_uK2", "D_ell_std_uK2", "x_HII", "n_seeds"])
@@ -249,7 +271,7 @@ def main():
     ax.set_yscale("symlog", linthresh=linthresh)
     ax.set_xlabel(r"$z_0$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$] (symlog)")
-    ax.set_title(f"D_ell vs z0, direct/coeval vs stitched vs La Plante+2022 -- "
+    ax.set_title(f"D_ell vs z0 ({args.tracer}), direct/coeval vs stitched vs La Plante+2022 -- "
                  f"{n_used} seed{'s' if n_used > 1 else ''}, dz={args.dz}", pad=30)
     ax.text(0.02, 0.02, f"{cfg.box.box_len_mpc:.0f} Mpc box vs paper's larger box -- "
             f"trend/amplitude both shown, nothing normalized away",
@@ -273,7 +295,7 @@ def main():
         except Exception as e:
             print(f"  (secondary x_HI axis skipped: {e})")
 
-    outpath = os.path.join(args.out_dir, f"direct_dell_vs_z0_{seed_tag}.pdf")
+    outpath = os.path.join(args.out_dir, f"direct_dell_vs_z0_{seed_tag}{tracer_tag}.pdf")
     save_fig(fig, outpath)
     plt.close(fig)
     print(f"Saved: {outpath} (+ .png)")

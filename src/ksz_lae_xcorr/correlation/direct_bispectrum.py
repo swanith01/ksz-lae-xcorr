@@ -258,3 +258,55 @@ def build_tau_history(cfg, stitcher, seed: int, all_snap_z: np.ndarray, logger):
     dtau = tau_pref * x_e_mean * (1.0 + z_sorted) ** 2 * ds
     tau_cumulative = np.cumsum(dtau)
     return z_sorted, chi, tau_cumulative, x_e_mean
+
+
+def build_delta_g_field(stitcher, seed: int, z: float, tracer: str, logger, bias_fn=None, density=None):
+    """
+    Build the galaxy overdensity field for ONE snapshot, for one of three
+    tracer choices:
+
+      'density_proxy' (default, what every direct-method script has used
+        until 2026-09-10): bg(z) * (density - 1), La Plante+2022's Eq. 6-7
+        bias-weighted MATTER proxy -- smooth, well-behaved, but not a real
+        tracer catalogue.
+
+      'lae' / 'lbg': REAL tracer counts, via
+        Stitcher.load_lae_grid/load_lbg_grid (the same per-snapshot
+        occupation-count builders the stitched pipeline uses), converted
+        to the standard fractional overdensity (count - mean)/mean.
+
+    HONEST CAVEAT on 'lae'/'lbg', not yet resolved by real data: this
+    session's real stitched-lightcone runs showed LAE max count ~2-4 and
+    LBG max count ~9-15, SUMMED OVER THE ENTIRE 300x300 transverse plane
+    at a given redshift. A single snapshot's raw 3D grid (ngrid^3 cells)
+    will have only a handful of total nonzero cells at that sparsity --
+    almost certainly too few for a per-snapshot cross-correlation to be
+    anything but shot-noise-dominated, especially for LAE. Built anyway,
+    since the z0-window Limber sum aggregates several snapshots together
+    (partially averaging down the noise) and because the honest way to
+    settle "is this too sparse to be useful" is to look at the real
+    output, not guess in the abstract -- but treat any 'lae' result
+    especially skeptically until checked against something like a
+    seed-to-seed consistency test.
+
+    Returns delta_g (mean-zero not required -- callers already
+    mean-subtract before cross-correlating) or None if the field is
+    degenerate (zero total counts -- can't build a meaningful overdensity
+    from an all-zero field; caller should skip this snapshot).
+    """
+    if tracer == "density_proxy":
+        bg_z = float(bias_fn(z))
+        return bg_z * (density - 1.0)
+
+    if tracer == "lae":
+        counts = stitcher.load_lae_grid(seed, z, logger)
+    elif tracer == "lbg":
+        counts = stitcher.load_lbg_grid(seed, z, logger)
+    else:
+        raise ValueError(f"Unknown tracer '{tracer}' -- expected 'density_proxy', 'lae', or 'lbg'.")
+
+    total = counts.sum()
+    if total <= 0:
+        return None
+    mean_count = counts.mean()
+    return (counts - mean_count) / mean_count

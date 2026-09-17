@@ -15,6 +15,7 @@ import os
 import sys
 
 import numpy as np
+import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
@@ -235,3 +236,66 @@ def test_build_tau_history_x_e_mean_is_ionized_fraction_not_neutral():
     )
     # Exact values: x_e_mean = 1 - xHI at each z.
     np.testing.assert_allclose(x_e_mean, [0.9, 0.5, 0.1], atol=1e-9)
+
+
+class _FakeStitcherTracer:
+    """Returns fixed, KNOWN count grids for lae/lbg -- lets tests assert
+    exact expected overdensity values, not just 'it runs'."""
+    def __init__(self, lae_grid=None, lbg_grid=None):
+        self.lae_grid = lae_grid
+        self.lbg_grid = lbg_grid
+
+    def load_lae_grid(self, seed, z, logger):
+        return self.lae_grid
+
+    def load_lbg_grid(self, seed, z, logger):
+        return self.lbg_grid
+
+
+def test_build_delta_g_field_density_proxy_matches_bias_times_delta():
+    from ksz_lae_xcorr.correlation.direct_bispectrum import build_delta_g_field
+
+    density = np.array([[[1.1, 0.9], [1.0, 1.2]]])  # (1+delta)
+    bg_fn = lambda z: 10.0
+    delta_g = build_delta_g_field(None, seed=1, z=9.0, tracer="density_proxy",
+                                   logger=None, bias_fn=bg_fn, density=density)
+    expected = 10.0 * (density - 1.0)
+    np.testing.assert_allclose(delta_g, expected)
+
+
+def test_build_delta_g_field_lae_gives_correct_fractional_overdensity():
+    from ksz_lae_xcorr.correlation.direct_bispectrum import build_delta_g_field
+
+    counts = np.zeros((4, 4, 4), dtype=np.float32)
+    counts[0, 0, 0] = 2.0
+    counts[1, 1, 1] = 1.0
+    # mean = 3 total / 64 cells
+    stitcher = _FakeStitcherTracer(lae_grid=counts)
+    delta_g = build_delta_g_field(stitcher, seed=1, z=9.0, tracer="lae", logger=None)
+
+    mean_count = counts.mean()
+    expected = (counts - mean_count) / mean_count
+    np.testing.assert_allclose(delta_g, expected)
+    # Sanity: a cell with zero counts should show delta_g = -1 (maximally
+    # underdense -- correct fractional-overdensity behavior at count=0).
+    assert delta_g[2, 2, 2] == pytest.approx(-1.0)
+
+
+def test_build_delta_g_field_lbg_all_zero_returns_none():
+    """THE important edge case given real LAE/LBG sparsity: an all-zero
+    snapshot (plausible given real counts of ~2-4 total per lightcone
+    slice) must be detected and skipped, not silently divided into
+    inf/nan."""
+    from ksz_lae_xcorr.correlation.direct_bispectrum import build_delta_g_field
+
+    counts = np.zeros((4, 4, 4), dtype=np.float32)
+    stitcher = _FakeStitcherTracer(lbg_grid=counts)
+    result = build_delta_g_field(stitcher, seed=1, z=9.0, tracer="lbg", logger=None)
+    assert result is None
+
+
+def test_build_delta_g_field_rejects_unknown_tracer():
+    from ksz_lae_xcorr.correlation.direct_bispectrum import build_delta_g_field
+
+    with pytest.raises(ValueError, match="Unknown tracer"):
+        build_delta_g_field(None, seed=1, z=9.0, tracer="halo", logger=None)
