@@ -37,18 +37,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from ksz_lae_xcorr.io.la_plante_reference import load_dell_vs_ell_band, load_dell_vs_z0_bands
-from ksz_lae_xcorr.utils.figio import save_fig
+from ksz_lae_xcorr.utils.figio import compute_symlog_linthresh, save_fig
 
 
 def _read_csv(path):
     with open(path) as f:
         return list(csv.DictReader(f))
-
-
-def _symlog_thresh(*arrays):
-    vals = np.concatenate([np.asarray(a, dtype=float) for a in arrays if len(a)])
-    pos = np.abs(vals[vals != 0])
-    return max(np.percentile(pos, 5), 1e-30) if len(pos) else 1e-6
 
 
 def plot_dell_vs_ell(rows, out_stem, stitched_csv=None):
@@ -81,7 +75,7 @@ def plot_dell_vs_ell(rows, out_stem, stitched_csv=None):
         if ell_s:
             ax.plot(ell_s, D_s, "s--", color="firebrick", alpha=0.7, label="Stitched (SO filter)")
 
-    linthresh = _symlog_thresh(D, lp_band["hi"], D_s)
+    linthresh = compute_symlog_linthresh(D, lp_band["hi"], D_s)
     ax.axhline(0, color="gray", lw=0.5)
     ax.set_xscale("log")
     ax.set_yscale("symlog", linthresh=linthresh)
@@ -94,22 +88,17 @@ def plot_dell_vs_ell(rows, out_stem, stitched_csv=None):
     plt.close(fig)
 
 
-def plot_dell_vs_z0(rows, out_stem, stitched_csv=None):
-    """scripts/18-style: several fixed ell, D_ell vs z0."""
+def plot_dell_vs_z0(rows, out_stem):
+    """scripts/18-style: several fixed ell, D_ell vs z0. Direct-vs-La-Plante
+    only, no stitched overlay -- matches the original convention for this
+    plot type (confirmed 2026-09-17); the ell-sweep plot above is the one
+    that includes stitched."""
     ells = sorted(set(float(r["ell"]) for r in rows))
     colors_cycle = {ells[i]: c for i, c in enumerate(["tab:blue", "tab:orange", "tab:green", "tab:red"][:len(ells)])}
     has_err = "D_ell_mean_uK2" in rows[0]
 
     lp_bands = load_dell_vs_z0_bands()
     fig, ax = plt.subplots(figsize=(10, 7), constrained_layout=True)
-
-    stitched = {}
-    if stitched_csv and os.path.exists(stitched_csv):
-        for row in _read_csv(stitched_csv):
-            ell = float(row["ell"])
-            stitched.setdefault(ell, {"z0": [], "D": []})
-            stitched[ell]["z0"].append(float(row["z0"]))
-            stitched[ell]["D"].append(float(row["D_ell_uK2"]))
 
     all_D_for_thresh = []
     for ell in ells:
@@ -136,14 +125,7 @@ def plot_dell_vs_z0(rows, out_stem, stitched_csv=None):
                               label=f"La Plante+2022, ell={ell:.0f}")
             all_D_for_thresh.append(lp["hi"])
 
-        if ell in stitched:
-            order_s = np.argsort(stitched[ell]["z0"])
-            zs = np.array(stitched[ell]["z0"])[order_s]
-            Ds = np.array(stitched[ell]["D"])[order_s]
-            ax.plot(zs, Ds, "s--", color=color, alpha=0.5, ms=4, label=f"Stitched, ell={ell:.0f}")
-            all_D_for_thresh.append(Ds)
-
-    linthresh = _symlog_thresh(*all_D_for_thresh)
+    linthresh = compute_symlog_linthresh(*all_D_for_thresh)
     ax.axhline(0, color="gray", lw=0.5)
     ax.set_yscale("symlog", linthresh=linthresh)
     ax.set_xlabel(r"$z_0$")
@@ -159,7 +141,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--csv", type=str, required=True, help="Path to an existing scripts/15 or scripts/18 CSV")
     parser.add_argument("--stitched-csv", type=str, default=None,
-                         help="Optional companion stitched CSV (scripts/11 or scripts/13 output) to overlay")
+                         help="Optional companion stitched CSV (scripts/11 output) to overlay -- "
+                              "only used for D_ell vs ell CSVs; the D_ell vs z0 plot is "
+                              "direct-vs-La-Plante only, matching the original convention")
     parser.add_argument("--out", type=str, default=None,
                          help="Output file stem (no extension -- .pdf and .png both written). "
                               "Default: same name as --csv with '_symlog' appended")
@@ -175,7 +159,7 @@ def main():
     if "z0" in rows[0]:
         print(f"Detected scripts/18-style CSV (D_ell vs z0), {len(rows)} rows, "
               f"{len(set(r['ell'] for r in rows))} ell value(s)")
-        plot_dell_vs_z0(rows, out_stem, args.stitched_csv)
+        plot_dell_vs_z0(rows, out_stem)
     else:
         print(f"Detected scripts/15-style CSV (D_ell vs ell), {len(rows)} rows")
         plot_dell_vs_ell(rows, out_stem, args.stitched_csv)

@@ -67,7 +67,7 @@ from ksz_lae_xcorr.snr.roman_hls_benchmark import bluetides_bias_gz
 from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.config import load_config
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
-from ksz_lae_xcorr.utils.figio import save_fig
+from ksz_lae_xcorr.utils.figio import compute_symlog_linthresh, save_fig
 
 
 def compute_direct_dell_one_seed(cfg, stitcher, seed, z0, dz, ell_peak_filter, ell_edges, ell_centers,
@@ -235,8 +235,7 @@ def main():
     # every negative point rather than showing it -- symlog keeps a
     # linear region near zero and goes log-scale for larger magnitudes
     # on both sides, so nothing gets hidden.
-    all_pos_vals = np.abs(np.concatenate([D_mean[D_mean != 0], lp_band["hi"][lp_band["hi"] != 0]]))
-    linthresh = max(np.percentile(all_pos_vals, 5), 1e-30) if len(all_pos_vals) else 1e-6
+    linthresh = compute_symlog_linthresh(D_mean, lp_band["hi"], np.array(D_s))
 
     ax.axhline(0, color="gray", lw=0.5)
     ax.set_xscale("log")

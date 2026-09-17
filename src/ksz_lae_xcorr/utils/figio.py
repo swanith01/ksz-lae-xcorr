@@ -36,3 +36,24 @@ def save_fig(fig, base_path: str, dpi: int = 200, bbox_inches="tight") -> tuple[
     fig.savefig(pdf_path, dpi=dpi, bbox_inches=bbox_inches)
     fig.savefig(png_path, dpi=dpi, bbox_inches=bbox_inches)
     return pdf_path, png_path
+
+
+def compute_symlog_linthresh(*arrays):
+    """
+    A sensible linthresh for matplotlib's symlog scale, from one or more
+    arrays of values to be plotted on that axis (e.g. central values,
+    band edges, error bars). Filters out NaN/inf before computing --
+    np.isfinite excludes both; a naive "!= 0" filter does NOT exclude
+    NaN (NaN is never equal to anything, including itself), so a single
+    NaN anywhere in the input silently poisons np.percentile into NaN,
+    which can make the ENTIRE symlog axis render blank rather than just
+    skipping the bad point. Caught 2026-09-17 when a stitched-pathway
+    CSV (known to contain NaN from that pathway's own instability) did
+    exactly this to a whole plot.
+    """
+    import numpy as np
+
+    vals = np.concatenate([np.asarray(a, dtype=float) for a in arrays if len(a)])
+    finite = vals[np.isfinite(vals)]
+    pos = np.abs(finite[finite != 0])
+    return max(np.percentile(pos, 5), 1e-30) if len(pos) else 1e-6

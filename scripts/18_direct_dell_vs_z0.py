@@ -59,7 +59,7 @@ from ksz_lae_xcorr.lightcone.stitch import Stitcher, setup_logger
 from ksz_lae_xcorr.snr.roman_hls_benchmark import bluetides_bias_gz
 from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.config import load_config
-from ksz_lae_xcorr.utils.figio import save_fig
+from ksz_lae_xcorr.utils.figio import compute_symlog_linthresh, save_fig
 
 TARGET_ELLS = [500.0, 1000.0, 3000.0]
 
@@ -182,9 +182,6 @@ def main():
                          help="Galaxy field: La Plante+2022 bias-weighted density proxy (default), "
                               "or real LAE/LBG tracer counts (see build_delta_g_field's docstring "
                               "for the sparsity caveat on real counts)")
-    parser.add_argument("--stitched-csv", type=str, default=None,
-                         help="Path to scripts/13's dell_vs_z_multiell CSV, to overlay "
-                              "(default: guess from --out-dir/SO)")
     parser.add_argument("--out-dir", type=str, default="paper/figure_scripts/output")
     args = parser.parse_args()
 
@@ -230,17 +227,10 @@ def main():
     lp_bands = load_dell_vs_z0_bands()
     colors = {500.0: "tab:blue", 1000.0: "tab:orange", 3000.0: "tab:green"}
 
-    stitched_csv = args.stitched_csv or os.path.join(args.out_dir, "dell_vs_z_multiell_SO.csv")
-    stitched = {ell: {"z0": [], "D": []} for ell in TARGET_ELLS}
-    if os.path.exists(stitched_csv):
-        with open(stitched_csv) as f:
-            for row in csv.DictReader(f):
-                ell = float(row["ell"])
-                if ell in stitched:
-                    stitched[ell]["z0"].append(float(row["z0"]))
-                    stitched[ell]["D"].append(float(row["D_ell_uK2"]))
-    else:
-        print(f"  (no stitched overlay -- {stitched_csv} not found; run scripts/13 first for that)")
+    # NOTE: z0-sweep is direct-vs-La-Plante only, no stitched overlay --
+    # matches the original convention (the stitched z0-sweep, scripts/13,
+    # is a separate diagnostic, not meant to be overlaid here; confirmed
+    # 2026-09-17 after checking against the actual original plots).
 
     fig, ax = plt.subplots(figsize=(10, 7), constrained_layout=True)
     for ell in TARGET_ELLS:
@@ -251,27 +241,19 @@ def main():
         ax.fill_between(lp["z0_lo"], lp["lo"], lp_hi_interp,
                           color=colors[ell], alpha=0.15,
                           label=f"La Plante+2022 (digitized), ell={ell:.0f}")
-        if stitched[ell]["z0"]:
-            order_s = np.argsort(stitched[ell]["z0"])
-            zs = np.array(stitched[ell]["z0"])[order_s]
-            Ds = np.array(stitched[ell]["D"])[order_s]
-            ax.plot(zs, Ds, "s--", color=colors[ell], alpha=0.5, ms=4,
-                     label=f"Stitched, ell={ell:.0f}")
 
     # symlog: these values can be legitimately negative (noise-dominated
     # bins), and a plain log axis would silently drop every negative
     # point -- symlog keeps a linear region near zero and goes log-scale
     # for larger magnitudes on both sides, so nothing gets hidden.
-    all_vals = np.concatenate([D_mean_at_ell[ell] for ell in TARGET_ELLS] +
-                               [lp_bands[int(ell)]["hi"] for ell in TARGET_ELLS])
-    all_pos_vals = np.abs(all_vals[all_vals != 0])
-    linthresh = max(np.percentile(all_pos_vals, 5), 1e-30) if len(all_pos_vals) else 1e-6
+    linthresh = compute_symlog_linthresh(*[D_mean_at_ell[ell] for ell in TARGET_ELLS],
+                                          *[lp_bands[int(ell)]["hi"] for ell in TARGET_ELLS])
 
     ax.axhline(0, color="gray", lw=0.5)
     ax.set_yscale("symlog", linthresh=linthresh)
     ax.set_xlabel(r"$z_0$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$] (symlog)")
-    ax.set_title(f"D_ell vs z0 ({args.tracer}), direct/coeval vs stitched vs La Plante+2022 -- "
+    ax.set_title(f"D_ell vs z0 ({args.tracer}), direct/coeval vs La Plante+2022 -- "
                  f"{n_used} seed{'s' if n_used > 1 else ''}, dz={args.dz}", pad=30)
     ax.text(0.02, 0.02, f"{cfg.box.box_len_mpc:.0f} Mpc box vs paper's larger box -- "
             f"trend/amplitude both shown, nothing normalized away",

@@ -67,3 +67,32 @@ def test_save_fig_regression_decimal_with_real_extension_still_works(tmp_path):
     pdf_path, png_path = save_fig(_tiny_fig(), stem)
     assert pdf_path == str(tmp_path / "direct_vs_stitched_seed1_z9.5.pdf")
     assert png_path == str(tmp_path / "direct_vs_stitched_seed1_z9.5.png")
+
+
+def test_compute_symlog_linthresh_ignores_nan():
+    """THE regression test for a real bug caught 2026-09-17: a plain
+    'vals != 0' filter does NOT exclude NaN (NaN is never equal to
+    anything, including itself), so a single NaN anywhere in a stitched
+    CSV silently poisoned np.percentile into NaN -- which made an
+    ENTIRE symlog-scaled plot render blank, not just skip the bad point."""
+    from ksz_lae_xcorr.utils.figio import compute_symlog_linthresh
+    import numpy as np
+
+    clean = np.array([0.001, 0.01, 0.02, 0.005])
+    with_nan = np.array([0.001, 0.01, np.nan, 0.02, np.nan, 0.005])
+
+    result_clean = compute_symlog_linthresh(clean)
+    result_with_nan = compute_symlog_linthresh(with_nan)
+
+    assert np.isfinite(result_clean)
+    assert np.isfinite(result_with_nan), "NaN in the input leaked into the result"
+    assert result_clean == pytest.approx(result_with_nan)
+
+
+def test_compute_symlog_linthresh_all_nan_falls_back_gracefully():
+    from ksz_lae_xcorr.utils.figio import compute_symlog_linthresh
+    import numpy as np
+
+    result = compute_symlog_linthresh(np.array([np.nan, np.nan]))
+    assert np.isfinite(result)
+    assert result > 0
