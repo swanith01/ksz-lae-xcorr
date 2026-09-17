@@ -13,12 +13,24 @@ base_path may be given with or without an extension -- either
 
 import os
 
+# Only strip the suffix if it's actually one of these -- otherwise a
+# stem with an internal decimal point and no real extension (e.g.
+# 'output/direct_bispectrum_z9.5_symlog', no '.pdf'/'.png' yet) gets
+# mis-split by a naive os.path.splitext, which treats the LAST dot
+# anywhere in the string as an extension separator regardless of what
+# follows it -- caught 2026-09-17 when this produced
+# 'direct_bispectrum_seed1_z9.pdf' instead of
+# 'direct_bispectrum_seed1_z9.5_symlog.pdf'.
+_KNOWN_EXTENSIONS = {".pdf", ".png", ".jpg", ".jpeg", ".svg"}
+
 
 def save_fig(fig, base_path: str, dpi: int = 200, bbox_inches="tight") -> tuple[str, str]:
     """
     Save fig as both PDF and PNG next to each other. Returns (pdf_path, png_path).
     """
-    root, _ext = os.path.splitext(base_path)
+    root, ext = os.path.splitext(base_path)
+    if ext.lower() not in _KNOWN_EXTENSIONS:
+        root = base_path  # not a real extension -- treat the whole thing as the stem
     pdf_path = root + ".pdf"
     png_path = root + ".png"
     fig.savefig(pdf_path, dpi=dpi, bbox_inches=bbox_inches)
