@@ -87,7 +87,7 @@ def plot_dell_vs_ell(rows, out_stem, stitched_csv=None):
     ax.set_yscale("symlog", linthresh=linthresh)
     ax.set_xlabel(r"$\ell$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$] (symlog)")
-    ax.set_title("Direct/coeval vs La Plante+2022 (re-plotted from existing CSV)", fontsize=11)
+    ax.set_title("Direct/coeval vs La Plante+2022", fontsize=11)
     ax.legend(fontsize=8)
 
     save_fig(fig, out_stem)
@@ -148,7 +148,7 @@ def plot_dell_vs_z0(rows, out_stem, stitched_csv=None):
     ax.set_yscale("symlog", linthresh=linthresh)
     ax.set_xlabel(r"$z_0$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$] (symlog)")
-    ax.set_title("D_ell vs z0, direct/coeval vs La Plante+2022 (re-plotted from existing CSV)", fontsize=11)
+    ax.set_title("D_ell vs z0, direct/coeval vs La Plante+2022", fontsize=11)
     ax.legend(fontsize=8, ncol=2)
 
     save_fig(fig, out_stem)
