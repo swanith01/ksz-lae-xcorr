@@ -2,17 +2,24 @@
 """
 scripts/23_lae_luminosity_function.py
 ========================================
-Our simulated LAE luminosity function (from the raw lya_lum_obs catalogue
-values, tracers/luminosity_function.py) against real observed LAE
-luminosity functions (Konno et al. 2018, PASJ 70, S16 -- the SILVERRUSH
-survey, at z=5.7 and z=6.6, both within our simulation's real LAE data
-range). Unlike everything else built for the kSZ comparison, this checks
-the LAE catalogue's actual luminosity distribution directly, independent
-of any kSZ, stitching, or cross-correlation machinery at all.
+Our simulated LAE luminosity function, swept across many real redshifts
+and colored by z (one smooth line per z, continuous colormap + colorbar),
+overlaid with Kageura et al. 2025's real observational data points
+(their own Table 2 measurements, with error bars, at their own five
+redshift bins) -- matching the comparison style used in that paper's own
+Figure 6 and in this group's prior plots.
+
+Unlike everything else built for the kSZ comparison, this checks the LAE
+catalogue's actual luminosity distribution directly, independent of any
+kSZ, stitching, or cross-correlation machinery at all.
+
+NOTE: Umeda et al. 2025's own measurement (a second real reference,
+Subaru narrow-band survey) is not yet included -- see
+io/lae_luminosity_function_reference.py's module docstring for why.
 
 Usage:
     python scripts/23_lae_luminosity_function.py
-    python scripts/23_lae_luminosity_function.py --z 5.7 6.6 --seeds 1 2 3
+    python scripts/23_lae_luminosity_function.py --seeds 1 2 3 --n-z-lines 8
 """
 
 import argparse
@@ -25,10 +32,7 @@ import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from ksz_lae_xcorr.io.lae_luminosity_function_reference import (
-    KONNO2018_SCHECHTER_PARAMS_ALPHA_FIXED,
-    schechter_phi_per_dex,
-)
+from ksz_lae_xcorr.io.lae_luminosity_function_reference import KAGEURA2025_LF_POINTS
 from ksz_lae_xcorr.lightcone.stitch import Stitcher, setup_logger
 from ksz_lae_xcorr.tracers.luminosity_function import compute_luminosity_function
 from ksz_lae_xcorr.utils.config import load_config
@@ -39,11 +43,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=str, default="configs/fiducial.yaml")
     parser.add_argument("--seeds", type=int, nargs="+", default=None)
-    parser.add_argument("--z", type=float, nargs="+", default=[5.7, 6.6],
-                         help="Redshifts to compute at -- default matches the two Konno+2018 "
-                              "reference redshifts exactly. If your snapshot grid doesn't land "
-                              "exactly here, the nearest real snapshot z is used instead.")
-    parser.add_argument("--log-l-min", type=float, default=41.0)
+    parser.add_argument("--n-z-lines", type=int, default=12,
+                         help="How many of our simulation's real snapshot redshifts to show as "
+                              "lines, evenly spread across the range with real LAE data")
+    parser.add_argument("--log-l-min", type=float, default=41.5)
     parser.add_argument("--log-l-max", type=float, default=44.0)
     parser.add_argument("--n-bins", type=int, default=15)
     parser.add_argument("--out-dir", type=str, default="paper/figure_scripts/output")
@@ -54,47 +57,52 @@ def main():
     os.makedirs(args.out_dir, exist_ok=True)
 
     stitcher = Stitcher(cfg)
+    logger = setup_logger(seeds[0], cfg.paths.lightcone_root)
+    all_snap_z = np.sort(stitcher.get_halo_redshifts(seeds[0]))
+    print(f"Found {len(all_snap_z)} real snapshot redshifts: z={all_snap_z.min():.2f}-{all_snap_z.max():.2f}")
 
-    fig, axes = plt.subplots(1, len(args.z), figsize=(7 * len(args.z), 6), constrained_layout=True)
-    if len(args.z) == 1:
-        axes = [axes]
+    idx = np.linspace(0, len(all_snap_z) - 1, args.n_z_lines).round().astype(int)
+    z_lines = sorted(set(all_snap_z[idx]))
 
-    for ax, z_target in zip(axes, args.z):
-        z_actual = z_target
-        try:
-            logger = setup_logger(seeds[0], cfg.paths.lightcone_root)
-            all_snap_z = stitcher.get_halo_redshifts(seeds[0])
-            z_actual = float(all_snap_z[np.argmin(np.abs(all_snap_z - z_target))])
-        except Exception as e:
-            print(f"  Could not find real snapshot redshifts, using requested z={z_target} as-is ({e})")
+    all_z_for_color = list(z_lines) + list(KAGEURA2025_LF_POINTS.keys())
+    z_min_color, z_max_color = min(all_z_for_color), max(all_z_for_color)
+    cmap = plt.cm.viridis
+    norm = plt.Normalize(vmin=z_min_color, vmax=z_max_color)
 
-        print(f"z_target={z_target} -> using real snapshot z={z_actual:.4f}")
-        result = compute_luminosity_function(cfg, seeds, z_actual, args.log_l_min, args.log_l_max, args.n_bins)
-        print(f"  {result['n_seeds_with_data']}/{len(seeds)} seeds have data, "
-              f"{result['n_objects_total']} total LAEs across those seeds")
+    fig, ax = plt.subplots(figsize=(9, 7), constrained_layout=True)
 
+    print("Computing simulated LF at each line redshift...")
+    for z in z_lines:
+        result = compute_luminosity_function(cfg, seeds, z, args.log_l_min, args.log_l_max, args.n_bins)
         valid = np.isfinite(result["phi"]) & (result["phi"] > 0)
-        if np.any(valid):
-            ax.errorbar(result["log_l_centers"][valid], result["phi"][valid],
-                         yerr=result["phi_err"][valid], fmt="o-", color="darkgreen",
-                         capsize=3, label=f"This sim (z={z_actual:.2f}, {result['n_seeds_with_data']} seeds)")
-        else:
-            ax.text(0.5, 0.5, "No LAE luminosity data at this z\n(lya_lum_obs not yet delivered "
-                    "for this snapshot, or genuinely zero)", transform=ax.transAxes,
-                    ha="center", va="center", fontsize=10, color="firebrick")
+        if not np.any(valid):
+            print(f"  z={z:.2f}: no data, skipping this line")
+            continue
+        log_phi = np.log10(result["phi"][valid])
+        ax.plot(result["log_l_centers"][valid], log_phi, "-", color=cmap(norm(z)), lw=1.3, alpha=0.85)
+        print(f"  z={z:.2f}: {result['n_seeds_with_data']}/{len(seeds)} seeds, "
+              f"{result['n_objects_total']} total LAEs")
 
-        if z_target in KONNO2018_SCHECHTER_PARAMS_ALPHA_FIXED:
-            alpha, log_l_star, log_phi_star = KONNO2018_SCHECHTER_PARAMS_ALPHA_FIXED[z_target]
-            log_l_smooth = np.linspace(args.log_l_min, args.log_l_max, 200)
-            phi_ref = schechter_phi_per_dex(log_l_smooth, alpha, log_l_star, log_phi_star)
-            ax.plot(log_l_smooth, phi_ref, "--", color="black",
-                     label=f"Konno+2018, z={z_target} (alpha={alpha} fixed)")
+    print("Overlaying Kageura+2025 real data points...")
+    for z, d in KAGEURA2025_LF_POINTS.items():
+        log_phi = np.array(d["log_phi"])
+        yerr = np.array([d["log_phi_err_lo"], d["log_phi_err_hi"]])
+        ax.errorbar(d["log_l"], log_phi, yerr=yerr, fmt="o", color=cmap(norm(z)),
+                     markeredgecolor="black", markeredgewidth=0.6, ms=7, capsize=3, zorder=5)
 
-        ax.set_yscale("log")
-        ax.set_xlabel(r"$\log_{10}(L_{\rm Ly\alpha}$ [erg/s])")
-        ax.set_ylabel(r"$\Phi(L)$ [Mpc$^{-3}$ dex$^{-1}$]")
-        ax.set_title(f"LAE luminosity function, z~{z_target}")
-        ax.legend(fontsize=8)
+    ax.plot([], [], "o", color="gray", markeredgecolor="black", markeredgewidth=0.6,
+             label="Kageura+2025 (real data, JWST/NIRSpec)")
+    ax.plot([], [], "-", color="gray", label="This simulation (lines, colored by z)")
+
+    sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax)
+    cbar.set_label(r"$z$")
+
+    ax.set_xlabel(r"$\log_{10}(L_{\rm Ly\alpha}$ [erg/s])")
+    ax.set_ylabel(r"$\log_{10}\phi$ [Mpc$^{-3}$ dex$^{-1}$]")
+    ax.set_title(f"LAE luminosity function ({len(seeds)} seed{'s' if len(seeds) > 1 else ''})")
+    ax.legend(loc="lower left", fontsize=8)
 
     outpath = os.path.join(args.out_dir, "lae_luminosity_function.pdf")
     save_fig(fig, outpath)

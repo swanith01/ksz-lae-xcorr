@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from ksz_lae_xcorr.io.lae_luminosity_function_reference import (
     KONNO2018_SCHECHTER_PARAMS_ALPHA_FIXED,
+    nearest_kageura2025_redshift,
     nearest_konno2018_redshift,
     schechter_phi_per_dex,
 )
@@ -55,3 +56,40 @@ def test_nearest_konno2018_redshift():
     assert nearest_konno2018_redshift(5.5) == 5.7
     assert nearest_konno2018_redshift(6.9) == 6.6
     assert nearest_konno2018_redshift(6.15) in (5.7, 6.6)  # exactly midway, either is defensible
+
+
+def test_kageura2025_schechter_params_five_bins():
+    from ksz_lae_xcorr.io.lae_luminosity_function_reference import KAGEURA2025_SCHECHTER_PARAMS
+    assert len(KAGEURA2025_SCHECHTER_PARAMS) == 5
+    for z, (alpha, log_l_star, log_phi_star) in KAGEURA2025_SCHECHTER_PARAMS.items():
+        assert 4.5 < z < 15.0
+        assert -3.0 < alpha < -1.0
+        assert 42.0 < log_l_star < 44.0
+        assert -7.0 < log_phi_star < -2.0
+
+
+def test_kageura2025_lf_points_consistent_array_lengths():
+    from ksz_lae_xcorr.io.lae_luminosity_function_reference import KAGEURA2025_LF_POINTS
+    assert len(KAGEURA2025_LF_POINTS) == 5
+    for z, d in KAGEURA2025_LF_POINTS.items():
+        n = len(d["log_l"])
+        assert len(d["log_phi"]) == n
+        assert len(d["log_phi_err_lo"]) == n
+        assert len(d["log_phi_err_hi"]) == n
+
+
+def test_kageura2025_lf_points_number_density_decreases_with_redshift():
+    """Physical sanity check: at a fixed luminosity present in every bin
+    (log L=42.3, the only one common to all five z bins), Phi should
+    decrease toward higher z -- fewer bright LAEs further from us in
+    time, consistent with the paper's own headline ~3 dex decline."""
+    from ksz_lae_xcorr.io.lae_luminosity_function_reference import KAGEURA2025_LF_POINTS
+    zs_sorted = sorted(KAGEURA2025_LF_POINTS.keys())
+    log_phi_at_42_3 = [KAGEURA2025_LF_POINTS[z]["log_phi"][0] for z in zs_sorted]
+    assert all(np.diff(log_phi_at_42_3) < 0)
+
+
+def test_nearest_kageura2025_redshift():
+    assert nearest_kageura2025_redshift(5.0) == 5.01
+    assert nearest_kageura2025_redshift(6.0) == 5.90
+    assert nearest_kageura2025_redshift(12.0) == 11.00
