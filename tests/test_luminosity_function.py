@@ -13,7 +13,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from ksz_lae_xcorr.tracers.luminosity_function import (
     compute_luminosity_function,
+    compute_uv_luminosity_function,
     load_raw_lae_luminosities,
+    load_raw_lbg_muv,
 )
 from ksz_lae_xcorr.utils.config import Config
 from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename
@@ -22,15 +24,23 @@ from ksz_lae_xcorr.utils.external_catalogue import external_catalogue_filename
 def _cfg(tmp_path, box_len_mpc=40.0, hii_dim=16):
     root = str(tmp_path / "lae_catalogue")
     os.makedirs(os.path.join(root, "lya_lum_obs"), exist_ok=True)
+    lbg_root = str(tmp_path / "lbg_catalogue")
+    os.makedirs(os.path.join(lbg_root, "MUV_lbg"), exist_ok=True)
     return Config({
         "box": Config({"box_len_mpc": box_len_mpc, "hii_dim": hii_dim}),
-        "paths": Config({"lae_catalogue_root": root}),
+        "paths": Config({"lae_catalogue_root": root, "lbg_catalogue_root": lbg_root}),
     })
 
 
 def _write_fake_luminosities(cfg, seed, z, values):
     fname = external_catalogue_filename("lya_lum_obs", z, cfg, seed)
     path = os.path.join(cfg.paths.lae_catalogue_root, "lya_lum_obs", fname)
+    np.save(path, np.array(values, dtype=np.float64))
+
+
+def _write_fake_muv(cfg, seed, z, values):
+    fname = external_catalogue_filename("MUV_lbg", z, cfg, seed)
+    path = os.path.join(cfg.paths.lbg_catalogue_root, "MUV_lbg", fname)
     np.save(path, np.array(values, dtype=np.float64))
 
 
@@ -95,5 +105,69 @@ def test_compute_luminosity_function_averages_and_scatters_across_seeds(tmp_path
     dlogL = (44.0 - 41.0) / 15
     phi_seed1 = 10 / (40.0**3 * dlogL)
     phi_seed2 = 20 / (40.0**3 * dlogL)
+    assert result["phi"][5] == pytest.approx((phi_seed1 + phi_seed2) / 2, rel=1e-6)
+    assert result["phi_err"][5] > 0
+
+
+def test_load_raw_lbg_muv_missing_file_returns_empty(tmp_path):
+    cfg = _cfg(tmp_path)
+    result = load_raw_lbg_muv(cfg, seed=1, z=9.0)
+    assert len(result) == 0
+
+
+def test_load_raw_lbg_muv_returns_exact_values_uncut(tmp_path):
+    """Deliberately checks the FULL distribution is returned, including
+    values fainter than cfg.tracers.lbg_muv_cut -- the LF should show the
+    real population, not the cross-correlation tracer's cut subset."""
+    cfg = _cfg(tmp_path)
+    values = [-21.0, -19.5, -17.0, -15.2, -14.8]  # spans both sides of the -17.0 cut
+    _write_fake_muv(cfg, seed=1, z=9.0, values=values)
+    result = load_raw_lbg_muv(cfg, seed=1, z=9.0)
+    np.testing.assert_allclose(sorted(result), sorted(values))
+
+
+def test_compute_uv_luminosity_function_no_data_gives_nan_not_zero(tmp_path):
+    cfg = _cfg(tmp_path)
+    result = compute_uv_luminosity_function(cfg, seeds=[1, 2], z=9.0)
+    assert result["n_seeds_with_data"] == 0
+    assert np.all(np.isnan(result["phi"]))
+
+
+def test_compute_uv_luminosity_function_matches_hand_computed_value(tmp_path):
+    """Exact numeric check: 10 objects all at the center of one magnitude
+    bin, box_len=40 Mpc -> phi in that bin = 10 / (40^3 * dM)."""
+    cfg = _cfg(tmp_path, box_len_mpc=40.0)
+    m_uv_min, m_uv_max, n_bins = -24.0, -14.0, 15
+    dM = (m_uv_max - m_uv_min) / n_bins
+    edges = np.linspace(m_uv_min, m_uv_max, n_bins + 1)
+    centers = 0.5 * (edges[:-1] + edges[1:])
+    target_m = centers[5]
+
+    _write_fake_muv(cfg, seed=1, z=9.0, values=[target_m] * 10)
+    result = compute_uv_luminosity_function(cfg, seeds=[1], z=9.0,
+                                             m_uv_min=m_uv_min, m_uv_max=m_uv_max, n_bins=n_bins)
+
+    expected_phi = 10 / (40.0 ** 3 * dM)
+    assert result["n_objects_total"] == 10
+    assert result["phi"][5] == pytest.approx(expected_phi, rel=1e-6)
+    other_bins = [i for i in range(n_bins) if i != 5]
+    assert np.all(result["phi"][other_bins] == 0.0)
+
+
+def test_compute_uv_luminosity_function_averages_and_scatters_across_seeds(tmp_path):
+    cfg = _cfg(tmp_path, box_len_mpc=40.0)
+    edges = np.linspace(-24.0, -14.0, 16)
+    centers = 0.5 * (edges[:-1] + edges[1:])
+    target_m = centers[5]
+
+    _write_fake_muv(cfg, seed=1, z=9.0, values=[target_m] * 10)
+    _write_fake_muv(cfg, seed=2, z=9.0, values=[target_m] * 20)
+
+    result = compute_uv_luminosity_function(cfg, seeds=[1, 2], z=9.0)
+    assert result["n_seeds_with_data"] == 2
+    assert result["n_objects_total"] == 30
+    dM = (-14.0 - -24.0) / 15
+    phi_seed1 = 10 / (40.0**3 * dM)
+    phi_seed2 = 20 / (40.0**3 * dM)
     assert result["phi"][5] == pytest.approx((phi_seed1 + phi_seed2) / 2, rel=1e-6)
     assert result["phi_err"][5] > 0

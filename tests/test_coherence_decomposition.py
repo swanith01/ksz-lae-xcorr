@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from ksz_lae_xcorr.correlation.coherence_decomposition import (
     compute_ksz_slices,
+    compute_patchy_window_diag_power,
     cross_power_by_dchi,
     decompose_p_total_diag_off,
     group_slices_by_snapshot,
@@ -173,6 +174,115 @@ def test_group_slices_by_snapshot_conserves_los_sum():
     # Regrouping only re-sums subsets of the same LOS axis -- total must
     # be conserved exactly regardless of how it's bucketed.
     np.testing.assert_allclose(grouped.sum(axis=2), theta_slices.sum(axis=2), rtol=1e-10)
+
+
+def _make_cfg_wide_patchy():
+    # z_min=4.0 is deliberately BELOW Z_FLOOR_REIONIZATION (6.0), so the
+    # floor clamp is actually exercised, not just the x_HI-range clamp.
+    return Config({
+        "box": Config({"z_min": 4.0, "z_max": 14.0, "box_len_mpc": 30.0, "hii_dim": NGRID}),
+        "cosmology": Config({"H0": 67.77, "Om0": 0.3086, "Ob0": 0.0489, "ns": 0.9665}),
+        "correlation": Config({"n_kbins": 8, "tracers": []}),
+    })
+
+
+def _xHI_mean_patchy(z):
+    """Saturates to EXACTLY 0 (fully ionized) at/below z=6 and EXACTLY 1
+    (fully neutral) at/above z=13, with a patchy ramp in between -- so
+    clamp_window_to_patchy_regime has real degenerate tails to trim on
+    both ends, not just the reionization floor."""
+    raw = (z - 6.0) / (13.0 - 6.0)
+    return np.clip(raw, 0.0, 1.0)
+
+
+def _make_field_data_patchy(seed: int = 0, n_pix: int = 100, period: int = 10):
+    rng = np.random.default_rng(seed)
+    z_lc = np.linspace(4.0, 14.0, n_pix)
+
+    base_density = 1.0 + rng.normal(0, 0.3, size=(period, NGRID, NGRID))
+    base_velocity = rng.normal(0, 1e-3, size=(period, NGRID, NGRID))
+    density_lc = np.stack([base_density[i % period] for i in range(n_pix)], axis=-1)
+    velocity_lc = np.stack([base_velocity[i % period] for i in range(n_pix)], axis=-1)
+
+    xHI_lc = np.broadcast_to(_xHI_mean_patchy(z_lc)[None, None, :], (NGRID, NGRID, n_pix)).copy()
+
+    return {
+        "z_lc": z_lc,
+        "xHI_lc": xHI_lc,
+        "density_lc": density_lc,
+        "velocity_lc": velocity_lc,
+        "velocity_kms": velocity_lc.copy(),
+    }
+
+
+def test_compute_patchy_window_diag_power_restricts_to_real_patchy_range():
+    """The whole point of this function: z_lo/z_hi in the output should be
+    a genuine SUBSET of the requested box.z_min-z_max range (4-14), pulled
+    in on both ends -- the low end by the z>=6 reionization floor, the
+    high end by excluding the exactly-fully-neutral tail (z>=13)."""
+    cfg = _make_cfg_wide_patchy()
+    fd = _make_field_data_patchy(seed=10)
+
+    result = compute_patchy_window_diag_power(cfg, fd)
+
+    assert result["z_lo"] >= 6.0 - 1e-6, (
+        f"z_lo={result['z_lo']} should respect the z>=6 reionization floor"
+    )
+    assert result["z_hi"] < 13.0 + 1e-3, (
+        f"z_hi={result['z_hi']} should exclude the fully-neutral (x_HI=1) tail at z>=13"
+    )
+    assert result["z_lo"] > cfg.box.z_min
+    assert result["z_hi"] < cfg.box.z_max
+    assert len(result["ell"]) > 0
+    np.testing.assert_allclose(
+        result["D_total"], result["D_diag"] + result["D_off"], rtol=1e-6, atol=1e-25
+    )
+
+
+def test_compute_patchy_window_diag_power_matches_manual_composition():
+    """Correctness of the composition itself: manually slicing theta_slices
+    to the same clamped window and calling decompose_p_total_diag_off
+    directly should reproduce compute_patchy_window_diag_power's output
+    exactly -- this function should just be wiring, not new math."""
+    from ksz_lae_xcorr.snr.roman_hls_benchmark import chi_eff_power_weighted, clamp_window_to_patchy_regime
+
+    cfg = _make_cfg_wide_patchy()
+    fd = _make_field_data_patchy(seed=11)
+
+    result = compute_patchy_window_diag_power(cfg, fd)
+
+    theta_full, chi_full, z_full = compute_ksz_slices(cfg, fd)
+    z0 = 0.5 * (cfg.box.z_min + cfg.box.z_max)
+    dz = cfg.box.z_max - cfg.box.z_min
+    z_lo, z_hi = clamp_window_to_patchy_regime(z0, dz, fd["z_lc"], fd["xHI_lc"])
+    mask = (z_full >= z_lo) & (z_full < z_hi)
+    chi_eff_expected = chi_eff_power_weighted(cfg, fd, z_lo, z_hi)
+    ell_exp, D_total_exp, D_diag_exp, D_off_exp = decompose_p_total_diag_off(
+        cfg, theta_full[:, :, mask], chi_eff_expected
+    )
+
+    assert result["z_lo"] == z_lo
+    assert result["z_hi"] == z_hi
+    assert result["chi_eff"] == chi_eff_expected
+    np.testing.assert_allclose(result["ell"], ell_exp, rtol=1e-10)
+    np.testing.assert_allclose(result["D_diag"], D_diag_exp, rtol=1e-10)
+
+
+def test_compute_patchy_window_diag_power_chi_eff_differs_from_box_midpoint():
+    """chi_eff should be the power-weighted mean over the ACTUAL patchy
+    window, not a naive box-midpoint chi -- guards against silently
+    falling back to the old z=12.5-style arbitrary reference."""
+    cfg = _make_cfg_wide_patchy()
+    fd = _make_field_data_patchy(seed=12)
+
+    result = compute_patchy_window_diag_power(cfg, fd)
+
+    from ksz_lae_xcorr.utils.cosmology import get_cosmology
+    cosmo = get_cosmology(cfg)
+    z_box_mid = 0.5 * (cfg.box.z_min + cfg.box.z_max)
+    chi_box_mid = cosmo.comoving_distance(z_box_mid).to_value("Mpc")
+
+    assert result["chi_eff"] != chi_box_mid
 
 
 def test_cross_power_by_dchi_detects_periodicity():

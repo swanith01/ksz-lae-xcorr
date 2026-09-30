@@ -29,6 +29,7 @@ import numpy as np
 
 from ksz_lae_xcorr.correlation.coherence_decomposition import (
     compute_ksz_slices,
+    compute_patchy_window_diag_power,
     cross_power_by_dchi,
     decompose_p_total_diag_off,
     group_slices_by_snapshot,
@@ -87,6 +88,13 @@ def main():
 
         plot_coherence_decomposition(cfg, ell, D_total, D_diag, D_off, seed, args.out_dir)
 
+        print("  computing the patchy-window version (z restricted to this "
+              "seed's actual patchy-reionization range, not the box midpoint)...")
+        patchy = compute_patchy_window_diag_power(cfg, field_data[seed])
+        print(f"    patchy window: z=[{patchy['z_lo']:.2f}, {patchy['z_hi']:.2f}]  "
+              f"chi_eff={patchy['chi_eff']:.1f} Mpc  "
+              f"(box-midpoint reference used above was z={0.5*(cfg.box.z_min+cfg.box.z_max):.2f})")
+
         print("  grouping by real coeval snapshot for the Delta-chi diagnostic...")
         logger = setup_logger(seed, cfg.paths.lightcone_root)
         snap_z = stitcher.get_snapshot_redshifts(seed, logger)
@@ -101,6 +109,15 @@ def main():
             "chi_eff": chi_eff, "frac_off_at_ell3000": frac_off_hi_ell,
             "dchi_centers": dchi_c, "dchi_mean": dchi_mean,
             "dchi_std": dchi_std, "dchi_n": dchi_n,
+            # Patchy-window version (see correlation.coherence_decomposition.
+            # compute_patchy_window_diag_power): restricted to this seed's
+            # actual patchy-reionization z-range instead of the box
+            # midpoint above -- this is what scripts/22's kSZ auto-power
+            # panel now plots. Kept alongside (not replacing) the
+            # box-midpoint fields above, since frac_off_at_ell3000 and the
+            # Delta-chi diagnostic were validated against ksz-pipeline
+            # using that convention and shouldn't silently change meaning.
+            "patchy": patchy,
         }
 
         if args.run_shift_control:

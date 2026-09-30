@@ -183,6 +183,86 @@ def decompose_p_total_diag_off(cfg, theta_slices: np.ndarray, chi_eff_mpc: float
     return ell[valid], D_total[valid], D_diag[valid], D_off[valid]
 
 
+def compute_patchy_window_diag_power(cfg, field_data_seed: dict) -> dict:
+    """
+    One-seed, periodicity-corrected kSZ auto-power D_ell, restricted to
+    this seed's own actual patchy-reionization redshift range instead of
+    an arbitrary box-midpoint reference or the full (possibly much wider,
+    largely non-patchy) cfg.box.z_min-z_max range.
+
+    Directly addresses Girish's 2026-09-29 question: "why is it till
+    z=12.5? That makes no sense for ksz power; we want it for the full
+    patchy window." z=12.5 was never a truncation of the LOS integral
+    (compute_ksz_slices always summed the FULL box.z_min-z_max range) --
+    it was only the reference redshift used for the single-chi_eff
+    ell=k*chi Limber conversion, and it was a physically arbitrary choice
+    (just the box midpoint). This function instead:
+
+      1. Uses snr.roman_hls_benchmark.clamp_window_to_patchy_regime to
+         find THIS seed's actual patchy window: z >= 6 (La Plante+2022's
+         own floor) AND x_HI strictly between 0 and 1 (excludes any z
+         where this seed is already fully ionized or still fully
+         neutral -- no residual patchiness left to correlate there).
+      2. Restricts the LOS sum (theta_slices) to that window before
+         decomposing -- besides being the physically correct choice, this
+         also means fewer periodic box copies are stacked along the
+         line of sight than the naive full z_min-z_max range, which can
+         only help (never hurt) the periodicity artifact P_off is meant
+         to isolate.
+      3. Uses chi_eff_power_weighted (not a bare box-midpoint chi) for
+         the ell-axis reference, so the ell grid itself reflects where
+         the kSZ signal actually is, weighted by its own strength.
+      4. Runs decompose_p_total_diag_off on that restricted window and
+         returns D_diag -- the periodicity-corrected quantity already
+         validated against ksz-pipeline's independent direct/Limber
+         calculation to 8.5% (see this module's docstring) -- as the
+         trustworthy kSZ auto-power, alongside D_total/D_off for
+         reference.
+
+    No new machinery from ksz-pipeline is needed for this: clamp_window_
+    to_patchy_regime and chi_eff_power_weighted were already ported over
+    (2026-09, roman_hls_benchmark.py) and decompose_p_total_diag_off was
+    already validated -- this function just composes what's already here
+    and already trusted, the same way compute_tracer_auto_spectra reuses
+    cross_correlation.py's z-slicing rather than inventing a new one.
+
+    Returns
+    -------
+    dict with 'ell', 'D_total', 'D_diag', 'D_off' (arrays), plus
+    'z_lo', 'z_hi' (this seed's actual patchy window) and 'chi_eff'
+    (the power-weighted reference comoving distance used for the ell axis).
+    """
+    from ksz_lae_xcorr.snr.roman_hls_benchmark import (
+        chi_eff_power_weighted,
+        clamp_window_to_patchy_regime,
+    )
+
+    theta_slices_full, chi_full, z_full = compute_ksz_slices(cfg, field_data_seed)
+
+    z_lo_box, z_hi_box = cfg.box.z_min, cfg.box.z_max
+    z0 = 0.5 * (z_lo_box + z_hi_box)
+    dz = z_hi_box - z_lo_box
+    z_lo, z_hi = clamp_window_to_patchy_regime(
+        z0, dz, field_data_seed["z_lc"], field_data_seed["xHI_lc"]
+    )
+
+    mask = (z_full >= z_lo) & (z_full < z_hi)
+    if mask.sum() < 2:
+        raise ValueError(
+            f"Patchy window [{z_lo:.3f}, {z_hi:.3f}] contains <2 LOS pixels "
+            f"in compute_ksz_slices's own z-grid -- cannot decompose."
+        )
+    theta_slices = theta_slices_full[:, :, mask]
+
+    chi_eff = chi_eff_power_weighted(cfg, field_data_seed, z_lo, z_hi)
+
+    ell, D_total, D_diag, D_off = decompose_p_total_diag_off(cfg, theta_slices, chi_eff)
+    return {
+        "ell": ell, "D_total": D_total, "D_diag": D_diag, "D_off": D_off,
+        "z_lo": z_lo, "z_hi": z_hi, "chi_eff": chi_eff,
+    }
+
+
 def group_slices_by_snapshot(cfg, theta_slices: np.ndarray, chi_mpc: np.ndarray,
                               z_snapshots) -> tuple[np.ndarray, np.ndarray]:
     """
