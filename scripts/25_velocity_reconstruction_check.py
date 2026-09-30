@@ -173,6 +173,23 @@ def main():
     print(f"  reconstructed v_z: min={v_rec.min():.3e}  max={v_rec.max():.3e}  "
           f"std={v_rec.std():.3e} Mpc/s")
 
+    # For a smoothed tracer reconstruction, also build the UNSMOOTHED version
+    # purely to show, side by side, why the smoothing was needed -- a sparse
+    # discrete tracer's raw overdensity field is shot-noise-dominated at the
+    # pixel level (most cells empty, a few cells with a huge fractional
+    # overdensity), and pushing that straight through the 1/k^2 continuity-
+    # equation kernel produces wild, unphysical real-space outliers that
+    # --r-smooth's low-pass filter suppresses. Not saved/compared as a
+    # "result" -- only used for the explanatory figure below.
+    v_rec_unsmoothed = None
+    if args.tracer != "matter" and args.r_smooth is not None:
+        print(f"Also reconstructing the UNSMOOTHED '{args.tracer}' field "
+              f"(for the smoothing-comparison figure only)...")
+        v_rec_unsmoothed = reconstruct_velocity_los(cfg, recon_input, cfg.box.box_len_mpc, z,
+                                                      bias=bias_used, r_smooth_mpc=None)
+        print(f"  unsmoothed reconstructed v_z: min={v_rec_unsmoothed.min():.3e}  "
+              f"max={v_rec_unsmoothed.max():.3e}  std={v_rec_unsmoothed.std():.3e} Mpc/s")
+
     result = compare_reconstructed_to_native(v_rec, v_native, cfg.box.box_len_mpc,
                                               n_kbins=args.n_kbins)
     print(f"\nPixel-level Pearson r (real space, all cells): {result['pixel_pearson_r']:.4f}")
@@ -211,6 +228,45 @@ def main():
     save_fig(fig_s, slice_outpath)
     plt.close(fig_s)
     print(f"Saved: {slice_outpath}.pdf (+ .png)")
+
+    # --- Plot: why smooth? native vs. UNsmoothed-rec vs. smoothed-rec vs. residual ---
+    if v_rec_unsmoothed is not None:
+        unsmoothed_slice = v_rec_unsmoothed[:, mid, :]
+        vlim_unsmoothed = np.percentile(np.abs(unsmoothed_slice), 99)
+
+        fig4, axes4 = plt.subplots(1, 4, figsize=(21, 5), constrained_layout=True)
+        panels = [
+            (native_slice, vlim, "Native $v_z$ (21cmFAST)"),
+            (unsmoothed_slice, vlim_unsmoothed,
+             f"Reconstructed, NO smoothing\n(own colour scale: {vlim_unsmoothed / vlim:.0f}$\\times$ "
+             f"native's range)"),
+            (rec_slice, vlim, f"Reconstructed, smoothed\n($R_s$={args.r_smooth:.1f} Mpc)"),
+            (resid_slice, vlim, "Residual (native $-$ smoothed)"),
+        ]
+        for ax4, (sl, vl, title) in zip(axes4, panels):
+            im4 = ax4.imshow(sl.T, origin="lower", cmap="RdBu_r", vmin=-vl, vmax=vl,
+                              extent=[0, cfg.box.box_len_mpc, 0, cfg.box.box_len_mpc])
+            ax4.set_title(title, fontsize=10)
+            ax4.set_xlabel("x [Mpc]")
+            fig4.colorbar(im4, ax=ax4, label="$v_z$ [Mpc/s]", shrink=0.85)
+        axes4[0].set_ylabel("z [Mpc, LOS]")
+
+        fig4.suptitle(
+            f"Why smooth the '{args.tracer}' tracer? -- seed {args.seed}, z={z:.3f} "
+            f"(y-index={mid} of {v_native.shape[1]}). Unsmoothed panel uses its OWN colour "
+            f"scale ({vlim_unsmoothed:.2e} vs native's {vlim:.2e} Mpc/s, "
+            f"{vlim_unsmoothed / vlim:.0f}$\\times$ larger) -- the sparse tracer "
+            f"({n_nonzero}/{counts.size} cells occupied, {n_obj} objects) has near-empty "
+            f"real-space structure, so its raw overdensity is shot-noise-dominated and the "
+            f"1/k^2 reconstruction kernel amplifies that into unphysical outliers; "
+            f"$R_s$={args.r_smooth:.1f} Mpc suppresses the small scales those outliers live on.",
+            fontsize=9)
+        smoothing_outpath = os.path.join(
+            args.out_dir,
+            f"velocity_reconstruction_smoothing_comparison_{args.tracer}_seed{args.seed}_z{z:.2f}")
+        save_fig(fig4, smoothing_outpath)
+        plt.close(fig4)
+        print(f"Saved: {smoothing_outpath}.pdf (+ .png)")
 
     # --- Plot: power spectra, r(k)/transfer(k), pixel-level comparison ---
     fig, axes = plt.subplots(1, 3, figsize=(16, 5), constrained_layout=True)
