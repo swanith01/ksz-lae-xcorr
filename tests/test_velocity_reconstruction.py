@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from ksz_lae_xcorr.correlation.velocity_reconstruction import (
     _k_grid_3d_components,
     compare_reconstructed_to_native,
+    measure_large_scale_bias,
     reconstruct_velocity_los,
 )
 from ksz_lae_xcorr.utils.config import Config
@@ -207,3 +208,47 @@ def test_los_axis_selection_changes_result_on_anisotropic_field():
     v0_scale = np.max(np.abs(v_los0))
     assert v0_scale > 1e-22, f"los_axis=0 reconstruction unexpectedly near zero: {v0_scale:.3e}"
     assert np.max(np.abs(v_los2)) < 1e-12 * v0_scale
+
+
+def test_measure_large_scale_bias_exact_recovery_noiseless():
+    """delta_tracer = b_true * delta_matter EXACTLY (no shot noise) -> the
+    cross/auto power ratio must recover b_true exactly at every k (it's a
+    linear rescaling of the same field, so there's no sample-variance
+    scatter to average away, unlike a real discrete tracer)."""
+    delta_matter = _random_delta(seed=20)
+    b_true = 2.35
+    delta_tracer = b_true * delta_matter
+
+    result = measure_large_scale_bias(delta_tracer, delta_matter, BOX_LEN, n_kbins=8)
+    assert result["b_eff"] == pytest.approx(b_true, rel=1e-8)
+    assert result["b_eff_std"] < 1e-6
+    finite = np.isfinite(result["b_of_k"])
+    np.testing.assert_allclose(result["b_of_k"][finite], b_true, rtol=1e-6)
+
+
+def test_measure_large_scale_bias_recovers_true_value_with_shot_noise():
+    """A more realistic case: delta_tracer = b_true * delta_matter PLUS
+    independent shot-noise-like scatter -- the large-scale-only average
+    should still land close to b_true, since shot noise is white (flat in
+    k) while the signal grows toward low k for a clustered field, so the
+    lowest-k bins are the least shot-noise-dominated."""
+    rng = np.random.default_rng(21)
+    delta_matter = _random_delta(seed=22, ngrid=32)
+    b_true = 1.8
+    shot_noise = rng.normal(0, 0.05, size=delta_matter.shape)
+    delta_tracer = b_true * delta_matter + shot_noise
+    delta_tracer -= delta_tracer.mean()
+
+    result = measure_large_scale_bias(delta_tracer, delta_matter, BOX_LEN, n_kbins=10,
+                                       n_large_scale_bins=3)
+    assert result["b_eff"] == pytest.approx(b_true, rel=0.15)
+
+
+def test_measure_large_scale_bias_rejects_shape_mismatch():
+    delta_matter = _random_delta(seed=23)
+    delta_tracer = np.zeros((8, 8, 8))
+    try:
+        measure_large_scale_bias(delta_tracer, delta_matter, BOX_LEN)
+        assert False, "expected ValueError for shape mismatch"
+    except ValueError:
+        pass

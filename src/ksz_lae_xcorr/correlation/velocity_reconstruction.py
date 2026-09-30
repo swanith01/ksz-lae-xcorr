@@ -135,6 +135,67 @@ def reconstruct_velocity_los(cfg, delta: np.ndarray, box_len_mpc: float, z: floa
     return v_los_kms * constants.MPC_PER_KM_S_TO_S
 
 
+def measure_large_scale_bias(delta_tracer: np.ndarray, delta_matter: np.ndarray,
+                              box_len_mpc: float, n_kbins: int = 15,
+                              n_large_scale_bins: int = 3) -> dict:
+    """
+    Empirical linear bias b, measured DIRECTLY from this box's own tracer
+    and matter overdensity fields -- rather than importing an external fit
+    calibrated to a different population. This repo's one existing bias
+    fit, snr.roman_hls_benchmark.bluetides_bias_gz(z), is a
+    luminosity-selected BlueTides galaxy fit (Waters et al. 2016); it is
+    not necessarily right for a mass-cut halo catalogue (or any other
+    tracer/selection), and this module's own "never fabricate published
+    numbers for the wrong thing" convention applies just as much to
+    borrowing a bias value for a population it wasn't measured on. When a
+    reconstruction needs a bias and no measured/trusted value is
+    available, measure it from the box instead of guessing.
+
+    Uses the standard large-scale linear-bias estimator
+        b(k) = P_cross(tracer, matter)(k) / P_matter,auto(k)
+    (Fourier-space analogue of a real-space regression slope), averaged
+    over the `n_large_scale_bins` lowest-k bins with finite power -- bias
+    is expected to be closest to scale-independent there; shot noise (for
+    a sparse discrete tracer) and nonlinear bias evolution both grow
+    toward high k, which is exactly why only large scales are used for
+    the single number.
+
+    Returns {'b_of_k', 'k_centers', 'b_eff', 'b_eff_std', 'idx_large_scale'}
+    -- b_of_k is the full per-bin estimate (diagnoses scale-dependence),
+    b_eff/b_eff_std are the mean/std over the bins actually averaged
+    (b_eff is what should be passed to reconstruct_velocity_los's bias=).
+    """
+    from ksz_lae_xcorr.correlation.velocity_convention_check import radial_power_spectrum_3d
+
+    if delta_tracer.shape != delta_matter.shape:
+        raise ValueError(
+            f"Shape mismatch: delta_tracer{delta_tracer.shape} vs "
+            f"delta_matter{delta_matter.shape}."
+        )
+
+    p_matter = radial_power_spectrum_3d(delta_matter, box_len_mpc, n_kbins)
+    p_cross = radial_cross_power_spectrum_3d(delta_tracer, delta_matter, box_len_mpc, n_kbins)
+
+    k = p_matter["k_centers"]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        b_of_k = np.where(p_matter["P"] > 0, p_cross["P_cross"] / p_matter["P"], np.nan)
+
+    finite = np.isfinite(b_of_k)
+    if finite.sum() == 0:
+        raise ValueError("No finite k-bins available to measure a bias from.")
+    idx_large_scale = np.where(finite)[0][:n_large_scale_bins]
+    b_eff = float(np.mean(b_of_k[idx_large_scale]))
+    b_eff_std = float(np.std(b_of_k[idx_large_scale]))
+
+    return {
+        "b_of_k": b_of_k,
+        "k_centers": k,
+        "b_eff": b_eff,
+        "b_eff_std": b_eff_std,
+        "idx_large_scale": idx_large_scale,
+    }
+
+
 def radial_cross_power_spectrum_3d(field_a: np.ndarray, field_b: np.ndarray,
                                     box_len_mpc: float, n_kbins: int = 15):
     """
