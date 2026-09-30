@@ -104,6 +104,36 @@ def main():
         print(f"r(k): k={result['k_centers'][i_lo]:.3f} Mpc^-1 -> r={result['r_k'][i_lo]:.3f}   "
               f"k={result['k_centers'][i_hi]:.3f} Mpc^-1 -> r={result['r_k'][i_hi]:.3f}")
 
+    # --- Plot: native vs. reconstructed vs. residual, one 2D slice ---
+    # Slice along a TRANSVERSE axis (index 1 = y) at the box midpoint, so
+    # the remaining (x, z) plane shows structure along the LOS (z, axis 2)
+    # itself -- the direction the reconstruction actually operates on --
+    # rather than a slice perpendicular to it.
+    mid = v_native.shape[1] // 2
+    native_slice = v_native[:, mid, :]
+    rec_slice = v_rec[:, mid, :]
+    resid_slice = native_slice - rec_slice
+
+    vlim = np.percentile(np.abs(native_slice), 99)
+    fig_s, axes_s = plt.subplots(1, 3, figsize=(16, 5), constrained_layout=True)
+    for ax_s, sl, title in zip(
+        axes_s,
+        [native_slice, rec_slice, resid_slice],
+        ["Native $v_z$ (21cmFAST)", "Reconstructed $v_z$ (continuity eq.)", "Residual (native $-$ reconstructed)"],
+    ):
+        im = ax_s.imshow(sl.T, origin="lower", cmap="RdBu_r", vmin=-vlim, vmax=vlim,
+                          extent=[0, cfg.box.box_len_mpc, 0, cfg.box.box_len_mpc])
+        ax_s.set_title(title, fontsize=10)
+        ax_s.set_xlabel("x [Mpc]")
+        ax_s.set_ylabel("z [Mpc, LOS]")
+        fig_s.colorbar(im, ax=ax_s, label="$v_z$ [Mpc/s]", shrink=0.85)
+    fig_s.suptitle(f"Velocity slice comparison -- seed {args.seed}, z={z:.3f} "
+                   f"(y-index={mid} of {v_native.shape[1]}, matter field, bias={args.bias})", fontsize=11)
+    slice_outpath = os.path.join(args.out_dir, f"velocity_reconstruction_slices_seed{args.seed}_z{z:.2f}")
+    save_fig(fig_s, slice_outpath)
+    plt.close(fig_s)
+    print(f"Saved: {slice_outpath}.pdf (+ .png)")
+
     # --- Plot: power spectra, r(k)/transfer(k), pixel-level comparison ---
     fig, axes = plt.subplots(1, 3, figsize=(16, 5), constrained_layout=True)
 
