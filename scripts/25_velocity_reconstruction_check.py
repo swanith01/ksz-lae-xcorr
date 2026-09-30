@@ -123,7 +123,20 @@ def main():
           f"std={v_native.std():.3e} Mpc/s")
 
     # --- Select the field to reconstruct FROM, and its bias ---
-    tag = "" if args.tracer == "matter" else f"_{args.tracer}"
+    # tag is baked into every output filename below so that reruns with a
+    # DIFFERENT --tracer or --r-smooth never silently overwrite a previous
+    # run's plots on disk (this bit everyone on 2026-09-30: the first
+    # --tracer halo run and the --tracer halo --r-smooth 18.4 rerun both
+    # wrote to the exact same filename, so the unsmoothed-only plot was
+    # gone before it was ever pulled to usha -- superseded in substance by
+    # the smoothing-comparison figure below, but not by design). Matter's
+    # tag stays "" (unchanged) so already-deployed matter filenames don't
+    # move.
+    if args.tracer == "matter":
+        tag = ""
+    else:
+        smooth_tag = f"_rs{args.r_smooth:g}" if args.r_smooth is not None else "_nosmooth"
+        tag = f"_{args.tracer}{smooth_tag}"
     if args.tracer == "matter":
         recon_input = delta
         bias_used = 1.0 if args.bias is None else args.bias
@@ -263,7 +276,7 @@ def main():
             fontsize=9)
         smoothing_outpath = os.path.join(
             args.out_dir,
-            f"velocity_reconstruction_smoothing_comparison_{args.tracer}_seed{args.seed}_z{z:.2f}")
+            f"velocity_reconstruction_smoothing_comparison{tag}_seed{args.seed}_z{z:.2f}")
         save_fig(fig4, smoothing_outpath)
         plt.close(fig4)
         print(f"Saved: {smoothing_outpath}.pdf (+ .png)")
