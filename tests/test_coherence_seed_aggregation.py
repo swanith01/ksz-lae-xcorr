@@ -55,12 +55,60 @@ def test_aggregate_coherence_requires_at_least_two_seeds():
 
 
 def test_aggregate_coherence_rejects_mismatched_ell_grids():
+    """A LARGE ell-grid discrepancy (e.g. a genuinely different box size or
+    k-binning) must still raise -- the rtol guard is there precisely to
+    catch this, not just the small chi_eff-driven case below."""
     results = _fake_coherence_results(n_seeds=3, n_ell=15)
-    # Corrupt one seed's ell grid to simulate a different-config run.
+    # Corrupt one seed's ell grid by 50% to simulate a different-config run.
     results[2] = dict(results[2])
-    results[2]["ell"] = results[2]["ell"] * 1.001
-    with pytest.raises(ValueError, match="doesn't match"):
+    results[2]["ell"] = results[2]["ell"] * 1.5
+    with pytest.raises(ValueError, match="different\\s+configs"):
         aggregate_coherence_over_seeds(results, seeds=list(results.keys()), field="D_diag")
+
+
+def test_aggregate_coherence_rejects_mismatched_ell_grid_lengths():
+    results = _fake_coherence_results(n_seeds=3, n_ell=15)
+    results[2] = dict(results[2])
+    results[2]["ell"] = results[2]["ell"][:-1]
+    results[2]["D_diag"] = results[2]["D_diag"][:-1]
+    with pytest.raises(ValueError, match="different\\s+configs"):
+        aggregate_coherence_over_seeds(results, seeds=list(results.keys()), field="D_diag")
+
+
+def test_aggregate_coherence_tolerates_seed_specific_chi_eff_ell_shift():
+    """This is the real scenario from scripts/09's patchy-window pathway:
+    every seed shares the same k_centers, but ell = k_centers * chi_eff
+    and chi_eff is power-weighted per seed (compute_patchy_window_diag_power),
+    varying seed-to-seed by a fraction of a percent (e.g. 9168.4, 9164.3,
+    9161.8, 9170.2 Mpc across 4 real seeds -- about a 0.1% spread). This
+    must NOT raise, and should interpolate each seed's D_diag(ell) onto a
+    shared ell grid rather than refusing to combine them."""
+    rng = np.random.default_rng(42)
+    n_seeds, n_ell = 4, 25
+    k_centers = np.logspace(-2, 0, n_ell)  # Mpc^-1, shared across seeds
+    chi_eff_values = 9168.4, 9164.3, 9161.8, 9170.2  # Mpc, real log values
+
+    results = {}
+    for s, chi_eff in zip(range(1, n_seeds + 1), chi_eff_values):
+        ell = k_centers * chi_eff
+        D_true = 1e-2 * (ell / 3000.0) ** -1.0
+        D_diag = D_true + rng.normal(0, 0.02 * D_true)
+        results[s] = {"ell": ell, "D_diag": D_diag, "D_total": D_diag,
+                      "D_off": np.zeros(n_ell), "chi_eff": chi_eff}
+
+    agg = aggregate_coherence_over_seeds(results, seeds=list(results.keys()), field="D_diag")
+    assert agg["n_seeds"] == n_seeds
+    assert agg["ell"].shape == (n_ell,)
+    assert np.all(np.isfinite(agg["median"]))
+
+    # The combined ell grid should sit at the across-seed mean chi_eff,
+    # i.e. close to every individual seed's grid (well within the 0.1%
+    # spread), and the recovered median should track the true underlying
+    # power law reasonably well despite the per-seed noise.
+    chi_eff_mean = np.mean(chi_eff_values)
+    np.testing.assert_allclose(agg["ell"], k_centers * chi_eff_mean, rtol=1e-10)
+    D_true_at_common = 1e-2 * (agg["ell"] / 3000.0) ** -1.0
+    np.testing.assert_allclose(agg["median"], D_true_at_common, rtol=0.15)
 
 
 def test_aggregate_coherence_field_selection_differs_for_diag_vs_off():

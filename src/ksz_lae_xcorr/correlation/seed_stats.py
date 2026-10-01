@@ -77,7 +77,8 @@ def aggregate_all_z(cross_results: dict, tracer: str, signal: str, seeds: list[i
 
 
 def aggregate_coherence_over_seeds(coherence_results: dict, seeds: list[int],
-                                    field: str = "D_diag", ddof: int = 1) -> dict:
+                                    field: str = "D_diag", ddof: int = 1,
+                                    rtol: float = 0.05) -> dict:
     """
     Median +/- 1 sigma across seeds of one field ('D_total', 'D_diag', or
     'D_off') from correlation.coherence_decomposition's per-seed output
@@ -86,11 +87,26 @@ def aggregate_coherence_over_seeds(coherence_results: dict, seeds: list[int],
     decomposition is evaluated at a single reference redshift per seed,
     same as auto_power.compute_auto_spectra.
 
-    Requires every seed's 'ell' grid to match (same KGrid/cfg -- true by
-    construction if every seed came from the same config) -- raises rather
-    than silently averaging mismatched ell grids.
+    Every seed shares the same underlying k_centers (same KGrid/cfg), but
+    ell = k_centers * chi_eff, and chi_eff can be legitimately seed-specific
+    -- e.g. compute_patchy_window_diag_power's power-weighted chi_eff,
+    which differs seed-to-seed by a fraction of a percent because each
+    seed's reionization history (and hence its patchy-window z-range) is
+    slightly different. That makes each seed's 'ell' grid a slightly
+    different rescaling of the same k_centers, not a true mismatch.
+
+    To handle this, each seed's field is interpolated onto a common
+    reference ell grid (the across-seed mean, pointwise) before combining.
+    If any seed's ell grid differs from that mean by more than `rtol`
+    fractionally at any point (default 5%, well above the ~0.1% spread
+    chi_eff produces in practice but far below what a different box size
+    or k-binning would cause), this still raises -- that's the actual
+    config-mismatch guard, just no longer tripped by harmless chi_eff
+    scatter.
 
     Returns: {'ell', 'median', 'sigma', 'lower', 'upper', 'n_seeds'}
+    'ell' is the common reference grid (the across-seed mean), not any one
+    seed's original grid.
     """
     available = [s for s in seeds if s in coherence_results]
     if len(available) < 2:
@@ -99,22 +115,41 @@ def aggregate_coherence_over_seeds(coherence_results: dict, seeds: list[int],
             f"report a sigma -- got {len(available)} ({available})."
         )
 
-    ell_ref = coherence_results[available[0]]["ell"]
-    stack = []
-    for seed in available:
-        ell_this = coherence_results[seed]["ell"]
-        if len(ell_this) != len(ell_ref) or not np.allclose(ell_this, ell_ref):
+    ell_list = [np.asarray(coherence_results[seed]["ell"]) for seed in available]
+    n_ell = len(ell_list[0])
+    for seed, ell_this in zip(available, ell_list):
+        if len(ell_this) != n_ell:
             raise ValueError(
-                f"Seed {seed}'s ell grid doesn't match seed {available[0]}'s -- "
-                f"were these run with different configs? Cannot median-combine."
+                f"Seed {seed}'s ell grid has {len(ell_this)} points, seed "
+                f"{available[0]}'s has {n_ell} -- were these run with "
+                f"different configs? Cannot median-combine."
             )
-        stack.append(coherence_results[seed][field])
+
+    ell_stack = np.array(ell_list)  # (n_seeds, n_ell)
+    ell_common = ell_stack.mean(axis=0)
+
+    frac_dev = np.abs(ell_stack - ell_common[None, :]) / ell_common[None, :]
+    if np.any(frac_dev > rtol):
+        worst = available[int(np.argmax(frac_dev.max(axis=1)))]
+        raise ValueError(
+            f"Seed {worst}'s ell grid differs from the across-seed mean by "
+            f"more than {rtol:.0%} -- were these run with different "
+            f"configs? Cannot median-combine."
+        )
+
+    stack = []
+    for seed, ell_this in zip(available, ell_list):
+        field_vals = np.asarray(coherence_results[seed][field])
+        if np.array_equal(ell_this, ell_common):
+            stack.append(field_vals)
+        else:
+            stack.append(np.interp(ell_common, ell_this, field_vals))
 
     stack = np.array(stack)  # (n_seeds, n_ell)
     median = np.nanmedian(stack, axis=0)
     sigma = np.nanstd(stack, axis=0, ddof=ddof)
 
     return {
-        "ell": ell_ref, "median": median, "sigma": sigma,
+        "ell": ell_common, "median": median, "sigma": sigma,
         "lower": median - sigma, "upper": median + sigma, "n_seeds": len(available),
     }
