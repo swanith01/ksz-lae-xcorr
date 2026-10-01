@@ -35,6 +35,28 @@ def load_lightcone_products(cfg, seeds: list[int]) -> tuple[dict, dict]:
     }
     Seeds whose lightcone products aren't found on disk are silently skipped
     (matches the original notebook's "only load seeds that are ready" behaviour).
+
+    UNITS (fixed 2026-10-01, same bug class as the earlier lightcone/stitch.py
+    velocity_z fix): lc_vz.npz's raw 'lc' array is ALREADY in Mpc/s -- verified
+    directly against real data (check_vz_units.py), where its scale (std
+    ~4e-17) matches this session's independently-reconstructed v_z fields
+    bit for bit in order of magnitude, not the ~hundreds-of-km/s scale a
+    genuine km/s array would show. An old exploratory-notebook comment
+    claimed the external stitching script already converts to km/s, but
+    that's evidently not (or no longer) true of the product actually on
+    disk. The old code divided this already-Mpc/s array by c_kms and
+    multiplied by c_mpc_s (an erroneous extra ~1/3.086e19 factor) to build
+    'velocity_lc' -- since 'velocity_lc' feeds the kSZ integrand directly
+    (correlation.coherence_decomposition.compute_ksz_slices,
+    correlation.projected_maps.build_projected_maps), this silently
+    crushed every kSZ map (and therefore every stitched-lightcone-pathway
+    D_ell/SNR number: scripts 04/05/06/08/09/11/13/14) by that same factor
+    PER POWER of velocity -- amplitude only, not shape, since it's one
+    uniform multiplicative constant applied to every pixel/seed alike.
+    Fixed here: 'velocity_lc' is now the raw array as-is (no conversion),
+    and 'velocity_kms' is now properly DERIVED from it (Mpc/s -> km/s,
+    the correct direction) rather than being the untouched raw array
+    under a misleading name.
     """
     lc_root = cfg.paths.lightcone_root
     c_kms = constants.C_KMS
@@ -52,19 +74,20 @@ def load_lightcone_products(cfg, seeds: list[int]) -> tuple[dict, dict]:
             xHI = np.load(os.path.join(seed_dir, "lc_xH.npz"))["lc"]
             density = np.load(os.path.join(seed_dir, "lc_density.npz"))["lc"]
             vz_data = np.load(os.path.join(seed_dir, "lc_vz.npz"))
-            vz_kms = vz_data["lc"]
+            vz_raw = vz_data["lc"]
             z_lc = vz_data["z_arr"]
         except FileNotFoundError:
             continue
 
         density_1pdelta = 1.0 + density.astype(np.float64)
-        vz_mpc_s = vz_kms.astype(np.float64) / c_kms * c_mpc_s
+        vz_mpc_s = vz_raw.astype(np.float64)
+        vz_kms = vz_mpc_s * c_kms / c_mpc_s
 
         field_data[seed] = {
             "z_lc": z_lc,
             "xHI_lc": xHI.astype(np.float64),
             "density_lc": density_1pdelta,
-            "velocity_kms": vz_kms.astype(np.float64),
+            "velocity_kms": vz_kms,
             "velocity_lc": vz_mpc_s,
         }
 
