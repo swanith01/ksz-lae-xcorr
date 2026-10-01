@@ -61,6 +61,10 @@ from ksz_lae_xcorr.correlation.direct_bispectrum import (
     compute_snapshot_bispectrum_contribution,
     limber_sum_snapshots,
 )
+from ksz_lae_xcorr.correlation.velocity_reconstruction import (
+    measure_large_scale_bias,
+    reconstruct_velocity_los,
+)
 from ksz_lae_xcorr.lightcone.stitch import Stitcher, setup_logger
 from ksz_lae_xcorr.io.la_plante_reference import load_dell_vs_ell_band
 from ksz_lae_xcorr.snr.roman_hls_benchmark import bluetides_bias_gz
@@ -70,15 +74,55 @@ from ksz_lae_xcorr.utils.cosmology import get_cosmology
 from ksz_lae_xcorr.utils.figio import compute_symlog_linthresh, save_fig
 
 
+def _get_velocity(source, z, stitcher, seed, logger, cfg, delta_matter, r_smooth_mpc):
+    """One snapshot's v_los, for one velocity source.
+
+    'native': the simulation's own velocity_z (unchanged behaviour).
+    'halo_reconstructed': v_los reconstructed via the linear continuity
+    equation (velocity_reconstruction.reconstruct_velocity_los) FROM THAT
+    SNAPSHOT'S OWN halo catalogue (mass_cut=cfg.tracers.halo_mass_cut_msun),
+    bias measured empirically from this box (measure_large_scale_bias,
+    same reasoning as scripts/25: no bias fit in this repo is calibrated
+    to this specific mass cut), smoothed at r_smooth_mpc (default 18.4 Mpc,
+    the paper's R_s, and the value scripts/25 found necessary -- an
+    unsmoothed halo reconstruction is shot-noise-dominated).
+
+    Returns (v_los, bias_used) or (None, None) if this snapshot's halo
+    catalogue is empty (nothing to reconstruct from -- caller should skip).
+    """
+    if source == "native":
+        return np.asarray(stitcher.load_field_box(seed, z, "vz")), None
+
+    if source == "halo_reconstructed":
+        counts = stitcher.load_halo_grid(seed, z, logger).astype(np.float64)
+        if counts.sum() <= 0:
+            return None, None
+        delta_h = (counts - counts.mean()) / counts.mean()
+        bias_result = measure_large_scale_bias(delta_h, delta_matter, cfg.box.box_len_mpc)
+        v_rec = reconstruct_velocity_los(cfg, delta_h, cfg.box.box_len_mpc, z,
+                                          bias=bias_result["b_eff"], r_smooth_mpc=r_smooth_mpc)
+        return v_rec, bias_result["b_eff"]
+
+    raise ValueError(f"Unknown velocity source '{source}'.")
+
+
 def compute_direct_dell_one_seed(cfg, stitcher, seed, z0, dz, ell_peak_filter, ell_edges, ell_centers,
-                                  tracer="density_proxy"):
-    """One seed's D_ell(ell) at the given (z0, dz) window. Returns
-    (ell_direct, D_direct) or None if the window is empty for this seed.
+                                  tracer="density_proxy", velocity_sources=("native",),
+                                  recon_r_smooth=18.4):
+    """One seed's D_ell(ell) at the given (z0, dz) window, for EACH velocity
+    source requested (so native and halo_reconstructed can be compared
+    from the exact same snapshots/delta_g, not two separate runs).
+
+    Returns {source: (ell_direct, D_direct)} -- a source is simply absent
+    from the dict if every snapshot in the window was unusable for it
+    (e.g. halo_reconstructed with no halos above the mass cut anywhere in
+    the window).
 
     tracer: 'density_proxy' (default, La Plante+2022 Eq. 6-7 bias-weighted
     matter field), 'lae', or 'lbg' (real tracer counts -- see
     correlation.direct_bispectrum.build_delta_g_field's docstring for the
-    honest sparsity caveat on real LAE/LBG counts at the per-snapshot level)."""
+    honest sparsity caveat on real LAE/LBG counts at the per-snapshot level).
+    velocity_sources: subset of ('native', 'halo_reconstructed')."""
     logger = setup_logger(seed, cfg.paths.lightcone_root)
     all_snap_z = stitcher.get_snapshot_redshifts(seed, logger)
     z_sorted, chi_sorted, tau_cumulative, x_e_mean = build_tau_history(cfg, stitcher, seed, all_snap_z, logger)
@@ -87,15 +131,17 @@ def compute_direct_dell_one_seed(cfg, stitcher, seed, z0, dz, ell_peak_filter, e
     z_window = z_sorted[in_window]
     if len(z_window) == 0:
         print(f"  seed {seed}: NO snapshots in window z0={z0}, dz={dz} -- skipping this seed.")
-        return None
+        return {}
     print(f"  seed {seed}: {len(z_window)} snapshots inside window: z={z_window.min():.3f}-{z_window.max():.3f}")
 
     c_mpc_s = constants.c_mpc_per_s()
     tau_pref = constants.tau_prefactor(cfg)
 
-    per_snapshot_results = []
-    chi_list, g_chi_list, bg_list, dchi_list = [], [], [], []
-    n_skipped_empty = 0
+    per_snapshot_results = {src: [] for src in velocity_sources}
+    chi_g_dchi = {src: ([], [], [], []) for src in velocity_sources}  # chi, g_chi, bg, dchi
+    n_skipped_empty_g = 0
+    n_skipped_empty_v = {src: 0 for src in velocity_sources}
+    bias_log = {src: [] for src in velocity_sources}
 
     for z in z_window:
         i = np.searchsorted(z_sorted, z)
@@ -105,40 +151,62 @@ def compute_direct_dell_one_seed(cfg, stitcher, seed, z0, dz, ell_peak_filter, e
 
         density = np.asarray(stitcher.load_field_box(seed, z, "density"))
         xHI = np.asarray(stitcher.load_field_box(seed, z, "xH"))
-        v_los = np.asarray(stitcher.load_field_box(seed, z, "vz"))
+        delta_matter = density.astype(np.float64) - 1.0
+        delta_matter -= delta_matter.mean()
 
         delta_g = build_delta_g_field(stitcher, seed, z, tracer, logger,
                                        bias_fn=bluetides_bias_gz, density=density)
         if delta_g is None:
-            n_skipped_empty += 1
+            n_skipped_empty_g += 1
             continue
 
         k_hard = ell_peak_filter / chi_z
         k_soft_edges = ell_edges / chi_z
-        result = compute_snapshot_bispectrum_contribution(
-            density, xHI, v_los, delta_g, cfg.box.box_len_mpc, c_mpc_s, k_hard, k_soft_edges
-        )
-        result["k_centers"] = ell_centers
-        per_snapshot_results.append(result)
-
         dchi = float(np.abs(np.gradient(chi_sorted))[i])
-        chi_list.append(chi_z)
-        g_chi_list.append(g_chi)
-        bg_list.append(1.0)
-        dchi_list.append(dchi)
 
-    if n_skipped_empty:
-        print(f"  seed {seed}: {n_skipped_empty}/{len(z_window)} snapshots skipped "
-              f"(all-zero {tracer} counts in this window)")
-    if not per_snapshot_results:
-        print(f"  seed {seed}: every snapshot in this window had zero {tracer} counts -- skipping entirely.")
-        return None
+        for src in velocity_sources:
+            v_los, bias_used = _get_velocity(src, z, stitcher, seed, logger, cfg, delta_matter, recon_r_smooth)
+            if v_los is None:
+                n_skipped_empty_v[src] += 1
+                continue
+            if bias_used is not None:
+                bias_log[src].append(bias_used)
 
-    summed = limber_sum_snapshots(per_snapshot_results, np.array(chi_list), np.array(g_chi_list),
-                                    np.array(bg_list), np.array(dchi_list))
-    ell_direct = summed["k_centers"]
-    D_direct = ell_direct * (ell_direct + 1) * summed["P_cross_summed"] * constants.T_CMB_UK**2 / (2 * np.pi)
-    return ell_direct, D_direct
+            result = compute_snapshot_bispectrum_contribution(
+                density, xHI, v_los, delta_g, cfg.box.box_len_mpc, c_mpc_s, k_hard, k_soft_edges
+            )
+            result["k_centers"] = ell_centers
+            per_snapshot_results[src].append(result)
+
+            chi_list, g_chi_list, bg_list, dchi_list = chi_g_dchi[src]
+            chi_list.append(chi_z)
+            g_chi_list.append(g_chi)
+            bg_list.append(1.0)
+            dchi_list.append(dchi)
+
+    if n_skipped_empty_g:
+        print(f"  seed {seed}: {n_skipped_empty_g}/{len(z_window)} snapshots skipped "
+              f"(all-zero {tracer} counts in this window -- affects every velocity source)")
+
+    out = {}
+    for src in velocity_sources:
+        if n_skipped_empty_v[src]:
+            print(f"  seed {seed}: [{src}] {n_skipped_empty_v[src]}/{len(z_window)} snapshots skipped "
+                  f"(no usable velocity for this source)")
+        if bias_log[src]:
+            b_arr = np.array(bias_log[src])
+            print(f"  seed {seed}: [{src}] halo bias over {len(b_arr)} snapshots: "
+                  f"mean={b_arr.mean():.3f}, range={b_arr.min():.3f}-{b_arr.max():.3f}")
+        if not per_snapshot_results[src]:
+            print(f"  seed {seed}: [{src}] no usable snapshots at all -- skipping this source for this seed.")
+            continue
+        chi_list, g_chi_list, bg_list, dchi_list = chi_g_dchi[src]
+        summed = limber_sum_snapshots(per_snapshot_results[src], np.array(chi_list), np.array(g_chi_list),
+                                        np.array(bg_list), np.array(dchi_list))
+        ell_direct = summed["k_centers"]
+        D_direct = ell_direct * (ell_direct + 1) * summed["P_cross_summed"] * constants.T_CMB_UK**2 / (2 * np.pi)
+        out[src] = (ell_direct, D_direct)
+    return out
 
 
 def main():
@@ -160,6 +228,20 @@ def main():
                          help="Galaxy field: La Plante+2022 bias-weighted density proxy (default), "
                               "or real LAE/LBG tracer counts (see build_delta_g_field's docstring "
                               "for the sparsity caveat on real counts)")
+    parser.add_argument("--velocity", type=str, default="native",
+                         choices=["native", "halo_reconstructed", "both"],
+                         help="Source of v_los in the momentum field. 'native' (default, unchanged "
+                              "behaviour): the simulation's own velocity_z. 'halo_reconstructed': "
+                              "v_los reconstructed per-snapshot from that snapshot's OWN halo "
+                              "catalogue via the linear continuity equation (measured bias, "
+                              "r_smooth=--recon-r-smooth) -- tests how much kSZ^2 x <tracer> signal "
+                              "survives without access to the true velocity field. 'both' computes "
+                              "and overlays both from the exact same snapshots.")
+    parser.add_argument("--recon-r-smooth", type=float, default=18.4,
+                         help="Gaussian smoothing scale (Mpc) for --velocity halo_reconstructed -- "
+                              "default is this repo's h=0.6777 conversion of the reference paper's "
+                              "R_s=12.5 h^-1 Mpc, already found necessary in scripts/25 (an "
+                              "unsmoothed halo reconstruction is shot-noise-dominated).")
     parser.add_argument("--stitched-csv", type=str, default=None,
                          help="Path to scripts/11's stage1_dell_points CSV for the SO row, "
                               "to overlay (default: guess from --out-dir/z0)")
@@ -174,42 +256,71 @@ def main():
     ell_edges = np.geomspace(args.ell_min, args.ell_max, args.n_ell + 1)
     ell_centers = np.sqrt(ell_edges[:-1] * ell_edges[1:])
 
-    print(f"Running {len(seeds)} seed(s): {seeds}, tracer={args.tracer}")
-    per_seed_D = []
+    velocity_sources = {"native": ("native",), "halo_reconstructed": ("halo_reconstructed",),
+                         "both": ("native", "halo_reconstructed")}[args.velocity]
+
+    print(f"Running {len(seeds)} seed(s): {seeds}, tracer={args.tracer}, velocity={velocity_sources}")
+    per_seed_D = {src: [] for src in velocity_sources}
     for seed in seeds:
         res = compute_direct_dell_one_seed(cfg, stitcher, seed, args.z0, args.dz,
-                                            args.ell_peak_filter, ell_edges, ell_centers, tracer=args.tracer)
-        if res is not None:
-            per_seed_D.append(res[1])
+                                            args.ell_peak_filter, ell_edges, ell_centers, tracer=args.tracer,
+                                            velocity_sources=velocity_sources, recon_r_smooth=args.recon_r_smooth)
+        for src, (ell_s_, D_s_) in res.items():
+            per_seed_D[src].append(D_s_)
 
-    if not per_seed_D:
-        print("No seeds produced usable data -- nothing to plot.")
+    if not any(per_seed_D.values()):
+        print("No seeds produced usable data for any velocity source -- nothing to plot.")
         return 1
 
-    stacked = np.array(per_seed_D)
     ell_direct = ell_centers
-    D_mean = np.mean(stacked, axis=0)
-    D_std = np.std(stacked, axis=0) if len(per_seed_D) > 1 else np.zeros_like(D_mean)
-    n_used = len(per_seed_D)
-
-    print(f"\nDirect/coeval result (mean +/- std over {n_used} seed(s)):")
-    for e, d, s in zip(ell_direct, D_mean, D_std):
-        print(f"  ell={e:.0f}: D_ell={d:.4g} +/- {s:.4g} uK^2")
-
-    seed_tag = f"{n_used}seeds" if n_used > 1 else f"seed{seeds[0]}"
-    tracer_tag = "" if args.tracer == "density_proxy" else f"_{args.tracer}"
-    csv_path = os.path.join(args.out_dir, f"direct_bispectrum_{seed_tag}{tracer_tag}_z{args.z0:.1f}.csv")
-    with open(csv_path, "w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["ell", "D_ell_mean_uK2", "D_ell_std_uK2", "n_seeds"])
+    stats = {}  # src -> (D_mean, D_std, n_used)
+    for src in velocity_sources:
+        if not per_seed_D[src]:
+            print(f"[{src}]: no seed produced usable data -- omitted from the plot.")
+            continue
+        stacked = np.array(per_seed_D[src])
+        D_mean = np.mean(stacked, axis=0)
+        D_std = np.std(stacked, axis=0) if stacked.shape[0] > 1 else np.zeros_like(D_mean)
+        n_used = stacked.shape[0]
+        stats[src] = (D_mean, D_std, n_used)
+        print(f"\nDirect/coeval [{src}] result (mean +/- std over {n_used} seed(s)):")
         for e, d, s in zip(ell_direct, D_mean, D_std):
-            w.writerow([f"{e:.6f}", f"{d:.6e}", f"{s:.6e}", n_used])
-    print(f"Saved: {csv_path}")
+            print(f"  ell={e:.0f}: D_ell={d:.4g} +/- {s:.4g} uK^2")
+
+    if not stats:
+        print("No velocity source produced usable data -- nothing to plot.")
+        return 1
+
+    n_used_ref = next(iter(stats.values()))[2]
+    seed_tag = f"{n_used_ref}seeds" if n_used_ref > 1 else f"seed{seeds[0]}"
+    tracer_tag = "" if args.tracer == "density_proxy" else f"_{args.tracer}"
+    velocity_tag = "" if args.velocity == "native" else f"_v-{args.velocity}"
+
+    for src, (D_mean, D_std, n_used) in stats.items():
+        src_tag = "" if src == "native" and args.velocity == "native" else f"_{src}"
+        csv_path = os.path.join(args.out_dir, f"direct_bispectrum_{seed_tag}{tracer_tag}{src_tag}_z{args.z0:.1f}.csv")
+        with open(csv_path, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["ell", "D_ell_mean_uK2", "D_ell_std_uK2", "n_seeds"])
+            for e, d, s in zip(ell_direct, D_mean, D_std):
+                w.writerow([f"{e:.6f}", f"{d:.6e}", f"{s:.6e}", n_used])
+        print(f"Saved: {csv_path}")
 
     fig, ax = plt.subplots(figsize=(9, 6.5), constrained_layout=True)
 
-    ax.errorbar(ell_direct, D_mean, yerr=D_std, fmt="o-", color="darkgreen", capsize=3,
-                label=f"Direct/coeval (mean +/- std, {n_used} seed{'s' if n_used > 1 else ''}, no stitching)")
+    src_style = {
+        "native": dict(fmt="o-", color="darkgreen",
+                        label_fmt="Direct/coeval, native velocity (mean +/- std, {n} seed{p}, no stitching)"),
+        "halo_reconstructed": dict(fmt="^--", color="mediumorchid",
+                                     label_fmt="Direct/coeval, halo-RECONSTRUCTED velocity "
+                                                "(mean +/- std, {n} seed{p}, r_smooth=" +
+                                                f"{args.recon_r_smooth:.1f} Mpc)"),
+    }
+    for src, (D_mean, D_std, n_used) in stats.items():
+        style = src_style[src]
+        label = style["label_fmt"].format(n=n_used, p="s" if n_used > 1 else "")
+        ax.errorbar(ell_direct, D_mean, yerr=D_std, fmt=style["fmt"], color=style["color"],
+                    capsize=3, label=label)
 
     lp_band = load_dell_vs_ell_band()
     ax.fill_between(lp_band["ell_lo"], lp_band["lo"],
@@ -235,19 +346,22 @@ def main():
     # every negative point rather than showing it -- symlog keeps a
     # linear region near zero and goes log-scale for larger magnitudes
     # on both sides, so nothing gets hidden.
-    linthresh = compute_symlog_linthresh(D_mean, lp_band["hi"], np.array(D_s))
+    all_D_means = np.concatenate([D_mean for D_mean, _, _ in stats.values()])
+    linthresh = compute_symlog_linthresh(all_D_means, lp_band["hi"], np.array(D_s))
 
     ax.axhline(0, color="gray", lw=0.5)
     ax.set_xscale("log")
     ax.set_yscale("symlog", linthresh=linthresh)
     ax.set_xlabel(r"$\ell$")
     ax.set_ylabel(r"$\ell(\ell+1)C_\ell^{{\rm kSZ}^2\times\delta_g}/2\pi$ [$\mu K^2$] (symlog)")
-    ax.set_title(f"Direct/coeval ({args.tracer}) vs stitched vs La Plante+2022 -- {n_used} seed{'s' if n_used > 1 else ''}, "
+    velocity_desc = {"native": "native velocity", "halo_reconstructed": "halo-reconstructed velocity",
+                      "both": "native vs halo-reconstructed velocity"}[args.velocity]
+    ax.set_title(f"Direct/coeval ({args.tracer}, {velocity_desc}) vs stitched vs La Plante+2022 -- "
                  f"z0={args.z0}, dz={args.dz}\n({cfg.box.box_len_mpc:.0f} Mpc box vs paper's larger box -- "
                  f"trend/amplitude both shown, nothing normalized away", fontsize=11)
     ax.legend(fontsize=8)
 
-    outpath = os.path.join(args.out_dir, f"direct_vs_stitched_{seed_tag}{tracer_tag}_z{args.z0:.1f}.pdf")
+    outpath = os.path.join(args.out_dir, f"direct_vs_stitched_{seed_tag}{tracer_tag}{velocity_tag}_z{args.z0:.1f}.pdf")
     save_fig(fig, outpath)
     plt.close(fig)
     print(f"Saved: {outpath} (+ .png)")
