@@ -9,42 +9,71 @@ interpretation (comparing how the kSZ² signal correlates with a different,
 UV-selected tracer population) — but the S/N forecast itself is **LAE-only**.
 See "Scope: LAE vs LBG" below.
 
-## Start here: current status (2026-09-09)
+## Start here: current status (2026-10-01)
 
 **Trusted right now:**
 - Lightcone construction and tracer counting (halo/LAE/LBG spatial
   distributions relative to xHI) — real, correctly-populated data
   confirmed for seed 1 (LAE max count 3, LBG max count 15, both
   nonzero); re-stitch for the remaining 9 seeds was in progress as of
-  this writing (see the checkpoint gotcha below for why this needed
+  2026-09-09 (see the checkpoint gotcha below for why this needed
   fixing at all) — confirm all 10 landed before citing this as fully done.
-- The velocity field feeding the kSZ construction — fixed today (see
-  "Velocity conversion" below), verified with a first-principles physics
-  check on real data, not just an eyeball sanity check.
+- The velocity field feeding the **direct/coeval** kSZ construction —
+  fixed 2026-09-09 (see "Velocity conversion" below), verified with a
+  first-principles physics check on real data, not just an eyeball
+  sanity check.
 - The **direct/coeval** kSZ² × galaxy estimator (`correlation/direct_bispectrum.py`,
   `scripts/15`/`18`) — first real-data results land within ~15-20x of
   La Plante et al. 2022's published amplitude (down from ~1000-8000x
-  before today's velocity fix). Not a validated match, but the most
+  before the 2026-09-09 velocity fix). Not a validated match, but the most
   trustworthy number this repo currently has for the cross-correlation.
+- **Linear (continuity-equation) LOS velocity reconstruction** —
+  `correlation/velocity_reconstruction.py` / `scripts/25`, built 2026-09-30
+  per Girish's request, now wired into the direct/coeval estimator
+  (`scripts/15 --velocity {native,halo_reconstructed,both}`). Validated on
+  real data for both the matter field and the halo tracer catalogue — see
+  "Velocity reconstruction" below for the shot-noise/smoothing gotcha this
+  surfaced for sparse discrete tracers.
+
+**Major finding, fix shipped, full verification still pending:**
+- **`io/loaders.py` had the SAME velocity-unit bug as the 2026-09-09
+  `lightcone/stitch.py` fix, in a second code path that fix never
+  touched** — found 2026-10-01 while chasing an unrelated kSZ auto-power
+  crash. `load_lightcone_products` (feeding the **stitched-lightcone**
+  pathway: `scripts/04/05/06/08/09/11/13/14`) assumed the stitched
+  `lc_vz.npz` product was in km/s and converted it to Mpc/s anyway — but
+  it's already Mpc/s on disk (confirmed directly against real data,
+  `check_vz_units.py`), so every kSZ map built from it was crushed by a
+  spurious extra ~1/3.086e19 factor (linear in the kSZ map, quadratic in
+  kSZ²/`D_diag`). Fixed in `io/loaders.py`; 134/134 tests pass.
+  **This is the leading candidate explanation for the "stitched pathway
+  returns ~0" mystery reported below on 2026-09-09** — `scripts/11`/`13`
+  both go through this exact loader — but that is not yet confirmed: the
+  first rerun of `scripts/09` with the fix was interrupted before
+  finishing (it needs to go back to a background PBS batch job, like the
+  original `1733359.swarm` run, not an interactive foreground run). Until
+  `scripts/09`/`11`/`13` (and ideally `04`/`05`/`06`/`08`/`14`) are rerun
+  and actually checked, treat every absolute D_ell/SNR number from the
+  stitched pathway as unconfirmed, not merely "known broken" as before.
 
 **Known broken, actively being investigated:**
 - The **stitched** kSZ² × galaxy pathway (`scripts/11`/`13`, feeding off
-  `scripts/04`'s `cross_results.pkl`) currently returns numbers
-  indistinguishable from zero after today's velocity fix, even though
-  the underlying velocity data itself checks out fine and the *direct*
-  method (same corrected velocity, no stitching) works. This points to a
-  bug specific to the stitching/interpolation step itself — separate
-  from, and discovered only after, today's velocity-conversion fix.
-  Don't trust `scripts/11`/`13`'s output until this is resolved.
+  `scripts/04`'s `cross_results.pkl`) returned numbers indistinguishable
+  from zero as of 2026-09-09, even though the underlying velocity data
+  checked out fine at the time and the *direct* method (same corrected
+  velocity, no stitching) worked. See the finding directly above — this
+  now has a strong candidate root cause, pending the reruns described
+  there.
 
 **Not yet done:**
 - `scripts/05` (the actual production LAE S/N forecast) has not been run
-  with today's fixes.
+  with the 2026-09-09 velocity fix, nor the 2026-10-01 loaders.py fix.
 - Stage 2 (realistic LAE survey selection replacing the Roman-HLS LBG
   proxy, `scripts/07`/`08`) — untouched, blocked on Stage 1 settling first.
 
-See "Velocity conversion", "Direct/coeval kSZ2 x galaxy estimator", and
-"Known gotchas" below for the full story on each of these.
+See "Velocity conversion", "Velocity reconstruction", "Direct/coeval kSZ2
+x galaxy estimator", "Periodicity diagnostic", and "Known gotchas" below
+for the full story on each of these.
 
 ## Pipeline
 
@@ -157,13 +186,35 @@ Worse than the companion repo's 2.3x (equivalent framing) at their larger
 800 Mpc box, consistent with their own finding that the artifact's
 amplitude grows as the box shrinks.
 
-CAVEAT as of today's velocity fix: while the D_off/D_total RATIO above
-remains meaningful, the ABSOLUTE D_total/D_diag values from this same
-pathway are currently NOT trustworthy -- they come out numerically
-consistent with zero, tied to the broader stitched-pathway bug described
-in "Start here" above. Only the fractional ratio is currently reliable
-from this diagnostic; don't cite the absolute D_ell numbers from
-`scripts/09`'s current output.
+**Patchy-window rewrite (2026-09-30), per Girish's follow-up** ("why is
+it till z=12.5? ... we want it for the full patchy window"):
+`compute_patchy_window_diag_power` restricts the LOS sum to each seed's
+OWN actual patchy-reionization window (z>=6 floor, x_HI strictly between
+0 and 1, via `clamp_window_to_patchy_regime`) instead of the full
+box.z_min-z_max range, and uses a power-weighted `chi_eff`
+(`chi_eff_power_weighted`) for the ell=k*chi Limber conversion instead of
+an arbitrary box-midpoint reference. Because `chi_eff` is now genuinely
+seed-specific (real spread ~0.1% across seeds, e.g. 9168.4/9164.3/9161.8/
+9170.2 Mpc), each seed's `ell` grid is a slightly different rescaling of
+the same `k_centers` -- `seed_stats.aggregate_coherence_over_seeds` was
+updated (2026-10-01) to interpolate onto a common reference grid rather
+than requiring an exact match (still raises if the deviation exceeds 5%,
+which would indicate an actual config mismatch rather than this harmless
+scatter).
+
+CAVEAT as of 2026-10-01: `scripts/22_ksz_auto_power_plot.py` (the plot
+built on top of this) ran successfully against the full 10-seed patchy
+window for the first time, but `D_diag` came back at ~1e-36 uK^2 --
+nowhere near the expected O(1) uK^2 scale, and the same order of
+magnitude as the OLD pre-periodicity-fix cancellation artifact this
+module was built to cure. Root cause: the separate `io/loaders.py`
+velocity-unit bug described in "Start here" above -- `D_diag` is
+quadratic in velocity, so the ~1/3.086e19 crush shows up squared here.
+`coherence_decomposition.pkl` needs regenerating (`scripts/09`, as a
+background PBS job, not interactively) with the `io/loaders.py` fix
+before `scripts/22`'s numbers mean anything. The D_off/D_total RATIO
+figure quoted above predates both the patchy-window rewrite and this
+bug and should be re-measured, not assumed unaffected.
 
 This decomposes the kSZ AUTO-power only (the ingredient feeding
 `snr/cmb_filter.py`'s `kSZ_reion_from_sim`, for which
@@ -173,11 +224,15 @@ This decomposes the kSZ AUTO-power only (the ingredient feeding
 See the module docstrings for the full reasoning and caveats.
 
 ```
-scripts/09_coherence_decomposition.py    P_diag/P_off per seed + Delta-chi
-            |                            periodicity check, from real data
+scripts/09_coherence_decomposition.py    P_diag/P_off per seed, each over
+            |                            its own patchy window + power-
+            |                            weighted chi_eff, from real data
             |                            already on disk (no new sim needed)
 scripts/12_plot_coherence_summary.py     one seed-averaged summary plot
-                                          (reads the seed_agg pickle 09 saves)
+            |                            (reads the seed_agg pickle 09 saves)
+scripts/22_ksz_auto_power_plot.py        kSZ + xe2/v2/v_proj/v_proj2 auto-
+                                          power overview grid, median +/-
+                                          sigma across seeds (see caveat above)
 ```
 
 ## Stage 1 literature benchmark (La Plante, Sipple & Lidz 2022)
@@ -266,6 +321,55 @@ scripts/17_velocity_convention_definitive_check.py the rigorous version --
                                                     needs qsub
 ```
 
+### Second velocity-unit bug, same class, different file (fixed 2026-10-01)
+
+The fix above only touched `lightcone/stitch.py`'s `load_field_box` --
+the raw per-snapshot coeval loader used by the **direct/coeval**
+pathway. The **stitched-lightcone** pathway loads velocity through a
+completely separate function, `io/loaders.py`'s
+`load_lightcone_products`, which reads an already-stitched product
+(`lc_vz.npz`) rather than raw coeval snapshots. That function still had
+the old assumption baked in: it treated `lc_vz.npz`'s raw array as km/s
+and divided by `c_kms` then multiplied by `c_mpc_s` to get Mpc/s. An old
+exploratory-notebook comment claimed the external stitching script
+already converts to km/s -- evidently not (or no longer) true of the
+product actually on disk.
+
+Found 2026-10-01 while diagnosing why `scripts/22`'s patchy-window
+`D_diag` came back at ~1e-36 uK^2 instead of O(1). Confirmed directly
+against real data with a small diagnostic
+(`check_vz_units.py`, kept in the repo root): `lc_vz.npz`'s raw std
+(~4.2e-17) matches this repo's own independently-reconstructed Mpc/s
+velocity fields (see "Velocity reconstruction" below) almost exactly --
+not the hundreds-of-km/s scale a genuine km/s array would show.
+
+**Fix**: `velocity_lc` (Mpc/s, feeds the kSZ integrand directly via
+`coherence_decomposition.compute_ksz_slices` and
+`projected_maps.build_projected_maps`) is now the raw array as-is, no
+conversion. `velocity_kms` is now properly DERIVED from that corrected
+value (an actual Mpc/s -> km/s conversion) rather than being the
+untouched raw array under a misleading name.
+
+**Scope**: every script that calls `load_lightcone_products` --
+`04/05/06/08/09/11/13/14` -- computed its kSZ map (and therefore every
+D_ell/SNR number) with velocity crushed by a spurious ~1/3.086e19 factor
+per power of velocity, until this fix. Because it's one uniform
+multiplicative constant applied identically everywhere, this should only
+have corrupted absolute amplitude, not shapes or correlation
+coefficients (r(k), whether a cross-correlation looks coherent) -- but
+no absolute number from those scripts should be trusted or shown until
+they're rerun with the fix. The direct/coeval pathway
+(`scripts/15`/`18`/`25`, via `lightcone/stitch.py`) is unrelated and
+unaffected. `v2`/`v_proj`/`xe2`/`v_proj2` auto-power panels were
+mislabeled by this bug but not amplitude-corrupted (no extra conversion
+was ever applied to the `velocity_kms` key specifically).
+
+As of this writing, only the diagnostic has been run and the fix has
+been merged and unit-tested (`tests/test_loaders.py`, 134/134 suite
+passing) -- `scripts/09` has not yet successfully completed a rerun with
+the fix (see "Start here" above), so there is no confirmed post-fix
+number yet for any of the 8 affected scripts.
+
 ## Lightcone rendering diagnostics
 
 `scripts/14_lightcone_fluke_demo.py` -- two things, per `--tracer`
@@ -317,6 +421,69 @@ ell~1000 -- roughly 15-20x too high. Substantially better than the
 stitched pathway's pre-fix ~1000-8000x, though not (yet) a validated
 match -- treat as the current best-available number for this
 cross-correlation, not a settled result.
+
+## Velocity reconstruction (linear continuity-equation, not ML)
+
+`correlation/velocity_reconstruction.py` / `scripts/25`, built 2026-09-30
+per Girish's request: reconstructs the LOS velocity field from an
+overdensity field via the linear continuity equation,
+$v_{\rm los}(k) = i\,a H f\,(k_{\rm los}/k^2)\,W_G(k)\,\delta(k)/b$ (a
+Gaussian smoothing kernel $W_G$ and a $1/b$ bias correction are both
+optional), rather than any ML-based approach -- arXiv:2609.36355 Eqs.
+11-12, adapted here to a real-space coeval box. `scripts/25` is the CLI
+check: reconstructs from a chosen tracer field and compares to the
+native simulation velocity (`correlation.velocity_reconstruction.
+compare_reconstructed_to_native`: r(k), transfer(k), pixel Pearson r).
+
+**Matter field** (`--tracer matter`, bias=1 by construction): near-exact
+recovery on real data, as expected for linear theory applied to the
+field it was derived from.
+
+**Halo tracer** (`--tracer halo`, real halo catalogue at a mass cut --
+not the matter field): large-scale bias isn't known a priori for an
+arbitrary mass cut, so `measure_large_scale_bias` (cross/auto power
+ratio between tracer and matter overdensity, averaged over the lowest-k
+bins) measures it empirically from the box itself rather than borrowing
+`roman_hls_benchmark.bluetides_bias_gz` (a luminosity-selected galaxy fit
+that doesn't apply to an arbitrary mass cut). Measured halo bias at the
+1e10 Msun cut, z~9-10: b~0.7-0.73 (two independent real-data
+measurements) -- below 1, which is physically surprising for such a
+rare/massive population this early and not yet investigated further.
+
+**Shot-noise gotcha, found and fixed on real data**: an unsmoothed halo
+reconstruction blows up -- the sparse discrete tracer field (occupied in
+~0.08% of cells) has huge fractional overdensity in its few occupied
+cells, and pushing that through the reconstruction's $1/k^2$ kernel
+amplifies it into unphysical real-space outliers (~100x the native
+field's scale). Fixed with Gaussian smoothing at `--r-smooth 18.4`
+(the paper's $R_s=12.5\,h^{-1}$Mpc, converted with this repo's
+$h=0.6777$) -- confirmed on real data: amplitude back to native's scale,
+pixel Pearson r improved 0.50 -> 0.78. `scripts/25`'s 4-panel figure
+(native | unsmoothed | smoothed | residual) makes this comparison
+explicit. Output filenames bake in `--tracer`/`--r-smooth` so different
+settings never silently overwrite each other.
+
+**Wired into the direct/coeval kSZ2 x galaxy estimator** (2026-10-01):
+`scripts/15 --velocity {native,halo_reconstructed,both}` substitutes a
+per-snapshot halo-reconstructed velocity (same bias-measurement +
+18.4 Mpc smoothing as above) for the simulation's native v_z, computing
+both from the identical snapshots/delta_g so the comparison isn't
+confounded by anything else differing between runs. First real result
+(seed 1, 5 snapshots, z=9.0-9.8): bias measured per-snapshot in the
+0.688-0.727 range; reconstructed-velocity D_ell tracks native closely at
+the largest scales (near 100% signal retention) and falls off at smaller
+scales (roughly 15-40% retention), a physically sensible pattern for a
+tracer that carries less information than the full density field. Not
+yet scaled beyond 1-2 seeds.
+
+```
+scripts/25_velocity_reconstruction_check.py   standalone reconstruction
+            |                                 check, any tracer, 4-panel
+            |                                 smoothing diagnostic
+scripts/15_direct_bispectrum_vs_stitched.py   --velocity flag substitutes
+                                               reconstructed velocity into
+                                               the real kSZ2 x LAE estimator
+```
 
 ## Digitized La Plante+2022 reference data
 
@@ -379,15 +546,21 @@ src/ksz_lae_xcorr/
   lightcone/     3D lightcone stitching
   tracers/       physical-value (mass/luminosity/MUV) grids for diagnostics
   correlation/   projected maps, cross-power, auto-power (halo/LAE/LBG),
-                 periodicity decomposition (coherence_decomposition.py),
-                 direct/coeval bispectrum estimator (direct_bispectrum.py),
-                 velocity unit-convention check (velocity_convention_check.py)
+                 periodicity decomposition (coherence_decomposition.py,
+                 now with per-seed patchy-window + chi_eff_power_weighted),
+                 seed aggregation (seed_stats.py, tolerant of seed-specific
+                 ell grids), direct/coeval bispectrum estimator
+                 (direct_bispectrum.py, now with a --velocity source
+                 argument), linear continuity-equation LOS velocity
+                 reconstruction (velocity_reconstruction.py), velocity
+                 unit-convention check (velocity_convention_check.py)
   snr/           CMB filter + S/N forecast (LAE-default, tracer-generic),
                  Stage 1 literature benchmark (roman_hls_benchmark.py,
                  now with chi_eff and patchy-window clamping, ported
                  from ksz-pipeline)
-  io/            product loaders + digitized reference data loader
-                 (la_plante_reference.py)
+  io/            product loaders (loaders.py -- velocity units fixed
+                 2026-10-01, see "Velocity conversion") + digitized
+                 reference data loader (la_plante_reference.py)
   plotting/      all figure-generating code
   utils/         config loader, cosmology, physical constants,
                  figio.py (save_fig: PDF+PNG together, every plot script
