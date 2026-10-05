@@ -20,7 +20,7 @@ import numpy as np
 from ksz_lae_xcorr.utils import constants
 
 
-def load_lightcone_products(cfg, seeds: list[int]) -> tuple[dict, dict]:
+def load_lightcone_products(cfg, seeds: list[int], load_tracers: bool = True) -> tuple[dict, dict]:
     """
     Returns (field_data, tracer_data), keyed by seed:
 
@@ -35,6 +35,11 @@ def load_lightcone_products(cfg, seeds: list[int]) -> tuple[dict, dict]:
     }
     Seeds whose lightcone products aren't found on disk are silently skipped
     (matches the original notebook's "only load seeds that are ready" behaviour).
+
+    load_tracers=False skips reading the halo/lae/lbg count cubes (the
+    slowest, largest part of the load) -- tracer_data[seed] then holds only
+    'z_nodes'. For scripts that discard tracer_data anyway (e.g.
+    scripts/09's kSZ auto-power decomposition).
 
     UNITS (fixed 2026-10-01, same bug class as the earlier lightcone/stitch.py
     velocity_z fix): lc_vz.npz's raw 'lc' array is ALREADY in Mpc/s -- verified
@@ -93,6 +98,8 @@ def load_lightcone_products(cfg, seeds: list[int]) -> tuple[dict, dict]:
 
         tracer_data[seed] = {"z_nodes": z_lc}
         for tracer, fname in (("halo", "lc_halos.npz"), ("lae", "lc_lae.npz"), ("lbg", "lc_lbg.npz")):
+            if not load_tracers:
+                break
             fpath = os.path.join(seed_dir, fname)
             if not os.path.exists(fpath):
                 continue  # not stitched yet (e.g. LAE/LBG pending external catalogue handover)

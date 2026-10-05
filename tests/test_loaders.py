@@ -131,3 +131,17 @@ def test_tracer_products_loaded_when_present(tmp_path):
     # LAE/LBG weren't written -- must be absent, not zero-filled.
     assert "lae_count_lc" not in tracer_data[1]
     assert "lbg_count_lc" not in tracer_data[1]
+
+
+def test_load_tracers_false_skips_tracer_cubes(tmp_path):
+    rng = np.random.default_rng(4)
+    vz_raw = rng.normal(0, 1e-16, size=(NGRID, NGRID, NPIX))
+    seed_dir = _write_fake_lightcone(tmp_path, seed=1, vz_raw=vz_raw)
+    np.savez_compressed(seed_dir / "lc_halos.npz", lc=np.ones((NGRID, NGRID, NPIX)))
+
+    cfg = _make_cfg(str(tmp_path))
+    field_data, tracer_data = load_lightcone_products(cfg, seeds=[1], load_tracers=False)
+
+    assert "halo_count_lc" not in tracer_data[1]
+    assert "z_nodes" in tracer_data[1]
+    np.testing.assert_allclose(field_data[1]["velocity_lc"], vz_raw, rtol=1e-12)

@@ -59,7 +59,7 @@ def main():
     os.makedirs(cfg.paths.products_root, exist_ok=True)
 
     print("Loading stitched lightcone products...")
-    field_data, _tracer_data = load_lightcone_products(cfg, seeds)
+    field_data, _ = load_lightcone_products(cfg, seeds, load_tracers=False)  # tracers unused here; skipping them is most of the load time
     print(f"  {len(field_data)}/{len(seeds)} seeds have field data")
 
     stitcher = Stitcher(cfg)
