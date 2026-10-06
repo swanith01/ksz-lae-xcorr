@@ -75,6 +75,34 @@ See "Velocity conversion", "Velocity reconstruction", "Direct/coeval kSZ2
 x galaxy estimator", "Periodicity diagnostic", and "Known gotchas" below
 for the full story on each of these.
 
+## Wrap-cycle kSZ auto-power (2026-10-06, supersedes scripts/09 + 22 once validated)
+
+Per-seed kSZ auto-power from a **wrap-cycle stitched lightcone**, adapted from
+ksz-pipeline (`stitch_from_coeval.py`, commit 0c3b578; algorithm copied,
+interfaces adapted). Each wrap cycle (one `BOX_LEN` of comoving LOS distance)
+gets its own transverse rotation angle (`default_rng((wrap_seed, cycle))`), applied
+to *all* snapshots and all three fields at that LOS position, with bilinear periodic
+sampling. A fixed angle does not break periodicity (the revisited slab is bit-identical).
+
+* `lightcone/wrap_cycle.py` - geometry + streaming stitcher (only the two bracketing snapshots in memory).
+* `correlation/ksz_auto_wrapcycle.py` - stitch -> `field_data_seed` -> patchy-window and full-range D_total/D_diag/D_off.
+* `scripts/26_ksz_auto_power_wrapcycle.py --seed S` - one seed -> `data/products/ksz_auto_wrapcycle/seed{S}_wo{K}.pkl`.
+* `scripts/27_ksz_auto_power_aggregate.py` - median + sigma + 16-84% + min-max over seeds, CSVs, figure.
+* `pbs/submit_ksz_wrapcycle.sh` - one job per seed + a dependent aggregation job.
+
+**Deliberate differences from ksz-pipeline**
+1. Our cosmology (`get_cosmology(cfg)`), not Planck18.
+2. **Velocity untouched.** ksz-pipeline is py21cmfast v3 (Zel'dovich displacement, needs D f H/(1+z)); ours is v4 and already Mpc/s. Tests fail on any rescaling.
+3. `mode='grid-wrap'` (period n) instead of scipy `'wrap'` (period n-1). `--mode wrap` reproduces ksz-pipeline bit-for-bit (verified on 479 slabs).
+4. **LOS grid uniform in comoving distance, spacing = cell size (1 Mpc)** (3022 slabs over z=5-20). The old lightcone used 512 pixels uniform in z, i.e. 16 Mpc/pixel at z=5 down to 2.4 Mpc at z=20; since P_diag = sum|theta_i|^2 scales as ds^2 per pixel, that alone biased the old D_diag independent of periodicity.
+
+**Two normalisation issues found while porting (both on by default in scripts/26; `--ne-convention legacy --tau0 none` restores the old numbers)**
+* `constants.tau_prefactor` uses n = Ob0 rho_c / m_p, i.e. all baryons as hydrogen. Helium-inclusive n_e is 0.82x that (2.07e-7 vs 2.52e-7 cm^-3; ksz-pipeline: 2.064e-7) => legacy D_ell is ~1.49x too high. The old `build_projected_maps`/scripts 04-08/11/13-15 still use the legacy value.
+* `compute_ksz_slices` started tau at 0 at z_min; the real tau below z=5 is ~0.031 (`utils/optical_depth.analytic_tau_below`), worth ~6% in D_ell.
+Both enter `compute_ksz_slices` through optional `field_data_seed['ne_scale'|'tau0']`; absent => legacy behaviour unchanged.
+
+Run: `bash pbs/submit_ksz_wrapcycle.sh` (try `SEEDS="1 2"` first; `WRAP_OFFSET=100` repeats with fresh angles).
+
 ## Pipeline
 
 ```

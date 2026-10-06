@@ -104,7 +104,8 @@ def aggregate_coherence_over_seeds(coherence_results: dict, seeds: list[int],
     config-mismatch guard, just no longer tripped by harmless chi_eff
     scatter.
 
-    Returns: {'ell', 'median', 'sigma', 'lower', 'upper', 'n_seeds'}
+    Returns: {'ell', 'median', 'sigma', 'lower', 'upper', 'n_seeds', 'stack', 'seeds'}
+    ('stack': (n_seeds, n_ell) per-seed values on the common grid.)
     'ell' is the common reference grid (the across-seed mean), not any one
     seed's original grid.
     """
@@ -152,4 +153,8 @@ def aggregate_coherence_over_seeds(coherence_results: dict, seeds: list[int],
     return {
         "ell": ell_common, "median": median, "sigma": sigma,
         "lower": median - sigma, "upper": median + sigma, "n_seeds": len(available),
+        # Additive (2026-10-06): the per-seed values on the common ell grid and
+        # which seeds they are, so callers can form percentile / min-max
+        # spreads without redoing the interpolation.
+        "stack": stack, "seeds": list(available),
     }

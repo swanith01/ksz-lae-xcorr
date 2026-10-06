@@ -62,6 +62,13 @@ def compute_ksz_slices(cfg, field_data_seed: dict):
     field_data_seed : dict, one seed's entry as produced by
         io.loaders.load_lightcone_products -- needs 'z_lc', 'xHI_lc',
         'density_lc' (1+delta), 'velocity_lc' (Mpc/s).
+        OPTIONAL normalisation keys (absent => legacy behaviour, bit-
+        identical to before they existed; see utils/optical_depth.py):
+          'ne_scale' : float, multiplies constants.tau_prefactor (use
+                       ne_scale_helium() for helium-inclusive n_e).
+          'tau0'     : float, Thomson optical depth accumulated below the
+                       lowest simulated z (use analytic_tau_below()); added
+                       to the cumulative tau in e^{-tau}.
 
     Returns
     -------
@@ -72,7 +79,8 @@ def compute_ksz_slices(cfg, field_data_seed: dict):
         build_projected_maps: cfg.box.z_min <= z < cfg.box.z_max).
     """
     cosmo = get_cosmology(cfg)
-    tau_pref = constants.tau_prefactor(cfg)
+    tau_pref = constants.tau_prefactor(cfg) * float(field_data_seed.get("ne_scale", 1.0))
+    tau0 = float(field_data_seed.get("tau0", 0.0))
     c_mpc_s = constants.c_mpc_per_s()
 
     z_lo, z_hi = cfg.box.z_min, cfg.box.z_max
@@ -92,7 +100,7 @@ def compute_ksz_slices(cfg, field_data_seed: dict):
 
     x_e_mean = x_e.mean(axis=(0, 1))
     dtau = tau_pref * x_e_mean * (1.0 + z) ** 2 * ds
-    tau_arr = np.cumsum(dtau)
+    tau_arr = tau0 + np.cumsum(dtau)
     e_tau = np.exp(-tau_arr)
 
     v_over_c = v_m / c_mpc_s
