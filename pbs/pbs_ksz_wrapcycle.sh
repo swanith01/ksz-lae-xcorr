@@ -6,7 +6,9 @@
 #   (resources are overridable: qsub -l select=1:ncpus=4:mem=48gb -v SEED=3 ...)
 # Memory: ~3 float64 lightcones of 300x300x~3000 (~2 GB each) + FFT of the
 # per-pixel kSZ slices (~2 x 4.4 GB complex) -> ~40 GB peak; 64 GB requested.
-# Optional env: WRAP_OFFSET (default 0), EXTRA_ARGS (e.g. "--mode wrap").
+# Optional env: WRAP_OFFSET (default 0), EXTRA_ARGS (e.g. "--mode wrap"),
+#   SAVE_MAPS=1 (also write the La Plante map inputs seed{S}_wo{K}_lpmaps.pkl for
+#   scripts/28; adds ~2 min and no extra memory beyond the normal peak).
 # =============================================================================
 
 #PBS -N ksz_wc
@@ -30,6 +32,8 @@ cd "${REPO_ROOT}"
 mkdir -p logs
 
 echo "== ksz wrap-cycle seed ${SEED} | node $(hostname) | $(date) | job ${PBS_JOBID:-none} =="
+MAPS_ARG=""
+[ "${SAVE_MAPS:-0}" = "1" ] && MAPS_ARG="--save-maps"
 python -u scripts/26_ksz_auto_power_wrapcycle.py --seed "${SEED}" \
-    --wrap-cycle-seed-offset "${WRAP_OFFSET:-0}" ${EXTRA_ARGS:-}
+    --wrap-cycle-seed-offset "${WRAP_OFFSET:-0}" ${MAPS_ARG} ${EXTRA_ARGS:-}
 echo "== done: $(date) =="

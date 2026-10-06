@@ -25,11 +25,18 @@ from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
 
 
-def build_filtered_kSZ2_maps(cfg, kg: KGrid, kSZ_maps: dict, filt: dict, seeds: list[int]) -> dict:
-    """filtered_kSZ2[exp_name][seed] = (filtered kSZ)^2 real-space map."""
-    cosmo = get_cosmology(cfg)
-    z_ref = 0.5 * (cfg.box.z_min + cfg.box.z_max)
-    chi_ref = cosmo.comoving_distance(z_ref).to_value("Mpc")
+def build_filtered_kSZ2_maps(cfg, kg: KGrid, kSZ_maps: dict, filt: dict, seeds: list[int],
+                              chi_ref: float | None = None) -> dict:
+    """filtered_kSZ2[exp_name][seed] = (filtered kSZ)^2 real-space map.
+
+    chi_ref (default None = legacy): comoving distance [Mpc] used for l = k*chi when
+    evaluating the filter on the 2D FFT grid.  None keeps the historical choice,
+    chi at the box-midpoint z=(z_min+z_max)/2.  Pass the kSZ map's own chi_eff
+    (correlation.lp_maps) to make the filter consistent with the map it filters."""
+    if chi_ref is None:
+        cosmo = get_cosmology(cfg)
+        z_ref = 0.5 * (cfg.box.z_min + cfg.box.z_max)
+        chi_ref = cosmo.comoving_distance(z_ref).to_value("Mpc")
 
     n = kg.n_side
     dk = 2 * np.pi / kg.box_len

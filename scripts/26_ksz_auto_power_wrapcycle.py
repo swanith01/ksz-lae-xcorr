@@ -58,6 +58,17 @@ def main():
     ap.add_argument("--ne-convention", choices=("helium", "legacy"), default="helium")
     ap.add_argument("--tau0", choices=("analytic", "none"), default="analytic")
     ap.add_argument("--out-dir", default=None, help="default: <products_root>/ksz_auto_wrapcycle")
+    ap.add_argument("--save-maps", action="store_true",
+                    help="ALSO save the La Plante map-estimator inputs (kSZ map + bias-weighted "
+                         "galaxy window maps, a few MB) to seed{S}_wo{K}_lpmaps.pkl for scripts/28. "
+                         "Default OFF: the standard run is unchanged.")
+    ap.add_argument("--z0-grid", type=float, nargs="+", default=None,
+                    help="window centres for --save-maps (default 6.5..13 step 0.5)")
+    ap.add_argument("--dz-list", type=float, nargs="+", default=None,
+                    help="window widths for --save-maps (default 1.0, as LP Fig 5)")
+    ap.add_argument("--ksz-z-min", type=float, default=None,
+                    help="lowest z in the kSZ MAP for --save-maps (default 6.0; an assumption: "
+                         "LP's map is reionization-era only)")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -96,6 +107,25 @@ def main():
                     f"ell~{s['ell']:.0f}: D_total={s['D_total']:.4g} D_diag={s['D_diag']:.4g} "
                     f"D_off={s['D_off']:.4g} uK^2  D_off/D_total={s['D_off_over_total']:.1%}")
     logger.info(f"saved {out_path}  ({time.time() - t0:.0f}s total)")
+
+    if args.save_maps:
+        from ksz_lae_xcorr.correlation import lp_maps
+        del res
+        prod = lp_maps.build_lp_products(
+            cfg, fd,
+            z0_grid=args.z0_grid or lp_maps.DEFAULT_Z0_GRID,
+            dz_list=args.dz_list or lp_maps.DEFAULT_DZ_LIST,
+            kSZ_z_min=args.ksz_z_min if args.ksz_z_min is not None else lp_maps.DEFAULT_KSZ_Z_MIN)
+        prod["meta"] = {"seed": args.seed, "wrap_cycle_seed": wrap_seed,
+                        "wrap_cycle_seed_offset": args.wrap_cycle_seed_offset, "mode": args.mode,
+                        "ne_convention": args.ne_convention, "tau0_mode": args.tau0,
+                        "created": datetime.now().isoformat(timespec="seconds")}
+        lp_path = os.path.join(out_dir, f"seed{args.seed}_wo{args.wrap_cycle_seed_offset}_lpmaps.pkl")
+        with open(lp_path, "wb") as f:
+            pickle.dump(prod, f)
+        logger.info(f"[lp-maps] kSZ map z>={prod['kSZ_z_min']} chi_eff={prod['chi_eff_kSZ']:.0f} Mpc "
+                    f"rms(dT/T)={prod['kSZ_map'].std():.3g}; {len(prod['windows'])} windows; "
+                    f"saved {lp_path}  ({time.time() - t0:.0f}s total)")
 
 
 if __name__ == "__main__":

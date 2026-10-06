@@ -523,6 +523,27 @@ for exact provenance (manually digitized vs. automated pixel-extraction,
 which files are which, and known digitization uncertainty). Loaded
 directly into `scripts/15`/`18`'s overlay plots.
 
+## Map-based La Plante+22 reproduction (2026-10-06; D_stitched arm, no bispectrum)
+
+`correlation/lp_maps.py` + `scripts/28_lp_cross_vs_z0.py`. Recipe (LP+22 Sec 2-4): kSZ map = LOS sum of the
+wrap-cycle per-pixel integrand over z >= 6 (**assumption**: LP's map is reionization-era only; `--ksz-z-min`),
+CMB filter f(l)=F b with C_kSZreion = seed-median auto-power of *that same map* (same chi), (filtered map)^2,
+cross with delta_g = INT dz W b_g delta_m (top hat, INT W dz = 1, Waters+16 bias, floor z=6, **no** patchy/x_HI clamp),
+D_l = l(l+1)/2pi T_CMB^2 C_l, l = k chi_eff, at l = 500/1000/3000, dz=1, z0 = 6.5..13.
+
+Run (two seeds first, or all ten):
+
+    SAVE_MAPS=1 SEEDS="1 2" bash pbs/submit_ksz_wrapcycle.sh   # seeds -> aggregate (27) AND lp cross (28), both afterok
+    # or by hand once *_lpmaps.pkl exist:
+    python scripts/28_lp_cross_vs_z0.py [--wrap-offset K] [--experiment SO] [--cltt-file ell,Cl_uK2.csv]
+
+`--save-maps` / `SAVE_MAPS=1` is OFF by default (standard scripts/26 runs are unchanged); it adds a ~10 MB
+`seed{S}_wo{K}_lpmaps.pkl` per seed. C_TT needs CAMB in the env, or `--cltt-file`.
+Caveats built in: l_min ~ 190 for 300 Mpc, so l=500 is ~2.6 k_f (n_modes printed - expect it to be very noisy);
+modes with l outside cfg.snr [ell_min, ell_max] are zeroed by the filter; one chi per map (flat-sky, comoving grid);
+our cosmology differs from LP's (Om 0.3086 vs 0.316, h 0.6777 vs 0.673); the x_HII axis is our own.
+`snr_forecast.build_filtered_kSZ2_maps` gained an optional `chi_ref` (default = legacy box-midpoint chi).
+
 ## Cosmology
 
 This repo standardizes on the **21cmFAST-default cosmology**
