@@ -316,7 +316,7 @@ unconverted linear-theory Zel'dovich *displacement*, needing a full
 become a genuine velocity.
 
 This repo runs **py21cmfast v4**. Its coeval `velocity_z` is *already* a
-genuine comoving peculiar velocity in Mpc/s -- confirmed two ways: (1)
+genuine comoving peculiar velocity in Mpc/s [SUPERSEDED 2026-10-06: it is the comoving-coordinate rate, v_pec = velocity_z/(1+z) -- see 'FIELD-UNITS BUG' above] -- confirmed two ways: (1)
 raw `velocity_z`, used completely as-is, gives $v/c \sim 4\times10^{-3}$,
 squarely physical; (2) a rigorous check --
 `correlation/velocity_convention_check.py`, comparing the raw field's own
@@ -522,6 +522,27 @@ not a single hand-read peak value. See that directory's own README.md
 for exact provenance (manually digitized vs. automated pixel-extraction,
 which files are which, and known digitization uncertainty). Loaded
 directly into `scripts/15`/`18`'s overlay plots.
+
+## FIELD-UNITS BUG: raw velocity_z and hires_density are not physical (found 2026-10-06)
+
+The first real wrap-cycle run gave D_total ~ 700-950 uK^2 at l~2800 (expected O(1)); tracing it (per-slab rms -> implied
+velocity ~9000 km/s; one real z=9.04 snapshot: velocity_z std = 1135 km/s, hires_density std 4.5, min -22) showed TWO
+unit errors in the raw coeval fields (details + evidence in `utils/field_units.py`):
+
+1. `velocity_z` is the comoving-coordinate rate (py21cmfast `PerturbedField.c`: `velocity_k *= (dD/dt / D) * i k / k^2`),
+   so v_pec = velocity_z/(1+z).  (Previously treated as already peculiar.)
+2. `hires_density` comes from `coeval.initial_conditions`: the LINEAR density at z=0 normalisation, the same at every
+   snapshot.  delta(z) = D(z)/D(0) * hires_density.  (Previously used as delta(z).)
+
+The 2026-09-09 "definitive" check (scripts/17) passed only because the two errors cancel in P_v/P_delta
+(obs/theory = (D/a)^2; its reported factor 0.78-0.90 is exactly a/D = 0.784 at z=9.04).  Its conclusion "velocity_z is
+already a genuine peculiar velocity" is WRONG and superseded; `velocity_convention_check.py` is kept for reference only.
+
+Fixed so far ONLY in the wrap-cycle path (`scripts/26 --field-convention physical`, the default; `legacy` = old behaviour).
+Delta(z) is the LINEAR approximation (1+delta floored at 0); the proper fix is to save `perturbed_field.density` per
+snapshot.  **Not yet fixed (same raw loaders): `Stitcher.load_field_box` and everything built on it** -- scripts 02/04/05/
+06/08/11/13/14/15/18 (stitched + direct kSZ and cross-power, SNR), `io/loaders.py`, `direct_bispectrum`.  Their absolute
+amplitudes (including the "15-20x off" direct D_ell) should be treated as unreliable until re-run.
 
 ## Map-based La Plante+22 reproduction (2026-10-06; D_stitched arm, no bispectrum)
 

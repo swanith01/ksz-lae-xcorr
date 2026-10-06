@@ -38,8 +38,10 @@ from ksz_lae_xcorr.correlation.coherence_decomposition import (
 from ksz_lae_xcorr.lightcone.wrap_cycle import build_los_z_grid, stitch_wrapcycle
 from ksz_lae_xcorr.snr.roman_hls_benchmark import chi_eff_power_weighted
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
+from ksz_lae_xcorr.utils.field_units import delta_at_z_from_ic, peculiar_velocity_from_raw
 from ksz_lae_xcorr.utils.optical_depth import analytic_tau_below, ne_scale_helium
 
+FIELD_CONVENTIONS = ("physical", "legacy")
 NE_CONVENTIONS = ("helium", "legacy")
 TAU0_MODES = ("analytic", "none")
 
@@ -58,8 +60,18 @@ def normalisation_keys(cfg, ne_convention: str = "helium", tau0_mode: str = "ana
 
 
 def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, logger,
-                                mode: str = "grid-wrap", norm: dict | None = None) -> dict:
-    """Stitch one seed's wrap-cycle lightcone into a field_data_seed dict."""
+                                mode: str = "grid-wrap", norm: dict | None = None,
+                                field_convention: str = "physical") -> dict:
+    """Stitch one seed's wrap-cycle lightcone into a field_data_seed dict.
+
+    field_convention (see utils/field_units.py -- both fixes found 2026-10-06):
+      'physical' (default): velocity_z / (1+z) (raw is the comoving rate, not v_pec) and
+                  delta(z) = D(z)/D(0) * hires_density (raw is the z=0-normalised IC field);
+                  1+delta floored at 0 (linear delta can dip below -1 in the tails).
+      'legacy'  : the raw fields exactly as before (known to be ~(1+z)^2 * (rms ratio)^2 too high)."""
+    if field_convention not in FIELD_CONVENTIONS:
+        raise ValueError(f"field_convention must be one of {FIELD_CONVENTIONS}, got {field_convention!r}")
+    Om0 = float(cfg.cosmology.Om0)
     cosmo = get_cosmology(cfg)
     ngrid = int(cfg.box.hii_dim)
     cell = float(cfg.box.box_len_mpc) / ngrid
@@ -72,7 +84,13 @@ def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, l
                 f"wrap_cycle_seed={wrap_cycle_seed}, mode={mode}")
 
     def load_box(z, field):
-        return np.ascontiguousarray(stitcher.load_field_box(seed, z, field), dtype=np.float32)
+        box = np.ascontiguousarray(stitcher.load_field_box(seed, z, field), dtype=np.float32)
+        if field_convention == "physical":
+            if field == "vz":
+                box = peculiar_velocity_from_raw(box, z).astype(np.float32)
+            elif field == "density":
+                box = delta_at_z_from_ic(box, Om0, z).astype(np.float32)
+        return box
 
     t0 = time.time()
     lc = stitch_wrapcycle(
@@ -83,11 +101,14 @@ def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, l
     fd = {
         "z_lc": z_arr,
         "xHI_lc": lc["xH"].astype(np.float64),
-        "density_lc": 1.0 + lc["density"].astype(np.float64),   # raw delta -> 1+delta, ONCE
+        "density_lc": (np.maximum(1.0 + lc["density"].astype(np.float64), 0.0)
+                       if field_convention == "physical"
+                       else 1.0 + lc["density"].astype(np.float64)),   # delta -> 1+delta, ONCE
         "velocity_lc": lc["vz"].astype(np.float64),             # Mpc/s, v4: NO conversion
     }
     fd.update(norm if norm is not None else normalisation_keys(cfg))
     fd["n_cycles"] = n_cycles
+    fd["field_convention"] = field_convention
     return fd
 
 
@@ -109,7 +130,28 @@ def compute_wrapcycle_auto_power(cfg, fd: dict) -> dict:
         "xHI_mean": fd["xHI_lc"][:, :, : len(z)].mean(axis=(0, 1)),
         "theta_rms_z": w_z,
         "ne_scale": fd["ne_scale"], "tau0": fd["tau0"], "n_cycles": fd["n_cycles"],
+        "field_convention": fd.get("field_convention", "legacy"),
     }
+
+
+def implied_velocity_kms(cfg, res: dict, z_targets=(6, 7, 8, 9, 10, 12)) -> list:
+    """Rough sanity diagnostic: effective rms[(1+delta) v] (km/s) implied by the per-slab kSZ rms,
+    theta_rms = tau_pref * rms(x_e) (1+z)^2 ds e^{-tau} rms[(1+delta) v/c] (e^{-tau} ~ 1 ignored).
+    rms(x_e) is approximated by sqrt(mean x_e) (the binary-pixel limit: pixels are mostly 0 or 1);
+    dividing by the MEAN x_e instead (as the 2026-10-06 first look did) inflates the result by
+    1/sqrt(x_e) -- ~2x at z=9, ~6x at z=12.  Still approximate: expect ~100-300 km/s at z=7-10
+    once the fields are physical; ~(1+z) x higher flags a missing 1/(1+z), more flags the density."""
+    from ksz_lae_xcorr.utils import constants
+    z, chi, th = res["z_lc"], res["chi_mpc"], res["theta_rms_z"]
+    xe = 1.0 - res["xHI_mean"]
+    pref = constants.tau_prefactor(cfg) * float(res.get("ne_scale", 1.0))
+    ds = np.abs(np.gradient(chi))
+    v = th / (pref * np.sqrt(np.maximum(xe, 1e-9)) * (1 + z) ** 2 * ds) * 299792.458
+    out = []
+    for zt in z_targets:
+        i = int(np.argmin(np.abs(z - zt)))
+        out.append((float(z[i]), float(xe[i]), float(v[i])))
+    return out
 
 
 def summarise_at_ell(res: dict, ell_target: float = 3000.0) -> dict:

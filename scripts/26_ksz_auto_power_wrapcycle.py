@@ -41,6 +41,7 @@ import numpy as np
 from ksz_lae_xcorr.correlation.ksz_auto_wrapcycle import (
     build_wrapcycle_field_data,
     compute_wrapcycle_auto_power,
+    implied_velocity_kms,
     normalisation_keys,
     summarise_at_ell,
 )
@@ -57,6 +58,10 @@ def main():
                     help="scipy periodic mode; 'wrap' reproduces ksz-pipeline bit-for-bit")
     ap.add_argument("--ne-convention", choices=("helium", "legacy"), default="helium")
     ap.add_argument("--tau0", choices=("analytic", "none"), default="analytic")
+    ap.add_argument("--field-convention", choices=("physical", "legacy"), default="physical",
+                    help="physical (default): velocity_z/(1+z) and delta(z)=D(z)/D(0)*hires_density "
+                         "(both missing before 2026-10-06, see utils/field_units.py); "
+                         "legacy: raw fields as in the first run (~700x too high)")
     ap.add_argument("--out-dir", default=None, help="default: <products_root>/ksz_auto_wrapcycle")
     ap.add_argument("--save-maps", action="store_true",
                     help="ALSO save the La Plante map-estimator inputs (kSZ map + bias-weighted "
@@ -87,14 +92,14 @@ def main():
 
     stitcher = Stitcher(cfg)
     fd = build_wrapcycle_field_data(cfg, args.seed, wrap_seed, stitcher, logger,
-                                    mode=args.mode, norm=norm)
+                                    mode=args.mode, norm=norm, field_convention=args.field_convention)
     logger.info(f"stitched in {time.time() - t0:.0f}s; decomposing...")
     res = compute_wrapcycle_auto_power(cfg, fd)
     res["meta"] = {
         "seed": args.seed, "wrap_cycle_seed": wrap_seed,
         "wrap_cycle_seed_offset": args.wrap_cycle_seed_offset, "mode": args.mode,
         "ne_convention": args.ne_convention, "tau0_mode": args.tau0,
-        "config": args.config, "created": datetime.now().isoformat(timespec="seconds"),
+        "field_convention": args.field_convention, "config": args.config, "created": datetime.now().isoformat(timespec="seconds"),
         "elapsed_s": time.time() - t0,
     }
     with open(out_path, "wb") as f:
@@ -106,6 +111,8 @@ def main():
         logger.info(f"[{key}] z=[{r['z_lo']:.2f},{r['z_hi']:.2f}] chi_eff={r['chi_eff']:.0f} Mpc | "
                     f"ell~{s['ell']:.0f}: D_total={s['D_total']:.4g} D_diag={s['D_diag']:.4g} "
                     f"D_off={s['D_off']:.4g} uK^2  D_off/D_total={s['D_off_over_total']:.1%}")
+    for zt, xe, vk in implied_velocity_kms(cfg, res):
+        logger.info(f"[implied v] z={zt:5.2f} x_e={xe:.3f} rms[(1+d)v]={vk:8.1f} km/s (expect ~100-300 at z=7-10)")
     logger.info(f"saved {out_path}  ({time.time() - t0:.0f}s total)")
 
     if args.save_maps:
@@ -119,6 +126,7 @@ def main():
         prod["meta"] = {"seed": args.seed, "wrap_cycle_seed": wrap_seed,
                         "wrap_cycle_seed_offset": args.wrap_cycle_seed_offset, "mode": args.mode,
                         "ne_convention": args.ne_convention, "tau0_mode": args.tau0,
+                        "field_convention": args.field_convention,
                         "created": datetime.now().isoformat(timespec="seconds")}
         lp_path = os.path.join(out_dir, f"seed{args.seed}_wo{args.wrap_cycle_seed_offset}_lpmaps.pkl")
         with open(lp_path, "wb") as f:
