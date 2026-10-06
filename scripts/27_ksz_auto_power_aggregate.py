@@ -91,11 +91,14 @@ def main():
     print(f"settings: mode={mode} ne={ne_conv} tau0={tau0_mode}")
 
     print("\nPer-seed, ell~3000 [uK^2]:")
-    print(f"{'seed':>4} {'window':>14} {'chi_eff':>8} {'D_total':>10} {'D_diag':>10} {'D_off':>10} {'off/tot':>8}")
+    print(f"{'seed':>4} {'window':>14} {'chi_eff':>8} {'D_total':>10} {'D_diag(1Mpc)':>12} {'D_off':>10} {'off/tot':>8} "
+          f"{'D_diag(grp)':>11} {'off/tot(grp)':>12}")
     for s in seeds:
         r = res[s]["patchy"]; q = summarise_at_ell(r, 3000.0)
         print(f"{s:>4} {r['z_lo']:6.2f}-{r['z_hi']:<6.2f} {r['chi_eff']:8.0f} {q['D_total']:10.4g} "
-              f"{q['D_diag']:10.4g} {q['D_off']:10.4g} {q['D_off_over_total']:8.1%}")
+              f"{q['D_diag']:12.4g} {q['D_off']:10.4g} {q['D_off_over_total']:8.1%} "
+              + (f"{q['D_diag_grouped']:11.4g} {q['D_off_grouped_over_total']:12.1%}" if "D_diag_grouped" in q else
+                 f"{'n/a':>11} {'n/a':>12}"))
 
     out = {"seeds": seeds, "wrap_offset": args.wrap_offset,
            "settings": {"mode": mode, "ne_convention": ne_conv, "tau0": tau0_mode}}

@@ -99,7 +99,14 @@ def fig_ksz(legacy_pkl, physical_pkl, seed, out_dir, window="patchy", ell_ref=30
         r = pickle.load(open(path, "rb"))[window]
         ell = r["ell"]
         ax.loglog(ell, np.abs(r["D_total"]), color=color, lw=1.8, label=f"{lab}: $D_{{total}}$")
-        ax.loglog(ell, np.abs(r["D_diag"]), color=color, lw=1.2, ls=(0, (4, 2)), label=f"{lab}: $D_{{diag}}$")
+        if "D_diag_grouped" in r:   # snapshot-grouped baseline (validated vs direct); the per-pixel one is a lower bound
+            ax.loglog(r["ell_grouped"], np.abs(r["D_diag_grouped"]), color=color, lw=1.2, ls=(0, (4, 2)),
+                      label=f"{lab}: $D_{{diag}}$ (per snapshot)")
+            ax.loglog(ell, np.abs(r["D_diag"]), color=color, lw=0.8, ls=":", alpha=0.7,
+                      label=f"{lab}: $D_{{diag}}$ (per 1 Mpc pixel)")
+        else:
+            ax.loglog(ell, np.abs(r["D_diag"]), color=color, lw=1.2, ls=(0, (4, 2)),
+                      label=f"{lab}: $D_{{diag}}$ (per 1 Mpc pixel)")
         i = int(np.argmin(np.abs(ell - ell_ref)))
         ax.annotate(f"{r['D_total'][i]:.3g} $\\mu K^2$", (ell[i], abs(r["D_total"][i])), textcoords="offset points",
                     xytext=(8, 6), fontsize=8, color=MUTED)

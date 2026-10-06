@@ -763,3 +763,17 @@ examples, or just ask.
 - `v0.1` — tagged when the first full pipeline (steps 01–06) runs end to end.
 - `submitted-v1` — tagged at journal submission.
 - `accepted-v1` — tagged at acceptance.
+
+## D_diag baseline: per-snapshot, not per-1-Mpc-pixel (corrected 2026-10-06)
+
+`D_total` (the coherent LOS sum) is the kSZ auto-power and was never affected. The
+`D_diag` / `D_off` split in the wrap-cycle path was computed on the individual 1 Mpc LOS
+pixels, which discards REAL within-snapshot correlations and gives a diagonal ~4x too small
+at ell~3000 (D_off/D_total ~75-80%). That is NOT the baseline validated against ksz-pipeline's
+coeval-direct calculation (8.5%): that one sums LOS pixels coherently inside each snapshot's
+comoving bucket first (`group_slices_by_snapshot`) and only then adds the groups' powers.
+`compute_wrapcycle_auto_power` now returns, in each of `patchy` / `full`:
+`D_diag_grouped`, `D_off_grouped`, `D_total_grouped` (== `D_total`), `ell_grouped`, `n_groups`
+(needs `fd['snap_z']`, set by `build_wrapcycle_field_data`). The per-pixel `D_diag`/`D_off` are kept
+as a lower bound only. The success criterion "D_off/D_total small after wrap-cycle" applies to the
+GROUPED split; an earlier retraction of it (same session) was itself wrong. Rerun the seeds to get the grouped numbers (the pkls do not store theta).

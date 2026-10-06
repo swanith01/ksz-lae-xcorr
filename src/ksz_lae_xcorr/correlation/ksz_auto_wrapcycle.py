@@ -19,9 +19,17 @@ Pipeline for ONE realisation (seed):
      decompose_p_total_diag_off.
 
 With the wrap-cycle lightcone D_total (the coherent LOS sum) is the kSZ
-auto-power; D_diag and D_off are kept as consistency diagnostics -- D_off /
-D_total should now be small, unlike the fixed-angle lightcone where P_off is
-the periodicity artifact itself.
+auto-power.  Two 'diagonal' baselines are reported (2026-10-06 correction):
+  * D_diag_grouped / D_off_grouped -- LOS pixels first summed coherently WITHIN
+    each coeval snapshot's comoving bucket (group_slices_by_snapshot), then the
+    groups' own powers added with no cross terms.  This is the baseline
+    validated against ksz-pipeline's coeval-direct calculation (8.5%), and the
+    one whose D_off/D_total should be SMALL after wrap-cycle: within-snapshot
+    coherence is real physics and belongs in the diagonal; only
+    cross-snapshot / cross-cycle correlations are the periodicity artifact.
+  * D_diag / D_off -- per 1 Mpc LOS pixel (no grouping).  A much smaller
+    number that discards real within-snapshot correlations; kept only as a
+    lower bound, NOT the quantity to compare with a direct calculation.
 """
 
 from __future__ import annotations
@@ -34,6 +42,7 @@ from ksz_lae_xcorr.correlation.coherence_decomposition import (
     compute_ksz_slices,
     compute_patchy_window_diag_power,
     decompose_p_total_diag_off,
+    group_slices_by_snapshot,
 )
 from ksz_lae_xcorr.lightcone.wrap_cycle import build_los_z_grid, stitch_wrapcycle
 from ksz_lae_xcorr.snr.roman_hls_benchmark import chi_eff_power_weighted
@@ -107,22 +116,42 @@ def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, l
         "velocity_lc": lc["vz"].astype(np.float64),             # Mpc/s, v4: NO conversion
     }
     fd.update(norm if norm is not None else normalisation_keys(cfg))
+    fd["snap_z"] = [float(x) for x in snap_z]   # for the snapshot-grouped D_diag
     fd["n_cycles"] = n_cycles
     fd["field_convention"] = field_convention
     return fd
 
 
+def _grouped_diag(cfg, theta, chi_mpc, snap_z, chi_eff) -> dict:
+    """Snapshot-grouped diagonal/off-diagonal split of theta (D_total is unchanged:
+    the per-group mean subtraction is linear).  Returns {} if snap_z is unavailable
+    or fewer than 2 groups result (the grouping would be meaningless)."""
+    if snap_z is None or len(snap_z) < 2:
+        return {}
+    grouped, _ = group_slices_by_snapshot(cfg, theta, chi_mpc, snap_z)
+    if grouped.shape[-1] < 2:
+        return {}
+    ell, D_total, D_diag, D_off = decompose_p_total_diag_off(cfg, grouped, chi_eff)
+    return {"ell_grouped": ell, "D_total_grouped": D_total, "D_diag_grouped": D_diag,
+            "D_off_grouped": D_off, "n_groups": int(grouped.shape[-1])}
+
+
 def compute_wrapcycle_auto_power(cfg, fd: dict) -> dict:
-    """Decompose one seed's wrap-cycle lightcone over (a) the patchy window
-    and (b) the full z range. Returns plain arrays/floats (pickle-friendly)."""
+    """Decompose one seed's wrap-cycle lightcone over (a) the patchy window and
+    (b) the full z range. Returns plain arrays/floats (pickle-friendly).
+    Each block carries D_total, the per-pixel D_diag/D_off, and (when fd['snap_z'] is
+    present) the snapshot-grouped D_diag_grouped/D_off_grouped -- see the module docstring."""
     patchy = compute_patchy_window_diag_power(cfg, fd)
 
     theta, chi_mpc, z = compute_ksz_slices(cfg, fd)
+    snap_z = fd.get("snap_z")
+    m = (z >= patchy["z_lo"]) & (z < patchy["z_hi"])
+    patchy.update(_grouped_diag(cfg, theta[:, :, m], chi_mpc[m], snap_z, patchy["chi_eff"]))
     chi_eff_full = chi_eff_power_weighted(cfg, fd, float(z[0]), float(z[-1]) + 1e-9)
     ell, D_total, D_diag, D_off = decompose_p_total_diag_off(cfg, theta, chi_eff_full)
     full = {"ell": ell, "D_total": D_total, "D_diag": D_diag, "D_off": D_off,
             "z_lo": float(z[0]), "z_hi": float(z[-1]), "chi_eff": float(chi_eff_full)}
-
+    full.update(_grouped_diag(cfg, theta, chi_mpc, snap_z, chi_eff_full))
     w_z = np.sqrt(np.mean(theta ** 2, axis=(0, 1)))
     return {
         "patchy": patchy, "full": full,
@@ -155,9 +184,19 @@ def implied_velocity_kms(cfg, res: dict, z_targets=(6, 7, 8, 9, 10, 12)) -> list
 
 
 def summarise_at_ell(res: dict, ell_target: float = 3000.0) -> dict:
-    """Headline numbers of one 'patchy' or 'full' block at ell ~ ell_target."""
+    """Headline numbers of one 'patchy' or 'full' block at ell ~ ell_target.
+    D_diag/D_off are the per-pixel (1 Mpc) baseline; when the block carries the
+    snapshot-grouped split, D_diag_grouped / D_off_grouped / D_off_grouped_over_total
+    (the validated baseline) are added."""
     i = int(np.argmin(np.abs(res["ell"] - ell_target)))
     tot = res["D_total"][i]
-    return {"ell": float(res["ell"][i]), "D_total": float(tot), "D_diag": float(res["D_diag"][i]),
-            "D_off": float(res["D_off"][i]),
-            "D_off_over_total": float(res["D_off"][i] / tot) if tot != 0 else float("nan")}
+    out = {"ell": float(res["ell"][i]), "D_total": float(tot), "D_diag": float(res["D_diag"][i]),
+           "D_off": float(res["D_off"][i]),
+           "D_off_over_total": float(res["D_off"][i] / tot) if tot != 0 else float("nan")}
+    if "D_diag_grouped" in res:
+        j = int(np.argmin(np.abs(res["ell_grouped"] - ell_target)))
+        tg = res["D_total_grouped"][j]
+        out["D_diag_grouped"] = float(res["D_diag_grouped"][j])
+        out["D_off_grouped"] = float(res["D_off_grouped"][j])
+        out["D_off_grouped_over_total"] = float(res["D_off_grouped"][j] / tg) if tg != 0 else float("nan")
+    return out

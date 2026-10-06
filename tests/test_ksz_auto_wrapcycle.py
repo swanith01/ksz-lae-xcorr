@@ -78,7 +78,38 @@ def test_end_to_end_shapes_sum_rule_and_density_convention(tmp_path):
         assert np.all(r["D_diag"] >= 0)
     assert res["patchy"]["z_lo"] >= 6.0
     s = summarise_at_ell(res["patchy"], 3000.0)
-    assert set(s) == {"ell", "D_total", "D_diag", "D_off", "D_off_over_total"}
+    assert {"ell", "D_total", "D_diag", "D_off", "D_off_over_total",
+            "D_diag_grouped", "D_off_grouped", "D_off_grouped_over_total"} <= set(s)
+
+
+def test_grouped_diag_sum_rule_ordering_and_total_unchanged(tmp_path):
+    """Grouping adds within-snapshot coherence to the diagonal: D_total is unchanged, the sum
+    rule holds, and D_diag(grouped) >= D_diag(per pixel) (|sum_i a_i|^2 summed over groups vs
+    sum_i |a_i|^2 differ by the intra-group cross terms, which are >= 0 on average for a
+    positively-coherent field; checked in the aggregate over ell, not bin by bin)."""
+    _write_tree(tmp_path)
+    _, fd, res = _run(tmp_path)
+    assert len(fd["snap_z"]) >= 2
+    for key in ("patchy", "full"):
+        r = res[key]
+        assert r["n_groups"] >= 2
+        np.testing.assert_allclose(r["D_total_grouped"], r["D_total"], rtol=1e-8, atol=1e-30)
+        np.testing.assert_allclose(r["D_total_grouped"], r["D_diag_grouped"] + r["D_off_grouped"],
+                                   rtol=1e-6, atol=1e-30)
+        np.testing.assert_array_equal(r["ell_grouped"], r["ell"])
+        assert np.all(r["D_diag_grouped"] >= 0)
+        # fewer, thicker groups => the diagonal captures more of the total
+        assert np.nansum(np.abs(r["D_off_grouped"])) <= np.nansum(np.abs(r["D_off"])) * 1.0001
+
+
+def test_grouped_diag_absent_without_snap_z(tmp_path):
+    _write_tree(tmp_path)
+    cfg, fd, _ = _run(tmp_path)
+    fd2 = {k: v for k, v in fd.items() if k != "snap_z"}
+    res = compute_wrapcycle_auto_power(cfg, fd2)
+    assert "D_diag_grouped" not in res["patchy"]
+    s = summarise_at_ell(res["patchy"], 3000.0)
+    assert "D_diag_grouped" not in s
 
 
 def test_D_scales_as_velocity_squared_no_hidden_unit_conversion(tmp_path):

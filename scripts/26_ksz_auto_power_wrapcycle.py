@@ -110,7 +110,11 @@ def main():
         s = summarise_at_ell(r, 3000.0)
         logger.info(f"[{key}] z=[{r['z_lo']:.2f},{r['z_hi']:.2f}] chi_eff={r['chi_eff']:.0f} Mpc | "
                     f"ell~{s['ell']:.0f}: D_total={s['D_total']:.4g} D_diag={s['D_diag']:.4g} "
-                    f"D_off={s['D_off']:.4g} uK^2  D_off/D_total={s['D_off_over_total']:.1%}")
+                    f"D_off={s['D_off']:.4g} uK^2  D_off/D_total={s['D_off_over_total']:.1%}  [per-1Mpc-pixel baseline]")
+        if "D_diag_grouped" in s:
+            logger.info(f"[{key}] snapshot-GROUPED ({r['n_groups']} groups): D_diag_grouped={s['D_diag_grouped']:.4g} "
+                        f"D_off_grouped={s['D_off_grouped']:.4g} uK^2  D_off/D_total={s['D_off_grouped_over_total']:.1%}  "
+                        f"(the validated baseline; expect small after wrap-cycle)")
     for zt, xe, vk in implied_velocity_kms(cfg, res):
         logger.info(f"[implied v] z={zt:5.2f} x_e={xe:.3f} rms[(1+d)v]={vk:8.1f} km/s (expect ~100-300 at z=7-10)")
     logger.info(f"saved {out_path}  ({time.time() - t0:.0f}s total)")
