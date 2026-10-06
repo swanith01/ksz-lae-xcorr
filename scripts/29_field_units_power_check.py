@@ -49,12 +49,18 @@ def main():
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--z", type=float, nargs="+", default=[6.0, 9.0, 12.0, 15.0])
     ap.add_argument("--sigma8", type=float, default=0.8102, help="21cmFAST default; +-1%% in sigma8 = +-2%% in ratios")
+    ap.add_argument("--save-npz", default=None, help="save the spectra/predictions for scripts/30 (small)")
+    ap.add_argument("--fake-pk", action="store_true", help="TEST ONLY: analytic P_lin instead of CAMB")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
     st = Stitcher(cfg)
     cosmo = get_cosmology(cfg)
-    Pk = camb_pk(cfg, args.sigma8)
+    if args.fake_pk:
+        def Pk(k, z):
+            return 2e4 * (k / .05) / (1 + (k / .05) ** 3.2) * float(growth_factor_ratio(cfg.cosmology.Om0, z)) ** 2
+    else:
+        Pk = camb_pk(cfg, args.sigma8)
     root = os.path.join(cfg.paths.coeval_root, f"seed_{args.seed}")
     zs_avail = np.array(sorted(float(os.path.basename(d)[8:]) for d in glob.glob(os.path.join(root, "coeval_z*"))))
     print(f"seed {args.seed}; sigma8={args.sigma8}; ratios over k=0.04-0.4 /Mpc: median [rms dex-scatter in ln]\n")
@@ -71,6 +77,13 @@ def main():
         print(f"{z:7.3f}  {rv:9.3f} [{sv:.2f}]  {(1+z)**2:8.2f}  {np.sqrt(rv):8.3f}   {rd0:9.3f} [{sd0:.2f}]   "
               f"{rdz:9.3f} [{sdz:.2f}]   {float(growth_factor_ratio(cfg.cosmology.Om0, z))**-2:8.2f}", flush=True)
         rows.append(r)
+    if args.save_npz:
+        os.makedirs(os.path.dirname(os.path.abspath(args.save_npz)), exist_ok=True)
+        np.savez(args.save_npz, seed=args.seed, sigma8=args.sigma8, k=rows[0]["k"],
+                 z=np.array([r["z"] for r in rows]),
+                 **{key: np.array([r[key] for r in rows]) for key in
+                    ("P_vz_raw", "P_vz_pec_theory", "P_d", "P_lin_z", "P_lin_0", "R_v", "R_d_z0", "R_d_z")})
+        print("saved", args.save_npz)
     print("\nk-dependence of R_v (should be flat if it is a pure units factor):")
     print("      k   " + "  ".join(f"z={r['z']:.1f}" for r in rows))
     for i, k in enumerate(rows[0]["k"]):

@@ -50,6 +50,9 @@ def compare_to_linear_theory(delta_ic, vz_raw, box_len_mpc: float, z: float,
         "R_v": pv["P"] / Pv_pec,               # 1 => raw is v_pec ; (1+z)^2 => raw is v_pec/a
         "R_d_z0": pd["P"] / Pk_lin(k, 0.0),    # 1 => hires_density is the z=0-normalised linear field
         "R_d_z": pd["P"] / Pk_lin(k, z),       # 1 => already delta(z)
+        # raw spectra / predictions (Mpc^3-type units; v in Mpc/s) for plotting
+        "P_vz_raw": pv["P"], "P_vz_pec_theory": Pv_pec, "P_d": pd["P"],
+        "P_lin_z": Pk_lin(k, z), "P_lin_0": Pk_lin(k, 0.0),
         "pred_R_v_peculiar": 1.0, "pred_R_v_comoving_rate": (1.0 + z) ** 2,
     }
 
