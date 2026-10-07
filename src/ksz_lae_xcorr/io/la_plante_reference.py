@@ -86,3 +86,21 @@ def load_reionization_histories(cfg=None, root=None) -> dict:
         out[scenario]["z"] = np.array(out[scenario]["z"])[order]
         out[scenario]["x_HII"] = np.array(out[scenario]["x_HII"])[order]
     return out
+
+
+def load_fig1_components(cfg=None, root=None) -> dict:
+    """La Plante+22 Fig. 1 curves (vector-extracted from the PDF, see the README):
+    {component: (ell, D_ell_uK2)} with D = l(l+1)C_l/2pi.  Components: 'SO_post_ILC_noise',
+    'CMB-S4_post_ILC_noise', 'CMB-HD_post_ILC_noise', 'lensed_primary_CMB', 'kSZ_reion_30sim_mean',
+    'kSZ_late_Park18'."""
+    root = root or _default_root(cfg)
+    path = os.path.join(root, "fig1_filter_components_digitized.csv")
+    tmp = {}
+    with open(path) as f:
+        for row in csv.DictReader(f):
+            tmp.setdefault(row["component"], []).append((float(row["ell"]), float(row["D_ell_uK2"])))
+    out = {}
+    for k, v in tmp.items():
+        a = np.array(sorted(v))
+        out[k] = (a[:, 0], a[:, 1])
+    return out

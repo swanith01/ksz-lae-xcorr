@@ -68,6 +68,9 @@ def main():
     ap.add_argument("--filter-norm", default="peak", choices=lp_maps.FILTER_NORMS,
                     help="'peak': f = F*b / max(F*b) (LP+22 Fig 2 convention; default); "
                          "'none': raw Wiener weight (the first, ~1/f_peak^2-too-small run)")
+    ap.add_argument("--noise", default="ilc", choices=lp_maps.NOISE_MODELS,
+                    help="'ilc': post-ILC N_l digitised from LP+22 Fig 1 (default; their headline filters); "
+                         "'naive': Delta_N^2 b^-2 (Eq. 11)")
     ap.add_argument("--cltt-file", default=None, help="CSV ell,Cl_uK2 (raw C_l) instead of CAMB")
     args = ap.parse_args()
 
@@ -83,7 +86,7 @@ def main():
     print(f"{len(prods)} seeds {sorted(prods)}; kSZ map z>={p0['kSZ_z_min']}, "
           f"ne_scale={p0['ne_scale']}, tau0={p0['tau0']}")
     res = lp_maps.run_lp_analysis(cfg, prods, _cl_tt_provider(cfg, args.cltt_file), args.experiment,
-                                  filter_norm=args.filter_norm)
+                                  filter_norm=args.filter_norm, noise=args.noise)
     kg, filt = res["kg"], res["filter"]
 
     # ---- diagnostics: is the kSZ map sane, is the filter sane ---------------
@@ -96,6 +99,26 @@ def main():
     D3 = ell_s[i3] * (ell_s[i3] + 1) * C_s[i3] / (2 * np.pi)
     print(f"seed {sorted(prods)[0]} map auto D_l at l~{ell_s[i3]:.0f}: {D3:.3g} uK^2 "
           f"(LP SO-era kSZ_reion ~ 1 uK^2 at l=3000)")
+    # cross-check of our ingredients against the paper's own Fig. 1 curves (digitised)
+    try:
+        from ksz_lae_xcorr.io.la_plante_reference import load_fig1_components
+        comp = load_fig1_components(None)
+        for lab, key, ours in (("lensed C_TT", "lensed_primary_CMB", filt["Cl_TT"]),
+                               ("kSZ_reion (ours, seed median)", "kSZ_reion_30sim_mean", filt["Cl_kSZ_reion"]),
+                               (f"N_l ({filt['noise']})", f"{args.experiment}_post_ILC_noise", filt["Nl"])):
+            if key not in comp:
+                continue
+            e, D = comp[key]
+            cells = []
+            for t in (1000.0, 3000.0):
+                j = int(np.argmin(np.abs(filt["ell_grid"] - t)))
+                Dours = filt["ell_grid"][j] * (filt["ell_grid"][j] + 1) * ours[j] / (2 * np.pi)
+                Dlp = float(np.exp(np.interp(np.log(filt["ell_grid"][j]), np.log(e), np.log(D))))
+                cells.append(f"l={filt['ell_grid'][j]:.0f}: ours {Dours:.3g} vs LP {Dlp:.3g} uK^2")
+            print(f"  {lab:32s} " + " | ".join(cells))
+    except FileNotFoundError as ex:
+        print(f"(Fig. 1 reference not found: {ex})")
+    print(f"noise model: {filt['noise']}")
     print(f"filter normalisation: {filt['normalise']} (raw peak of F*b = {filt['fl_peak']:.3g} "
           f"at l={filt['ell_grid'][int(np.argmax(filt['fl_raw']))]:.0f})")
     for e in (500.0, 1000.0, 3000.0):
@@ -145,7 +168,7 @@ def main():
               f"ours/band-mid median {np.nanmedian(ratios):.2f} (range {np.nanmin(ratios):.2f}-{np.nanmax(ratios):.2f})")
 
     # ---- outputs ------------------------------------------------------------
-    tag = f"{args.experiment}_wo{args.wrap_offset}" + ("" if args.filter_norm == "peak" else f"_f{args.filter_norm}")
+    tag = f"{args.experiment}_wo{args.wrap_offset}" + ("" if args.filter_norm == "peak" else f"_f{args.filter_norm}") + ("" if args.noise == "ilc" else f"_n{args.noise}")
     csv_path = os.path.join(args.out_dir, f"lp_cross_vs_z0_{tag}.csv")
     cols, names = [res["z0"], res["dz"], res["x_hii"]], ["z0", "dz", "x_hii"]
     for ti, t in enumerate(T):

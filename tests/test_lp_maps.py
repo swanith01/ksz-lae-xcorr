@@ -205,3 +205,39 @@ def test_integration_wrapcycle_lightcone_to_lp_products(tmp_path):
     cl_tt = lambda ell: 3e3 / (ell * (ell + 1)) * 2 * np.pi
     res = lp_maps.run_lp_analysis(cfg, prods, cl_tt, "SO", targets=(3000.0,))
     assert res["D"].shape[0] == 2 and res["D"].shape[2] == 1
+
+
+def test_ilc_noise_curve_reproduces_digitised_points_and_late_ksz_check():
+    from ksz_lae_xcorr.io.la_plante_reference import load_fig1_components
+    comp = load_fig1_components(None)
+    # vector extraction calibration check: the late-kSZ line is the paper's own Eq. 9 power law
+    e, D = comp["kSZ_late_Park18"]
+    np.testing.assert_allclose(D, 1.38 * (e / 3000.0) ** 0.21, rtol=3e-3)
+    e, D = comp["SO_post_ILC_noise"]
+    ell = e[5:30:6]
+    Nl = lp_maps.ilc_noise_Cl(ell, "SO")
+    np.testing.assert_allclose(ell * (ell + 1) * Nl / (2 * np.pi), D[5:30:6], rtol=1e-8)
+    # clamped (not extrapolated) outside the digitised range, and post-ILC > naive instrument noise at l=3000
+    assert np.all(np.isfinite(lp_maps.ilc_noise_Cl(np.array([20.0, 5e4]), "CMB-S4")))
+    for k in ("SO_post_ILC_noise", "CMB-S4_post_ILC_noise", "CMB-HD_post_ILC_noise"):
+        assert np.all(np.diff(comp[k][0]) > 0) and np.all(comp[k][1] > 0)
+    loglog = lambda x, k: float(np.exp(np.interp(np.log(x), np.log(comp[k][0]), np.log(comp[k][1]))))
+    assert 15 < loglog(3000.0, "lensed_primary_CMB") < 30                        # Fig 1 green line at l=3000
+    assert 1.0 < loglog(3000.0, "kSZ_reion_30sim_mean") < 1.3                    # paper Sec. 2.2: ~1 uK^2
+
+
+def test_build_filter_noise_models(tmp_path=None):
+    cfg = Config({"snr": Config({"experiments": Config({
+        "SO": Config({"delta_n_uk_arcmin": 10.0, "theta_fwhm_arcmin": 1.4}),
+        "CMB-S4": Config({"delta_n_uk_arcmin": 2.0, "theta_fwhm_arcmin": 1.4})})})})
+    ell = np.geomspace(100, 1e4, 60)
+    Cl_TT = 20.0 * 2 * np.pi / (ell * (ell + 1)) * (1000.0 / ell) ** 2
+    Ckz = 1.0 * 2 * np.pi / (ell * (ell + 1))
+    ilc = lp_maps.build_lp_filter(cfg, ell, Cl_TT, Ckz, "SO", noise="ilc")
+    nai = lp_maps.build_lp_filter(cfg, ell, Cl_TT, Ckz, "SO", noise="naive")
+    assert ilc["noise"] == "ilc" and nai["noise"] == "naive"
+    j = int(np.argmin(np.abs(ell - 3000.0)))
+    assert ilc["Nl"][j] > nai["Nl"][j]                   # post-ILC noise is higher than the naive one
+    assert np.nanmax(ilc["fl"]) == pytest.approx(1.0) and np.nanmax(nai["fl"]) == pytest.approx(1.0)
+    with pytest.raises(ValueError):
+        lp_maps.build_lp_filter(cfg, ell, Cl_TT, Ckz, "SO", noise="bogus")

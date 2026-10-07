@@ -811,3 +811,14 @@ Precedence: argument > env var > config key > 'legacy'.  CAUTION: scripts 02/04 
 (or use a separate config/paths) before a physical rerun so legacy and physical results are never mixed.
 `ksz_auto_wrapcycle` now routes through the same loader (single code path); its own `--field-convention`
 still defaults to physical.  Linear delta(z) caveat unchanged (proper fix: save perturbed_field.density).
+
+## Post-ILC noise from the paper's Fig. 1 (2026-10-07)
+
+`data/reference/la_plante_2022/fig1_filter_components_digitized.csv`: the curves of LP+22 Fig. 1 (post-ILC noise
+for SO / CMB-S4 / CMB-HD, lensed primary CMB, 30-sim kSZ_reion, late-time kSZ), extracted from the VECTOR paths of
+the PDF (not clicked), axes calibrated from the tick marks; the late-kSZ line reproduces their Eq. 9 to <0.1%.
+`lp_maps.build_lp_filter(noise='ilc')` (default; script 28 `--noise {ilc,naive}`) uses the post-ILC N_l for the
+filter F = C_kSZreion/(C_TT + C_kSZreion + C_kSZlate + N_l) -- the paper's "ILC noise" case behind Figs 2-5 --
+instead of the naive Delta_N^2 b^-2 (Eq. 11), which is ~1.7x lower at l=3000 for SO (15.9 vs 27.6 uK^2 in D_l).
+Script 28 now also prints our C_TT, C_kSZreion and N_l against the paper's curves at l=1000 and 3000
+(a check of our CAMB cosmology/lensing and of our simulated kSZ against theirs).

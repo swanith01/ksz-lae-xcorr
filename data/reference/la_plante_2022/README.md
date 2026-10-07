@@ -38,3 +38,12 @@ right at plot edges where lines get thin/anti-aliased. Fine for
 shape/order-of-magnitude comparison, not for anything requiring
 sub-percent precision. If better precision is ever needed, re-digitize
 from a vector PDF of the paper rather than a raster screenshot.
+
+- **fig1_filter_components_digitized.csv** -- their Figure 1 (D_ell = l(l+1)C_l/2pi in uK^2 vs l):
+  post-ILC noise for SO / CMB-S4 / CMB-HD, the lensed primary CMB, the 30-sim mean reionization kSZ
+  and the late-time kSZ power law. Columns: component, ell, D_ell_uK2. Digitised 2026-10-07 by EXTRACTING THE
+  VECTOR PATHS of the figure from the paper PDF (PyMuPDF `get_drawings`, axes calibrated from the tick marks),
+  not by clicking on pixels, so accuracy is ~path precision (<<1%), not 1-2%. Check built in: the extracted
+  late-kSZ line reproduces their Eq. 9 (1.38 (l/3000)^0.21) at both ends. The CMB and CMB-HD curves are drawn
+  as filled outlines / dots in the PDF; those two are binned (80 log-l bins, geometric mean) from the outlines
+  and are good to a few per cent. Range l ~ 96-10050 (the kSZ-reion curve starts at l = 200).

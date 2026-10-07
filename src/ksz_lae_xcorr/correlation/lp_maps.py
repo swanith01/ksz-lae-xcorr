@@ -188,10 +188,24 @@ def kSZ_reion_Cl_on_grid(maps: list, kg: KGrid, chi_eff: float, ell_grid: np.nda
 
 
 FILTER_NORMS = ("peak", "none")
+NOISE_MODELS = ("ilc", "naive")
+ILC_NOISE_COMPONENT = {"SO": "SO_post_ILC_noise", "CMB-S4": "CMB-S4_post_ILC_noise",
+                       "CMB-HD": "CMB-HD_post_ILC_noise"}
+
+
+def ilc_noise_Cl(ell_grid, experiment: str, cfg=None) -> np.ndarray:
+    """Post-ILC N_l [uK^2] for `experiment` from the digitised La Plante+22 Fig. 1 curve
+    (D = l(l+1)N/2pi; log-log interpolation, clamped outside the digitised l ~ 96-10050)."""
+    from ksz_lae_xcorr.io.la_plante_reference import load_fig1_components
+    comp = ILC_NOISE_COMPONENT[experiment]
+    ell, D = load_fig1_components(cfg)[comp]
+    ell_grid = np.asarray(ell_grid, float)
+    Dg = np.exp(np.interp(np.log(ell_grid), np.log(ell), np.log(D)))
+    return Dg * 2 * np.pi / (ell_grid * (ell_grid + 1))
 
 
 def build_lp_filter(cfg, ell_grid, Cl_TT, Cl_kSZ_reion, experiment: str = "SO",
-                    normalise: str = "peak") -> dict:
+                    normalise: str = "peak", noise: str = "ilc") -> dict:
     """f(l) = F(l) b(l) for one experiment (La Plante+22 Eq. 8, 10), via the repo's own
     snr.cmb_filter pieces.  Returns {'ell_grid','fl','fl_raw','fl_peak','Fl','bl','Nl','Cl_kSZ_late'}.
 
@@ -204,16 +218,29 @@ def build_lp_filter(cfg, ell_grid, Cl_TT, Cl_kSZ_reion, experiment: str = "SO",
                  ~1e-4 at l=500) the squared map would be ~1e-3 uK^2 and, at l=500, the cross-power
                  could not reach their band (it is suppressed by f^2 ~ 1e-8).
       'none'   : fl = F*b exactly (the 2026-10-06 first run; amplitudes ~1/f_peak^2 too small).
+
+    noise:
+      'ilc'   (default): N_l = the post-ILC residual-foreground + instrument noise of LP+22 Fig. 1
+                 (digitised from the paper's vector figure; the "ILC noise" case used for their headline
+                 filters, Fig. 2).  Falls back to 'naive' for an experiment without a digitised curve.
+      'naive' : N_l = Delta_N^2 b^-2 (LP+22 Eq. 11, instrument noise only; ~1.7x lower than ILC at l=3000 for SO).
     """
+    if noise not in NOISE_MODELS:
+        raise ValueError(f"noise must be one of {NOISE_MODELS}, got {noise!r}")
     if normalise not in FILTER_NORMS:
         raise ValueError(f"normalise must be one of {FILTER_NORMS}, got {normalise!r}")
     Cl_late = kSZ_late_time(ell_grid)
     Nl = instrument_noise(cfg, ell_grid)
+    noise_used = "naive"
+    if noise == "ilc" and experiment in ILC_NOISE_COMPONENT:
+        Nl = dict(Nl)
+        Nl[experiment] = ilc_noise_Cl(ell_grid, experiment, cfg)
+        noise_used = "ilc"
     Fl, bl, fl = build_filters(cfg, ell_grid, Cl_TT, Cl_kSZ_reion, Cl_late, Nl)
     fl_raw = np.asarray(fl[experiment], float)
     peak = float(np.nanmax(fl_raw))
     fl_used = fl_raw / peak if normalise == "peak" else fl_raw
-    return {"ell_grid": ell_grid, "fl": fl_used, "fl_raw": fl_raw, "fl_peak": peak, "normalise": normalise,
+    return {"ell_grid": ell_grid, "fl": fl_used, "fl_raw": fl_raw, "fl_peak": peak, "normalise": normalise, "noise": noise_used,
             "Fl": Fl[experiment], "bl": bl[experiment], "Nl": Nl[experiment], "Cl_kSZ_late": Cl_late,
             "Cl_kSZ_reion": Cl_kSZ_reion, "Cl_TT": Cl_TT, "experiment": experiment}
 
@@ -348,7 +375,7 @@ def compare_to_la_plante(res: dict, bands: dict) -> list[dict]:
 
 
 def run_lp_analysis(cfg, products_by_seed: dict, cl_tt, experiment: str = "SO",
-                    targets=LP_ELL_TARGETS, filter_norm: str = "peak") -> dict:
+                    targets=LP_ELL_TARGETS, filter_norm: str = "peak", noise: str = "ilc") -> dict:
     """
     Full map-based LP chain from the per-seed products: filter ingredients
     (C_kSZreion = seed-median auto-power of the SAME maps; C_TT from `cl_tt`, a callable
@@ -361,7 +388,7 @@ def run_lp_analysis(cfg, products_by_seed: dict, cl_tt, experiment: str = "SO",
     ell_grid = np.geomspace(cfg.snr.ell_min, cfg.snr.ell_max, cfg.snr.n_ell)
     Cl_kSZ = kSZ_reion_Cl_on_grid([products_by_seed[s]["kSZ_map"] for s in seeds], kg, chi_ref, ell_grid)
     filt = build_lp_filter(cfg, ell_grid, np.asarray(cl_tt(ell_grid), float), Cl_kSZ, experiment,
-                           normalise=filter_norm)
+                           normalise=filter_norm, noise=noise)
     res = lp_cross_vs_z0(products_by_seed, kg, filt, targets, chi_ref=chi_ref)
     res.update({"filter": filt, "chi_ref": chi_ref, "kg": kg, "experiment": experiment})
     return res
