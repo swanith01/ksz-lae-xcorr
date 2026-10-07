@@ -65,6 +65,9 @@ def main():
     ap.add_argument("--in-dir", default=None, help="default: <products_root>/ksz_auto_wrapcycle")
     ap.add_argument("--out-dir", default="paper/figure_scripts/output")
     ap.add_argument("--experiment", default="SO", help="key of cfg.snr.experiments (LP Figs 4/5/7 use SO)")
+    ap.add_argument("--filter-norm", default="peak", choices=lp_maps.FILTER_NORMS,
+                    help="'peak': f = F*b / max(F*b) (LP+22 Fig 2 convention; default); "
+                         "'none': raw Wiener weight (the first, ~1/f_peak^2-too-small run)")
     ap.add_argument("--cltt-file", default=None, help="CSV ell,Cl_uK2 (raw C_l) instead of CAMB")
     args = ap.parse_args()
 
@@ -79,7 +82,8 @@ def main():
     p0 = prods[sorted(prods)[0]]
     print(f"{len(prods)} seeds {sorted(prods)}; kSZ map z>={p0['kSZ_z_min']}, "
           f"ne_scale={p0['ne_scale']}, tau0={p0['tau0']}")
-    res = lp_maps.run_lp_analysis(cfg, prods, _cl_tt_provider(cfg, args.cltt_file), args.experiment)
+    res = lp_maps.run_lp_analysis(cfg, prods, _cl_tt_provider(cfg, args.cltt_file), args.experiment,
+                                  filter_norm=args.filter_norm)
     kg, filt = res["kg"], res["filter"]
 
     # ---- diagnostics: is the kSZ map sane, is the filter sane ---------------
@@ -92,9 +96,23 @@ def main():
     D3 = ell_s[i3] * (ell_s[i3] + 1) * C_s[i3] / (2 * np.pi)
     print(f"seed {sorted(prods)[0]} map auto D_l at l~{ell_s[i3]:.0f}: {D3:.3g} uK^2 "
           f"(LP SO-era kSZ_reion ~ 1 uK^2 at l=3000)")
+    print(f"filter normalisation: {filt['normalise']} (raw peak of F*b = {filt['fl_peak']:.3g} "
+          f"at l={filt['ell_grid'][int(np.argmax(filt['fl_raw']))]:.0f})")
     for e in (500.0, 1000.0, 3000.0):
         j = int(np.argmin(np.abs(filt["ell_grid"] - e)))
-        print(f"filter {args.experiment} @ l={e:.0f}: F={filt['Fl'][j]:.3g} b={filt['bl'][j]:.3g} f={filt['fl'][j]:.3g}")
+        print(f"filter {args.experiment} @ l={e:.0f}: F={filt['Fl'][j]:.3g} b={filt['bl'][j]:.3g} "
+              f"f_raw={filt['fl_raw'][j]:.3g} f_used={filt['fl'][j]:.3g}")
+    # amplitude sanity vs LP+22 Sec. 3: RMS of the filtered kSZ^2 map = 1.6 uK^2 (brightest pixels ~30 uK^2);
+    # RMS of delta_g for z0=9.5, dz=1 is 0.54 (their 2 h^-1 Gpc box, 16 deg patch; ours is a 300 Mpc patch)
+    from ksz_lae_xcorr.utils import constants as _c
+    p1 = prods[sorted(prods)[0]]
+    f2 = lp_maps.filter_and_square(p1["kSZ_map"], filt["ell_grid"], filt["fl"], kg, res["chi_ref"]) * _c.T_CMB_UK ** 2
+    print(f"seed {sorted(prods)[0]} filtered kSZ^2 map [uK^2]: mean={f2.mean():.3g} rms(std)={f2.std():.3g} "
+          f"max={f2.max():.3g}   (LP+22: rms 1.6, brightest ~30)")
+    ws = [w for w in p1["windows"] if abs(w["dz"] - 1.0) < 1e-9]
+    if ws:
+        w95 = min(ws, key=lambda w: abs(w["z0"] - 9.5))
+        print(f"delta_g rms (z0={w95['z0']:.1f}, dz=1): {np.std(w95['gal_map']):.3g}   (LP+22: 0.54)")
 
     # ---- table --------------------------------------------------------------
     T = res["ell_targets"]
@@ -127,7 +145,7 @@ def main():
               f"ours/band-mid median {np.nanmedian(ratios):.2f} (range {np.nanmin(ratios):.2f}-{np.nanmax(ratios):.2f})")
 
     # ---- outputs ------------------------------------------------------------
-    tag = f"{args.experiment}_wo{args.wrap_offset}"
+    tag = f"{args.experiment}_wo{args.wrap_offset}" + ("" if args.filter_norm == "peak" else f"_f{args.filter_norm}")
     csv_path = os.path.join(args.out_dir, f"lp_cross_vs_z0_{tag}.csv")
     cols, names = [res["z0"], res["dz"], res["x_hii"]], ["z0", "dz", "x_hii"]
     for ti, t in enumerate(T):

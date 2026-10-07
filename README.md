@@ -777,3 +777,18 @@ comoving bucket first (`group_slices_by_snapshot`) and only then adds the groups
 (needs `fd['snap_z']`, set by `build_wrapcycle_field_data`). The per-pixel `D_diag`/`D_off` are kept
 as a lower bound only. The success criterion "D_off/D_total small after wrap-cycle" applies to the
 GROUPED split; an earlier retraction of it (same session) was itself wrong. Rerun the seeds to get the grouped numbers (the pkls do not store theta).
+
+## LP+22 filter normalisation: f(l) is peak-normalised (found 2026-10-07 from the paper)
+
+La Plante+22 (ApJ 928, 162) Eq. 8/10: dT_f = F(l) b(l) dT with F = C_kSZreion/(C_TT + C_kSZreion + C_kSZlate + N_l)
+-- as implemented -- but Fig. 2 normalises f(l)=F*b to unity at its peak, and their numbers only make sense
+that way: the filtered kSZ^2 map has RMS 1.6 uK^2 (Sec. 3) and the cross-power peaks at ~0.02 uK^2 (Fig. 5),
+whereas the raw Wiener weight (F ~ 0.02 at l=3000, ~1e-4 at l=500) suppresses D_cross by f^2 ~ 4e-4 / 1e-8.
+`lp_maps.build_lp_filter(normalise='peak')` (default; script 28 `--filter-norm {peak,none}`) now divides by max(F*b);
+D_cross changes by exactly 1/f_peak^2 (~1e3). Script 28 prints the filtered-kSZ^2 rms/max in uK^2 and the
+delta_g rms next to the paper's 1.6 / ~30 uK^2 and 0.54 -- the latter are for their 2 h^-1 Gpc, ~16 deg patch.
+Other paper facts verified: D_kSZreion ~ 1 uK^2 at l~3000 (Sec. 2.4), late-time D = 1.38 (l/3000)^0.21 (Eq. 9),
+naive noise Eq. 11 with SO 10 uK-arcmin / 1.4' (Table 1), N_He=1 => n_e,0 factor 1-3Y/4 (our ne_scale 0.82),
+filter truncated beyond l=10000, Delta z=1 top-hat galaxy windows with W16 bias, 30 realizations of a 2 h^-1 Gpc /
+1024^3-particle 2LPT box (so l_min ~ 20, vs ~190 for our 300 Mpc box). Not reproduced: the post-ILC noise
+(orphics) for the headline filters -- we use the naive instrument noise.

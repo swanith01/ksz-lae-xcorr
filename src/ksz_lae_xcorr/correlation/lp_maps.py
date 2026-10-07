@@ -187,14 +187,34 @@ def kSZ_reion_Cl_on_grid(maps: list, kg: KGrid, chi_eff: float, ell_grid: np.nda
     return np.exp(f(np.log(ell_grid)))
 
 
-def build_lp_filter(cfg, ell_grid, Cl_TT, Cl_kSZ_reion, experiment: str = "SO") -> dict:
+FILTER_NORMS = ("peak", "none")
+
+
+def build_lp_filter(cfg, ell_grid, Cl_TT, Cl_kSZ_reion, experiment: str = "SO",
+                    normalise: str = "peak") -> dict:
     """f(l) = F(l) b(l) for one experiment (La Plante+22 Eq. 8, 10), via the repo's own
-    snr.cmb_filter pieces.  Returns {'ell_grid','fl','Fl','bl','Nl','Cl_kSZ_late'}."""
+    snr.cmb_filter pieces.  Returns {'ell_grid','fl','fl_raw','fl_peak','Fl','bl','Nl','Cl_kSZ_late'}.
+
+    normalise:
+      'peak' (default): fl = F*b / max(F*b) over ell_grid, i.e. f peaks at 1 -- as in LP+22
+                 Fig. 2 ("arbitrary normalisation ... unity where the filter is maximal").
+                 Evidence that this is the amplitude convention of their cross-power: their
+                 quoted RMS of the filtered kSZ^2 map is 1.6 uK^2 (Sec. 3) and the cross-power
+                 peaks at ~0.02 uK^2 (Fig. 4/5).  With the raw Wiener weight (F ~ 0.02 at l=3000,
+                 ~1e-4 at l=500) the squared map would be ~1e-3 uK^2 and, at l=500, the cross-power
+                 could not reach their band (it is suppressed by f^2 ~ 1e-8).
+      'none'   : fl = F*b exactly (the 2026-10-06 first run; amplitudes ~1/f_peak^2 too small).
+    """
+    if normalise not in FILTER_NORMS:
+        raise ValueError(f"normalise must be one of {FILTER_NORMS}, got {normalise!r}")
     Cl_late = kSZ_late_time(ell_grid)
     Nl = instrument_noise(cfg, ell_grid)
     Fl, bl, fl = build_filters(cfg, ell_grid, Cl_TT, Cl_kSZ_reion, Cl_late, Nl)
-    return {"ell_grid": ell_grid, "fl": fl[experiment], "Fl": Fl[experiment],
-            "bl": bl[experiment], "Nl": Nl[experiment], "Cl_kSZ_late": Cl_late,
+    fl_raw = np.asarray(fl[experiment], float)
+    peak = float(np.nanmax(fl_raw))
+    fl_used = fl_raw / peak if normalise == "peak" else fl_raw
+    return {"ell_grid": ell_grid, "fl": fl_used, "fl_raw": fl_raw, "fl_peak": peak, "normalise": normalise,
+            "Fl": Fl[experiment], "bl": bl[experiment], "Nl": Nl[experiment], "Cl_kSZ_late": Cl_late,
             "Cl_kSZ_reion": Cl_kSZ_reion, "Cl_TT": Cl_TT, "experiment": experiment}
 
 
@@ -328,7 +348,7 @@ def compare_to_la_plante(res: dict, bands: dict) -> list[dict]:
 
 
 def run_lp_analysis(cfg, products_by_seed: dict, cl_tt, experiment: str = "SO",
-                    targets=LP_ELL_TARGETS) -> dict:
+                    targets=LP_ELL_TARGETS, filter_norm: str = "peak") -> dict:
     """
     Full map-based LP chain from the per-seed products: filter ingredients
     (C_kSZreion = seed-median auto-power of the SAME maps; C_TT from `cl_tt`, a callable
@@ -340,7 +360,8 @@ def run_lp_analysis(cfg, products_by_seed: dict, cl_tt, experiment: str = "SO",
     chi_ref = float(np.median([products_by_seed[s]["chi_eff_kSZ"] for s in seeds]))
     ell_grid = np.geomspace(cfg.snr.ell_min, cfg.snr.ell_max, cfg.snr.n_ell)
     Cl_kSZ = kSZ_reion_Cl_on_grid([products_by_seed[s]["kSZ_map"] for s in seeds], kg, chi_ref, ell_grid)
-    filt = build_lp_filter(cfg, ell_grid, np.asarray(cl_tt(ell_grid), float), Cl_kSZ, experiment)
+    filt = build_lp_filter(cfg, ell_grid, np.asarray(cl_tt(ell_grid), float), Cl_kSZ, experiment,
+                           normalise=filter_norm)
     res = lp_cross_vs_z0(products_by_seed, kg, filt, targets, chi_ref=chi_ref)
     res.update({"filter": filt, "chi_ref": chi_ref, "kg": kg, "experiment": experiment})
     return res

@@ -157,6 +157,16 @@ def test_end_to_end_products_filter_and_aggregate():
     assert np.all(res["n_modes"] >= 1) and list(res["seeds"]) == [1, 2, 3]
     f = res["filter"]
     assert np.all((f["fl"] >= 0) & (f["fl"] <= 1.0 + 1e-12))
+    # peak normalisation (LP+22 Fig 2): max of f is exactly 1, shape equals F*b
+    assert f["normalise"] == "peak" and np.nanmax(f["fl"]) == pytest.approx(1.0)
+    np.testing.assert_allclose(f["fl"] * f["fl_peak"], f["fl_raw"])
+    np.testing.assert_allclose(f["fl_raw"], f["Fl"] * f["bl"])
+    res_raw = lp_maps.run_lp_analysis(cfg, prods, cl_tt, "SO", targets=(1500.0, 3000.0, 5000.0), filter_norm="none")
+    assert np.nanmax(res_raw["filter"]["fl"]) == pytest.approx(res_raw["filter"]["fl_peak"])
+    # D_cross scales as f^2: the two conventions differ by exactly 1/f_peak^2
+    np.testing.assert_allclose(res["D"], res_raw["D"] / res_raw["filter"]["fl_peak"] ** 2, rtol=1e-8, atol=1e-30)
+    with pytest.raises(ValueError):
+        lp_maps.build_lp_filter(cfg, f["ell_grid"], f["Cl_TT"], f["Cl_kSZ_reion"], "SO", normalise="bogus")
     # filter is F*b with F = Ckz/(CTT+Ckz+Clate+N): recompute independently
     den = f["Cl_TT"] + f["Cl_kSZ_reion"] + f["Cl_kSZ_late"] + f["Nl"]
     np.testing.assert_allclose(f["Fl"], f["Cl_kSZ_reion"] / den)
