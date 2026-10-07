@@ -35,7 +35,33 @@ from scipy.interpolate import interp1d
 
 from ksz_lae_xcorr.utils import constants
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
+from ksz_lae_xcorr.utils.field_units import delta_at_z_from_ic, peculiar_velocity_from_raw
 from ksz_lae_xcorr.utils.grid import block_average_downsample
+
+FIELD_CONVENTIONS = ("legacy", "physical")
+FIELD_CONVENTION_ENV = "KSZ_FIELD_CONVENTION"
+_LEGACY_WARNED = False
+
+
+def resolve_field_convention(cfg, explicit: str | None = None) -> str:
+    """Precedence: explicit argument > env KSZ_FIELD_CONVENTION > cfg.lightcone.field_convention > 'legacy'."""
+    conv = explicit or os.environ.get(FIELD_CONVENTION_ENV) or cfg.lightcone.get("field_convention") or "legacy"
+    if conv not in FIELD_CONVENTIONS:
+        raise ValueError(f"field_convention must be one of {FIELD_CONVENTIONS}, got {conv!r}")
+    return conv
+
+
+def _warn_legacy_once() -> None:
+    global _LEGACY_WARNED
+    if not _LEGACY_WARNED:
+        _LEGACY_WARNED = True
+        import warnings
+        warnings.warn(
+            "Stitcher is loading RAW py21cmfast fields (field_convention='legacy'): velocity_z is a comoving "
+            "rate (needs 1/(1+z)) and hires_density is the z=0-normalised linear IC field (needs D(z)/D(0)); "
+            "absolute kSZ amplitudes are ~1e2-1e3 too large (found 2026-10-06, see README / utils/field_units.py). "
+            "Use field_convention='physical' (KSZ_FIELD_CONVENTION=physical) for physical amplitudes.",
+            UserWarning, stacklevel=3)
 
 
 def _linear_growth_factor(cosmo, z: float) -> float:
@@ -117,8 +143,9 @@ def setup_logger(seed: int, out_root: str) -> logging.Logger:
 class Stitcher:
     """Holds config-derived constants and does the actual stitching for one seed."""
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, field_convention: str | None = None):
         self.cfg = cfg
+        self.field_convention = resolve_field_convention(cfg, field_convention)
         self.cosmo = get_cosmology(cfg)
         self.box_len = cfg.box.box_len_mpc
         self.ngrid = cfg.box.hii_dim
@@ -214,7 +241,24 @@ class Stitcher:
 
     # -- box / catalogue loaders ------------------------------------------
 
-    def load_field_box(self, seed: int, z: float, field_name: str) -> np.ndarray:
+    def load_field_box(self, seed: int, z: float, field_name: str,
+                       convention: str | None = None) -> np.ndarray:
+        """Load one coeval box.
+
+        convention (default: self.field_convention, i.e. 'legacy' unless opted in):
+          'legacy'  : raw py21cmfast fields as saved -- vz is the COMOVING-coordinate rate and
+                      density is the z=0-normalised linear IC field.  Amplitudes are unphysical
+                      (see utils/field_units.py, found 2026-10-06); kept as the default so existing
+                      results stay reproducible.
+          'physical': vz -> v_pec = vz/(1+z);  density -> linear delta(z) = D(z)/D(0)*delta_IC
+                      (still delta, not 1+delta: callers add 1; no floor applied here).
+        Select per Stitcher via Stitcher(cfg, field_convention=...), the env var
+        KSZ_FIELD_CONVENTION, or cfg.lightcone.field_convention."""
+        conv = self.field_convention if convention is None else convention
+        if conv not in FIELD_CONVENTIONS:
+            raise ValueError(f"convention must be one of {FIELD_CONVENTIONS}, got {conv!r}")
+        if conv == "legacy":
+            _warn_legacy_once()
         field_map = {
             "xH": "neutral_fraction.npy",
             "density": "hires_density.npy",
@@ -234,7 +278,13 @@ class Stitcher:
             # silently reads a spatially wrong, mismatched sub-region (bug found
             # during the Jul 2026 pixel-level validation requested by G. Kulkarni).
             box = block_average_downsample(np.array(box), self.ngrid)
+            if conv == "physical":   # linear op, so order vs the block-average is irrelevant
+                box = delta_at_z_from_ic(box, float(self.cfg.cosmology.Om0), z).astype(np.float32)
         if field_name == "vz":
+            # SUPERSEDED 2026-10-06: the claim below that raw velocity_z is "already a genuine
+            # comoving peculiar velocity" is WRONG -- it is the comoving-coordinate rate and needs
+            # 1/(1+z) (convention='physical' does that); the check passed only because the unconverted
+            # density error cancelled it (README "FIELD-UNITS BUG").  Kept as history:
             # FIXED 2026-09-09, CONFIRMED via first-principles physics on
             # real data (correlation/velocity_convention_check.py,
             # scripts/17, job 1715931): raw velocity_z, with NO conversion
@@ -252,6 +302,8 @@ class Stitcher:
             # field that formula was designed to convert; it's already a
             # genuine comoving peculiar velocity in Mpc/s.
             box = np.array(box)
+            if conv == "physical":
+                box = peculiar_velocity_from_raw(box, z).astype(np.float32)
         return box
 
     def _halo_coords_masses(self, seed: int, z: float):

@@ -47,7 +47,6 @@ from ksz_lae_xcorr.correlation.coherence_decomposition import (
 from ksz_lae_xcorr.lightcone.wrap_cycle import build_los_z_grid, stitch_wrapcycle
 from ksz_lae_xcorr.snr.roman_hls_benchmark import chi_eff_power_weighted
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
-from ksz_lae_xcorr.utils.field_units import delta_at_z_from_ic, peculiar_velocity_from_raw
 from ksz_lae_xcorr.utils.optical_depth import analytic_tau_below, ne_scale_helium
 
 FIELD_CONVENTIONS = ("physical", "legacy")
@@ -80,7 +79,6 @@ def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, l
       'legacy'  : the raw fields exactly as before (known to be ~(1+z)^2 * (rms ratio)^2 too high)."""
     if field_convention not in FIELD_CONVENTIONS:
         raise ValueError(f"field_convention must be one of {FIELD_CONVENTIONS}, got {field_convention!r}")
-    Om0 = float(cfg.cosmology.Om0)
     cosmo = get_cosmology(cfg)
     ngrid = int(cfg.box.hii_dim)
     cell = float(cfg.box.box_len_mpc) / ngrid
@@ -93,13 +91,9 @@ def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, l
                 f"wrap_cycle_seed={wrap_cycle_seed}, mode={mode}")
 
     def load_box(z, field):
-        box = np.ascontiguousarray(stitcher.load_field_box(seed, z, field), dtype=np.float32)
-        if field_convention == "physical":
-            if field == "vz":
-                box = peculiar_velocity_from_raw(box, z).astype(np.float32)
-            elif field == "density":
-                box = delta_at_z_from_ic(box, Om0, z).astype(np.float32)
-        return box
+        # the unit conversion now lives in Stitcher.load_field_box (single code path)
+        return np.ascontiguousarray(
+            stitcher.load_field_box(seed, z, field, convention=field_convention), dtype=np.float32)
 
     t0 = time.time()
     lc = stitch_wrapcycle(

@@ -792,3 +792,22 @@ naive noise Eq. 11 with SO 10 uK-arcmin / 1.4' (Table 1), N_He=1 => n_e,0 factor
 filter truncated beyond l=10000, Delta z=1 top-hat galaxy windows with W16 bias, 30 realizations of a 2 h^-1 Gpc /
 1024^3-particle 2LPT box (so l_min ~ 20, vs ~190 for our 300 Mpc box). Not reproduced: the post-ILC noise
 (orphics) for the headline filters -- we use the naive instrument noise.
+
+## Opt-in physical fields for the OLDER pipeline (Stitcher.load_field_box), 2026-10-07
+
+The wrap-cycle path already used physical fields; everything built on `Stitcher.load_field_box` directly
+(scripts 02/04/05/06/08/09/11/13/14/15/18/19/23/24, `direct_bispectrum`, `lightcone.value_fields`, the SNR
+forecasts' lightcones) still gets the raw, unphysical fields BY DEFAULT so existing products stay reproducible
+(a one-time `UserWarning` now says so).  To rerun any of them with physical amplitudes (vz -> vz/(1+z);
+density -> D(z)/D(0)*hires_density, still delta not 1+delta, no floor):
+
+    KSZ_FIELD_CONVENTION=physical python scripts/18_direct_dell_vs_z0.py ...      # env var (any script)
+    qsub -v KSZ_FIELD_CONVENTION=physical pbs/<script>.sh                           # PBS
+    Stitcher(cfg, field_convention="physical")                                      # code
+    lightcone: {field_convention: physical}  in the config                          # yaml
+
+Precedence: argument > env var > config key > 'legacy'.  CAUTION: scripts 02/04 write into
+`cfg.paths.lightcone_root` and do not record the convention in their outputs -- move the old products aside
+(or use a separate config/paths) before a physical rerun so legacy and physical results are never mixed.
+`ksz_auto_wrapcycle` now routes through the same loader (single code path); its own `--field-convention`
+still defaults to physical.  Linear delta(z) caveat unchanged (proper fix: save perturbed_field.density).
