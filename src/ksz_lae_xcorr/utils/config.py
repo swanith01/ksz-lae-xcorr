@@ -80,14 +80,29 @@ def _expand_paths(obj: Any) -> Any:
     return obj
 
 
+def _load_yaml_with_extends(path: str, _seen: tuple = ()) -> dict:
+    """Read a YAML file; if it has a top-level `extends: <other.yaml>` (path relative to this file), load that
+    base first and deep-update it with the rest of this file.  Lets a variant state only what differs
+    (e.g. configs/variants/zreion_xh.yaml) instead of copying fiducial.yaml and drifting from it."""
+    ap = os.path.abspath(path)
+    if ap in _seen:
+        raise ValueError(f"circular `extends` in {path}")
+    with open(path, "r") as f:
+        raw = yaml.safe_load(f) or {}
+    base_rel = raw.pop("extends", None)
+    if base_rel is None:
+        return raw
+    base = _load_yaml_with_extends(os.path.join(os.path.dirname(ap), base_rel), _seen + (ap,))
+    return _deep_update(base, raw)
+
+
 def load_config(path: str, overrides: dict | None = None) -> Config:
     """
     Load a YAML config, resolve ${...} cross-references, expand '~' paths,
     and apply optional dict overrides (e.g. from a configs/variants/ file
     or CLI args), then return it as an attribute-accessible Config.
     """
-    with open(path, "r") as f:
-        raw = yaml.safe_load(f)
+    raw = _load_yaml_with_extends(path)
 
     if overrides:
         raw = _deep_update(raw, overrides)

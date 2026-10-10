@@ -74,3 +74,25 @@ def test_to_cell_to_dell_roundtrip_shapes():
     D, Derr = to_Dell(ell, C, Cerr)
     assert D.shape == ell.shape
     assert np.all(D > 0)
+
+
+def test_config_extends(tmp_path):
+    import textwrap
+    from ksz_lae_xcorr.utils.config import load_config
+    (tmp_path / "base.yaml").write_text(textwrap.dedent("""
+        paths:
+          project_root: /p
+          coeval_root: "${paths.project_root}"
+          products_root: data/products
+        box: {hii_dim: 10}
+    """))
+    (tmp_path / "var").mkdir()
+    (tmp_path / "var" / "v.yaml").write_text(textwrap.dedent("""
+        extends: ../base.yaml
+        paths:
+          coeval_root: /other
+    """))
+    c = load_config(str(tmp_path / "var" / "v.yaml"))
+    assert c.paths.coeval_root == "/other" and c.paths.products_root == "data/products" and c.box.hii_dim == 10
+    c0 = load_config(str(tmp_path / "base.yaml"))
+    assert c0.paths.coeval_root == "/p"

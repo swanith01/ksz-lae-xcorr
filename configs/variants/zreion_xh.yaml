@@ -1,0 +1,14 @@
+# =============================================================================
+# zreion_xh.yaml -- run the existing pipeline with the ionisation field replaced by zreion
+# (scripts/34_zreion_on_21cmfast.py --write-root /user1/swanith/zreion_coeval ...).  Density and velocity files in that
+# root are symlinks to the original 21cmFAST boxes; ONLY neutral_fraction.npy differs.
+# Everything not listed here is inherited from fiducial.yaml.
+# Use:  python scripts/26_ksz_auto_power_wrapcycle.py --config configs/variants/zreion_xh.yaml --seed 1 ...
+# Outputs land under products_root below (kept separate so the 21cmFAST products are never overwritten).
+# =============================================================================
+extends: ../fiducial.yaml
+run_name: "zreion_xh"
+
+paths:
+  coeval_root: "/user1/swanith/zreion_coeval"
+  products_root: "data/products_zreion"
