@@ -89,3 +89,21 @@ def test_reionization_histories_early_ionizes_faster_than_fiducial():
         f"(higher x_HII, having started earlier) than Fiducial "
         f"({x_fiducial:.3f}) -- scenario semantics may be backwards."
     )
+
+
+def test_loaders_prefer_repo_copy_when_project_root_lacks_the_file(tmp_path):
+    """Cluster regression (2026-10-10): cfg.paths.project_root pointed at an older project folder
+    without fig1_filter_components_digitized.csv -> FileNotFoundError.  The repo copy must be used."""
+    from types import SimpleNamespace
+    from ksz_lae_xcorr.io.la_plante_reference import load_fig1_components
+    cfg = SimpleNamespace(paths=SimpleNamespace(project_root=str(tmp_path)))   # empty -> no CSVs there
+    comps = load_fig1_components(cfg=cfg)
+    assert "SO_post_ILC_noise" in comps
+    assert load_dell_vs_z0_bands(cfg=cfg)
+    assert load_reionization_histories(cfg=cfg)
+
+
+def test_missing_file_error_lists_searched_dirs(tmp_path):
+    from ksz_lae_xcorr.io.la_plante_reference import _resolve
+    with pytest.raises(FileNotFoundError, match="not found in any of"):
+        _resolve("nope.csv")

@@ -12,10 +12,35 @@ import os
 import numpy as np
 
 
-def _default_root(cfg=None):
+def _repo_root_dir():
+    """data/reference/la_plante_2022 inside this repository checkout."""
+    return os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "..", "..",
+                                         "data", "reference", "la_plante_2022"))
+
+
+def _project_root_dir(cfg=None):
     if cfg is not None and hasattr(cfg, "paths") and hasattr(cfg.paths, "project_root"):
         return os.path.join(cfg.paths.project_root, "data", "reference", "la_plante_2022")
-    return os.path.join(os.path.dirname(__file__), "..", "..", "..", "data", "reference", "la_plante_2022")
+    return None
+
+
+def _resolve(filename, cfg=None, root=None):
+    """Path of a reference CSV.  An explicit `root` always wins.  Otherwise the copy that ships
+    with the repository is used (it is the single source of truth and is always current);
+    cfg.paths.project_root/data/reference/... is only a fallback.  (Before 2026-10-10 the
+    project_root copy came first: on the cluster project_root is the older
+    kSZ2_LAE_project_22Jun2026 folder, which lacks newer CSVs -> FileNotFoundError.)"""
+    if root:
+        return os.path.join(root, filename)
+    cands = [_repo_root_dir()]
+    pr = _project_root_dir(cfg)
+    if pr:
+        cands.append(pr)
+    for d in cands:
+        p = os.path.join(d, filename)
+        if os.path.isfile(p):
+            return p
+    raise FileNotFoundError(f"{filename} not found in any of: {cands}")
 
 
 def load_dell_vs_z0_bands(cfg=None, root=None) -> dict:
@@ -27,8 +52,7 @@ def load_dell_vs_z0_bands(cfg=None, root=None) -> dict:
     needed, not resampled here to avoid baking in interpolation choices
     upstream of where they're actually used.
     """
-    root = root or _default_root(cfg)
-    path = os.path.join(root, "dell_vs_z0_bands_digitized.csv")
+    path = _resolve("dell_vs_z0_bands_digitized.csv", cfg, root)
     out = {}
     with open(path) as f:
         for row in csv.DictReader(f):
@@ -52,8 +76,7 @@ def load_dell_vs_ell_band(cfg=None, root=None) -> dict:
     """Returns {'ell_lo','lo','ell_hi','hi'} -- single band at x_HII~0.43,
     since the individual z-window curves overlap within it in the
     original figure (see README)."""
-    root = root or _default_root(cfg)
-    path = os.path.join(root, "dell_vs_ell_xhii043_band_digitized.csv")
+    path = _resolve("dell_vs_ell_xhii043_band_digitized.csv", cfg, root)
     out = {"ell_lo": [], "lo": [], "ell_hi": [], "hi": []}
     with open(path) as f:
         for row in csv.DictReader(f):
@@ -72,8 +95,7 @@ def load_dell_vs_ell_band(cfg=None, root=None) -> dict:
 def load_reionization_histories(cfg=None, root=None) -> dict:
     """Returns {scenario: {'z': array, 'x_HII': array}} for
     'Fiducial', 'Early', 'Short'."""
-    root = root or _default_root(cfg)
-    path = os.path.join(root, "reionization_histories_digitized.csv")
+    path = _resolve("reionization_histories_digitized.csv", cfg, root)
     out = {}
     with open(path) as f:
         for row in csv.DictReader(f):
@@ -93,8 +115,7 @@ def load_fig1_components(cfg=None, root=None) -> dict:
     {component: (ell, D_ell_uK2)} with D = l(l+1)C_l/2pi.  Components: 'SO_post_ILC_noise',
     'CMB-S4_post_ILC_noise', 'CMB-HD_post_ILC_noise', 'lensed_primary_CMB', 'kSZ_reion_30sim_mean',
     'kSZ_late_Park18'."""
-    root = root or _default_root(cfg)
-    path = os.path.join(root, "fig1_filter_components_digitized.csv")
+    path = _resolve("fig1_filter_components_digitized.csv", cfg, root)
     tmp = {}
     with open(path) as f:
         for row in csv.DictReader(f):
