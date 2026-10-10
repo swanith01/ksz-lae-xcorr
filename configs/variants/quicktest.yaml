@@ -68,10 +68,10 @@ snr:
 
 # Local paths on usha -- NOT the cluster paths from fiducial.yaml.
 paths:
-  project_root: "~/Desktop/Research/ksz-lae-xcorr/quicktest_data"
+  project_root: "~/Desktop/Research/ksz-lae-xcorr/data/quicktest"
   coeval_root: "${paths.project_root}/coeval"
   halo_root: "${paths.project_root}/coeval"
   lightcone_root: "${paths.project_root}/lightcones"
-  products_root: "quicktest_data/products"
+  products_root: "data/quicktest/products"
   lae_catalogue_root: "TBD"
   lbg_catalogue_root: "TBD"

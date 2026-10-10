@@ -22,7 +22,7 @@ configs/variants/local_*.yaml
 
 # Local quicktest scratch output (configs/variants/quicktest.yaml) -- pure
 # throwaway sanity-check data, never a real product.
-quicktest_data/
+data/quicktest/
 
 # Python
 __pycache__/
@@ -44,3 +44,6 @@ paper/figure_scripts/output/
 # Local result-pull directories (rsync'd from cluster for inspection/plotting) --
 # large binary lightcone/data files, never meant to be committed wholesale
 results_300Mpc*/
+
+# 300 Mpc lightcone dumps (large npz; never commit)
+data/products/lightcones_*/

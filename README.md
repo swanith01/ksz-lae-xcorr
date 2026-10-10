@@ -366,7 +366,7 @@ product actually on disk.
 Found 2026-10-01 while diagnosing why `scripts/22`'s patchy-window
 `D_diag` came back at ~1e-36 uK^2 instead of O(1). Confirmed directly
 against real data with a small diagnostic
-(`check_vz_units.py`, kept in the repo root): `lc_vz.npz`'s raw std
+(`scripts/legacy/check_vz_units.py`): `lc_vz.npz`'s raw std
 (~4.2e-17) matches this repo's own independently-reconstructed Mpc/s
 velocity fields (see "Velocity reconstruction" below) almost exactly --
 not the hundreds-of-km/s scale a genuine km/s array would show.
@@ -693,14 +693,14 @@ python scripts/04_compute_xcorr.py --config configs/variants/quicktest.yaml
 
 Expect ~1,000,000 halos at z=6 falling to a few hundred thousand by z=10.27
 (monotonic decrease with z is the expected structure-formation trend), and
-`cross_results.pkl` / `auto_results.pkl` under `quicktest_data/products/`.
+`cross_results.pkl` / `auto_results.pkl` under `data/quicktest/products/`.
 
 ### Inspecting results
 
 ```bash
 python -c "
 import pickle, numpy as np
-with open('quicktest_data/products/cross_results.pkl', 'rb') as f:
+with open('data/quicktest/products/cross_results.pkl', 'rb') as f:
     d = pickle.load(f)
 cross = d['cross_results']
 halo = cross['halo'][1]
