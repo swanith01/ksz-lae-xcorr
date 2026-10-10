@@ -125,3 +125,19 @@ def load_fig1_components(cfg=None, root=None) -> dict:
         a = np.array(sorted(v))
         out[k] = (a[:, 0], a[:, 1])
     return out
+
+
+def load_fig7_vs_xhii(cfg=None, root=None) -> dict:
+    """La Plante+22 Fig. 7 (right panel), FIDUCIAL scenario only: {ell: (x_HII, D_ell_uK2)}
+    for ell = 500, 1000, 3000, x_HII ascending (0 = fully neutral ... 1 = fully ionised;
+    the paper plots the axis reversed, 1 on the left).  Vector-traced from the PDF, see the README."""
+    path = _resolve("fig7_dell_vs_xhii_fiducial_digitized.csv", cfg, root)
+    tmp = {}
+    with open(path) as f:
+        for row in csv.DictReader(f):
+            tmp.setdefault(int(row["ell"]), []).append((float(row["x_HII"]), float(row["D_ell_uK2"])))
+    out = {}
+    for ell, v in tmp.items():
+        a = np.array(sorted(v))
+        out[ell] = (a[:, 0], a[:, 1])
+    return out

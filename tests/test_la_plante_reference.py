@@ -107,3 +107,17 @@ def test_missing_file_error_lists_searched_dirs(tmp_path):
     from ksz_lae_xcorr.io.la_plante_reference import _resolve
     with pytest.raises(FileNotFoundError, match="not found in any of"):
         _resolve("nope.csv")
+
+
+def test_fig7_vs_xhii_fiducial_curves():
+    from ksz_lae_xcorr.io.la_plante_reference import load_fig7_vs_xhii
+    d = load_fig7_vs_xhii(root=ROOT)
+    assert set(d) == {500, 1000, 3000}
+    for ell, (x, D) in d.items():
+        assert np.all(np.diff(x) > 0) and 0 <= x.min() < 0.05 and x.max() > 0.95
+        i = D.argmax()
+        assert 0.05 < x[i] < 0.35                       # signal peaks at x_HII ~ 0.1-0.25 (paper text)
+    # peak heights read off the figure: 500 -> ~0.0157, 1000 -> ~0.0196, 3000 -> ~0.0118
+    assert abs(d[500][1].max() - 0.0157) < 0.0015 and abs(d[1000][1].max() - 0.0196) < 0.0015
+    assert abs(d[3000][1].max() - 0.0118) < 0.0015
+    assert d[1000][1].max() > d[500][1].max() > d[3000][1].max()

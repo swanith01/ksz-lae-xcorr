@@ -47,3 +47,13 @@ from a vector PDF of the paper rather than a raster screenshot.
   late-kSZ line reproduces their Eq. 9 (1.38 (l/3000)^0.21) at both ends. The CMB and CMB-HD curves are drawn
   as filled outlines / dots in the PDF; those two are binned (80 log-l bins, geometric mean) from the outlines
   and are good to a few per cent. Range l ~ 96-10050 (the kSZ-reion curve starts at l = 200).
+
+- **fig7_dell_vs_xhii_fiducial_digitized.csv** -- right panel of their Figure 7: D_ell^cross against the
+  volume-averaged ionised fraction x_HII (the paper's axis runs 1 -> 0 left to right), FIDUCIAL history
+  only (solid lines), ell = 500, 1000, 3000. Columns: ell, x_HII, D_ell_uK2 (100 bins of 0.01 in x_HII, bin
+  medians, then a width-7 running median to remove tracking glitches where curves cross). Digitised 2026-10-10 from the paper PDF by rendering the panel at 8x and tracking each solid
+  curve by colour, with long-connected-component filtering to drop the dashed (Early) and dotted (Short)
+  curves of the same colour; axes calibrated from the vector tick marks (x_HII = 1 at x=365.9 pt, 0 at 556.7 pt;
+  D = 0 at y=192.6 pt, 0.030 at 61.7 pt). Checked by overlay on the figure. Peaks: ell=500 0.0157 at x_HII~0.21;
+  ell=1000 0.0196 at ~0.12-0.2; ell=3000 0.0118 at ~0.12. Accuracy ~1-2% of the y range; least reliable at
+  x_HII > ~0.8 (|D| < 0.002, all curves overlap there). Early/Short scenarios are NOT included.
