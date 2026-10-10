@@ -1,0 +1,11 @@
+# =============================================================================
+# zreion_xh_q.yaml -- like zreion_xh.yaml but the zreion ionisation field is thresholded to 21cmFAST's own x_HII(z)
+# at every snapshot (scripts/34 --match quantile): the HISTORY stays 21cmFAST's, only the MORPHOLOGY is zreion's.
+# Isolates "does the shape of the ionised regions matter" from "does the history matter".
+# =============================================================================
+extends: ../fiducial.yaml
+run_name: "zreion_xh_q"
+
+paths:
+  coeval_root: "/user1/swanith/zreion_coeval_q"
+  products_root: "data/products_zreion_q"
