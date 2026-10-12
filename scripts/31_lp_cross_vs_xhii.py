@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 from ksz_lae_xcorr.io.la_plante_reference import load_fig7_vs_xhii
 from ksz_lae_xcorr.utils.figio import save_fig
 
-BLUE, ORANGE = "#2a78d6", "#eb6834"
+BLUE, ORANGE, GREEN = "#2a78d6", "#eb6834", "#2a9d5c"
 
 
 def load_cross_csv(path: str) -> dict:
@@ -35,7 +35,8 @@ def load_cross_csv(path: str) -> dict:
     return {n: a[n] for n in a.dtype.names}
 
 
-def make_figure(cols: dict, paper: dict, dz: float = 1.0, title: str = ""):
+def make_figure(cols: dict, paper: dict, dz: float = 1.0, title: str = "", label: str = "ours", other: dict | None = None,
+                other_label: str = "other"):
     ells = sorted(int(n.split("_l")[1]) for n in cols if n.startswith("mean_l"))
     sel = np.isclose(cols["dz"], dz)
     fig, axes = plt.subplots(1, len(ells), figsize=(5 * len(ells), 4), sharex=True)
@@ -43,7 +44,11 @@ def make_figure(cols: dict, paper: dict, dz: float = 1.0, title: str = ""):
         if ell in paper:
             ax.plot(paper[ell][0], paper[ell][1], color=ORANGE, lw=2, label="La Plante+22 Fig. 7 (Fiducial, digitised)")
         x, m, e = cols["x_hii"][sel], cols[f"mean_l{ell}"][sel], cols[f"sigma_mean_l{ell}"][sel]
-        ax.errorbar(x, m, yerr=e, color=BLUE, marker="o", ms=3, ls="-", lw=1, label="ours: seed mean $\\pm$ s.e.m.")
+        ax.errorbar(x, m, yerr=e, color=BLUE, marker="o", ms=3, ls="-", lw=1, label=f"{label}: seed mean $\\pm$ s.e.m.")
+        if other is not None and f"mean_l{ell}" in other:
+            so = np.isclose(other["dz"], dz)
+            ax.errorbar(other["x_hii"][so], other[f"mean_l{ell}"][so], yerr=other[f"sigma_mean_l{ell}"][so], color=GREEN,
+                        marker="s", ms=3, ls="--", lw=1, label=f"{other_label}: seed mean $\\pm$ s.e.m.")
         ax.axhline(0, color="k", lw=0.5)
         ax.set_xlim(1.0, 0.0)                      # paper convention: fully ionised on the left
         ax.set_title(rf"$\ell={ell}$  {title}")
@@ -60,22 +65,31 @@ def main():
     ap.add_argument("--out-dir", default="paper/figure_scripts/output")
     ap.add_argument("--dz", type=float, default=1.0)
     ap.add_argument("--title", default="(SO)")
+    ap.add_argument("--label", default="ours", help="legend label for --csv")
+    ap.add_argument("--compare-csv", default=None, help="second scripts/28 CSV drawn on top (e.g. the 21cmFAST run)")
+    ap.add_argument("--compare-label", default="comparison")
     args = ap.parse_args()
     cols = load_cross_csv(args.csv)
     paper = load_fig7_vs_xhii()
-    fig = make_figure(cols, paper, args.dz, args.title)
+    other = load_cross_csv(args.compare_csv) if args.compare_csv else None
+    fig = make_figure(cols, paper, args.dz, args.title, args.label, other, args.compare_label)
     os.makedirs(args.out_dir, exist_ok=True)
     base = os.path.join(args.out_dir, os.path.basename(args.csv).replace("lp_cross_vs_z0", "lp_cross_vs_xhii").rsplit(".", 1)[0])
+    if other is not None:
+        base += "_compare"
     print("figure:", *save_fig(fig, base))
     # numbers: ours vs paper at the paper's peak and at x_HII ~ 0.43
     sel = np.isclose(cols["dz"], args.dz)
+    runs = [(args.label, cols)] + ([(args.compare_label, other)] if other is not None else [])
     for ell in sorted(paper):
         xp, dp = paper[ell]
-        ours_x = cols["x_hii"][sel]; ours_m = cols[f"mean_l{ell}"][sel]; ours_e = cols[f"sigma_mean_l{ell}"][sel]
         print(f"ell={ell}: paper peak {dp.max():.4f} at x_HII={xp[dp.argmax()]:.2f}")
-        for x0 in (0.6, 0.43, 0.25, 0.15):
-            i = np.argmin(np.abs(ours_x - x0))
-            print(f"   x_HII~{x0:.2f}: ours (x={ours_x[i]:.2f}) {ours_m[i]:+.4f} +- {ours_e[i]:.4f}   paper {np.interp(ours_x[i], xp, dp):+.4f}")
+        for name, c in runs:
+            sl = np.isclose(c["dz"], args.dz)
+            ours_x = c["x_hii"][sl]; ours_m = c[f"mean_l{ell}"][sl]; ours_e = c[f"sigma_mean_l{ell}"][sl]
+            for x0 in (0.6, 0.43, 0.25, 0.15):
+                i = np.argmin(np.abs(ours_x - x0))
+                print(f"   [{name}] x_HII~{x0:.2f}: (x={ours_x[i]:.2f}) {ours_m[i]:+.4f} +- {ours_e[i]:.4f}   paper {np.interp(ours_x[i], xp, dp):+.4f}")
 
 
 if __name__ == "__main__":

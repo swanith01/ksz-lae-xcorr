@@ -32,3 +32,21 @@ def test_make_figure_and_main(tmp_path, monkeypatch, capsys):
     m.main()
     assert (tmp_path / "lp_cross_vs_xhii_SO_wo0.png").exists() and (tmp_path / "lp_cross_vs_xhii_SO_wo0.pdf").exists()
     assert "paper peak" in capsys.readouterr().out
+
+
+def test_compare_overlay(tmp_path, monkeypatch, capsys):
+    m = _load()
+    z0 = np.arange(6.5, 13.01, 0.5)
+    names = ["z0", "dz", "x_hii"] + [f"{k}_l{l}" for l in (500, 1000, 3000) for k in ("mean", "sigma_mean")]
+    cols = [z0, np.ones_like(z0), np.clip(1.2 - 0.1 * z0, 0.0, 1.0)]
+    for l in (500, 1000, 3000):
+        cols += [0.01 * np.ones_like(z0), 0.004 * np.ones_like(z0)]
+    a, b = tmp_path / "a.csv", tmp_path / "lp_cross_vs_z0_SO_wo0.csv"
+    for f in (a, b):
+        np.savetxt(f, np.column_stack(cols), delimiter=",", header=",".join(names), comments="")
+    monkeypatch.setattr(sys, "argv", ["31", "--csv", str(b), "--label", "zreion", "--compare-csv", str(a),
+                                      "--compare-label", "21cmFAST", "--out-dir", str(tmp_path)])
+    m.main()
+    assert (tmp_path / "lp_cross_vs_xhii_SO_wo0_compare.png").exists()
+    out = capsys.readouterr().out
+    assert "[zreion]" in out and "[21cmFAST]" in out
