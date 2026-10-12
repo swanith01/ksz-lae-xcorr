@@ -53,6 +53,7 @@ def _aggregate(block_by_seed):
         st = agg[f]["stack"]
         agg[f]["p16"], agg[f]["p84"] = np.nanpercentile(st, [16, 84], axis=0)
         agg[f]["min"], agg[f]["max"] = np.nanmin(st, axis=0), np.nanmax(st, axis=0)
+        agg[f]["mean"] = np.nanmean(st, axis=0)
     return agg
 
 
@@ -60,9 +61,73 @@ def _write_csv(path, agg):
     ell = agg["D_total"]["ell"]
     cols, names = [ell], ["ell"]
     for f in FIELDS:
-        for k in ("median", "sigma", "p16", "p84", "min", "max"):
+        for k in ("median", "sigma", "p16", "p84", "min", "max", "mean"):
             cols.append(agg[f][k]); names.append(f"{f}_{k}")
     np.savetxt(path, np.column_stack(cols), delimiter=",", header=",".join(names), comments="")
+
+
+def make_figure(out, res, seeds, mode, ne_conv, tau0_mode, diagnostics=False, legacy_pkl=None):
+    """Default: 3 simple panels (patchy window | full z-range | reionisation histories).  diagnostics=True restores the
+    old 2x2 figure with the D_diag curves and the periodicity (D_off/D_total) panel."""
+    if diagnostics:
+        fig, axes = plt.subplots(2, 2, figsize=(13, 10), constrained_layout=True)
+        axes_main = (axes[0, 0], axes[0, 1])
+    else:
+        fig, axes = plt.subplots(1, 3, figsize=(17, 4.8), constrained_layout=True)
+        axes_main = (axes[0], axes[1])
+    for ax, key, ttl in zip(axes_main, ("patchy", "full"),
+                            ("patchy window (reionisation era)", "full redshift range")):
+        agg = out[key]["_agg"]; ell = agg["D_total"]["ell"]
+        for s, row in zip(agg["D_total"]["seeds"], agg["D_total"]["stack"]):
+            ax.plot(ell, row, color="0.75", lw=0.8, zorder=1)
+        ax.fill_between(ell, agg["D_total"]["min"], agg["D_total"]["max"], color="C0", alpha=0.12, label="min-max over seeds")
+        ax.fill_between(ell, agg["D_total"]["p16"], agg["D_total"]["p84"], color="C0", alpha=0.3, label="16-84% over seeds")
+        ax.plot(ell, agg["D_total"]["median"], "o-", color="C0", lw=2, label="median over seeds")
+        ax.plot(ell, np.nanmean(agg["D_total"]["stack"], axis=0), "s--", color="C1", lw=1.6, ms=4, label="mean over seeds")
+        if diagnostics:
+            ax.plot(ell, agg["D_diag"]["median"], "s--", color="C3", lw=1.2, ms=3, label=r"median $D_{\rm diag}$")
+            if key == "patchy" and legacy_pkl:
+                with open(legacy_pkl, "rb") as f:
+                    leg = pickle.load(f)
+                lp = {s: r["patchy"] for s, r in leg.items() if "patchy" in r}
+                if len(lp) >= 2:
+                    la = aggregate_coherence_over_seeds(lp, list(lp), field="D_diag")
+                    ax.plot(la["ell"], la["median"], "^:", color="k", ms=3,
+                            label="legacy fixed-angle $D_{\\rm diag}$ (old norm.)")
+        ax.set_xscale("log"); ax.set_yscale("log")
+        ax.set_xlabel(r"$\ell$"); ax.set_ylabel(r"$D_\ell^{\rm kSZ}$ [$\mu$K$^2$]")
+        z_lo = np.median([res[s][key]["z_lo"] for s in seeds]); z_hi = np.median([res[s][key]["z_hi"] for s in seeds])
+        ax.set_title(f"{ttl}: z~{z_lo:.1f}-{z_hi:.1f}")
+        ax.legend(fontsize=8)
+
+    if diagnostics:
+        ax = axes[1, 0]
+        for key, c in (("patchy", "C0"), ("full", "C2")):
+            agg = out[key]["_agg"]; ell = agg["D_total"]["ell"]
+            ratio = agg["D_off"]["stack"] / agg["D_total"]["stack"]
+            for row in ratio:
+                ax.plot(ell, row, color=c, lw=0.6, alpha=0.4)
+            ax.plot(ell, np.nanmedian(ratio, axis=0), color=c, lw=2, label=f"median ({key})")
+        ax.axhline(0, color="gray", lw=0.5); ax.set_xscale("log")
+        ax.set_xlabel(r"$\ell$"); ax.set_ylabel(r"$D_{\rm off}/D_{\rm total}$")
+        ax.set_title("periodicity diagnostic (small => coherent sum ~ incoherent)"); ax.legend(fontsize=8)
+        ax = axes[1, 1]
+    else:
+        ax = axes[2]
+    for s in seeds:
+        r = res[s]
+        ax.plot(r["z_lc"], r["xHI_mean"], lw=0.8, color="C0", alpha=0.6, label="one line per seed" if s == seeds[0] else None)
+    ax.axvspan(np.median([res[s]["patchy"]["z_lo"] for s in seeds]), np.median([res[s]["patchy"]["z_hi"] for s in seeds]),
+               color="C0", alpha=0.06, label="patchy window")
+    ax.set_xlabel("z"); ax.set_ylabel(r"$\bar{x}_{\rm HI}$"); ax.set_title("reionisation history")
+    ax.legend(fontsize=8)
+
+    n = len(seeds)
+    if diagnostics:
+        fig.suptitle(f"kSZ auto-power from wrap-cycle lightcone | mode={mode}, n_e={ne_conv}, tau0={tau0_mode}")
+    else:
+        fig.suptitle(f"kSZ auto-power from the lightcone (300 Mpc boxes, {n} seeds)")
+    return fig
 
 
 def main():
@@ -74,6 +139,8 @@ def main():
     ap.add_argument("--legacy-pkl", default=None,
                     help="optional old coherence_decomposition.pkl; overlays its patchy D_diag "
                          "(NOTE: legacy ne normalisation, fixed-angle lightcone)")
+    ap.add_argument("--diagnostics", action="store_true",
+                    help="old 2x2 figure with the D_diag curves and the periodicity panel (default: 3 simple panels)")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -110,6 +177,7 @@ def main():
         i = int(np.argmin(np.abs(agg["D_total"]["ell"] - 3000)))
         tot, dg, of = (agg[f]["median"][i] for f in FIELDS)
         print(f"\n[{key}] ell~{agg['D_total']['ell'][i]:.0f}, {len(seeds)} seeds, median [sigma] [16-84%]:")
+        print(f"   D_total mean = {np.nanmean(agg['D_total']['stack'][:, i]):.4g}  (median {tot:.4g})")
         print(f"   D_total = {tot:.4g} [{agg['D_total']['sigma'][i]:.3g}] "
               f"[{agg['D_total']['p16'][i]:.3g}, {agg['D_total']['p84'][i]:.3g}] uK^2")
         print(f"   D_diag  = {dg:.4g} [{agg['D_diag']['sigma'][i]:.3g}]   D_off = {of:.4g}   "
@@ -117,49 +185,7 @@ def main():
         out[key]["_agg"] = agg
 
     # ---- figure -------------------------------------------------------------
-    fig, axes = plt.subplots(2, 2, figsize=(13, 10), constrained_layout=True)
-    for ax, key, ttl in ((axes[0, 0], "patchy", "patchy window"), (axes[0, 1], "full", "full z-range")):
-        agg = out[key]["_agg"]; ell = agg["D_total"]["ell"]
-        for s, row in zip(agg["D_total"]["seeds"], agg["D_total"]["stack"]):
-            ax.plot(ell, row, color="0.75", lw=0.8, zorder=1)
-        ax.fill_between(ell, agg["D_total"]["min"], agg["D_total"]["max"], color="C0", alpha=0.12, label="min-max")
-        ax.fill_between(ell, agg["D_total"]["p16"], agg["D_total"]["p84"], color="C0", alpha=0.3, label="16-84%")
-        ax.plot(ell, agg["D_total"]["median"], "o-", color="C0", lw=2, label=r"median $D_{\rm total}$")
-        ax.plot(ell, agg["D_diag"]["median"], "s--", color="C3", lw=1.2, ms=3, label=r"median $D_{\rm diag}$")
-        if key == "patchy" and args.legacy_pkl:
-            with open(args.legacy_pkl, "rb") as f:
-                leg = pickle.load(f)
-            lp = {s: r["patchy"] for s, r in leg.items() if "patchy" in r}
-            if len(lp) >= 2:
-                la = aggregate_coherence_over_seeds(lp, list(lp), field="D_diag")
-                ax.plot(la["ell"], la["median"], "^:", color="k", ms=3,
-                        label="legacy fixed-angle $D_{\\rm diag}$ (old norm.)")
-        ax.set_xscale("log"); ax.set_yscale("log")
-        ax.set_xlabel(r"$\ell$"); ax.set_ylabel(r"$D_\ell^{\rm kSZ}$ [$\mu$K$^2$]")
-        z_lo = np.median([res[s][key]["z_lo"] for s in seeds]); z_hi = np.median([res[s][key]["z_hi"] for s in seeds])
-        ax.set_title(f"kSZ auto-power, {ttl} (z~{z_lo:.1f}-{z_hi:.1f}), {len(seeds)} seeds")
-        ax.legend(fontsize=8)
-
-    ax = axes[1, 0]
-    for key, c in (("patchy", "C0"), ("full", "C2")):
-        agg = out[key]["_agg"]; ell = agg["D_total"]["ell"]
-        ratio = agg["D_off"]["stack"] / agg["D_total"]["stack"]
-        for row in ratio:
-            ax.plot(ell, row, color=c, lw=0.6, alpha=0.4)
-        ax.plot(ell, np.nanmedian(ratio, axis=0), color=c, lw=2, label=f"median ({key})")
-    ax.axhline(0, color="gray", lw=0.5); ax.set_xscale("log")
-    ax.set_xlabel(r"$\ell$"); ax.set_ylabel(r"$D_{\rm off}/D_{\rm total}$")
-    ax.set_title("periodicity diagnostic (small => coherent sum ~ incoherent)"); ax.legend(fontsize=8)
-
-    ax = axes[1, 1]
-    for s in seeds:
-        r = res[s]
-        ax.plot(r["z_lc"], r["xHI_mean"], lw=1, label=f"seed {s}")
-        ax.axvspan(r["patchy"]["z_lo"], r["patchy"]["z_hi"], color="C0", alpha=0.03)
-    ax.set_xlabel("z"); ax.set_ylabel(r"$\bar{x}_{\rm HI}$"); ax.set_title("reionization histories & patchy windows")
-    ax.legend(fontsize=6, ncol=2)
-
-    fig.suptitle(f"kSZ auto-power from wrap-cycle lightcone | mode={mode}, n_e={ne_conv}, tau0={tau0_mode}")
+    fig = make_figure(out, res, seeds, mode, ne_conv, tau0_mode, diagnostics=args.diagnostics, legacy_pkl=args.legacy_pkl)
     base = os.path.join(args.out_dir, f"ksz_auto_power_wrapcycle_wo{args.wrap_offset}")
     print("\nfigure:", *save_fig(fig, base)); plt.close(fig)
 
