@@ -25,6 +25,8 @@ case "${MATCH}" in
   quantile) CFG=configs/variants/zreion_xh_q.yaml; ROOT=/user1/swanith/zreion_coeval_q; OUT=paper/figure_scripts/output_zreion_q ;;
   *) echo "MATCH must be z or quantile"; exit 1 ;;
 esac
+# NOTE: the write job reads the ORIGINAL 21cmFAST boxes, so it uses configs/fiducial.yaml; only the wrap-cycle/aggregate/
+# cross jobs use ${CFG} (whose coeval_root is the new zreion root).
 SEEDS="${SEEDS:-1 2 3 4 5 6 7 8 9 10}"
 echo "MATCH=${MATCH} config=${CFG} root=${ROOT} seeds: ${SEEDS}"
 Q() { if [ "${DRY:-0}" = "1" ]; then echo "DRY qsub $*" >&2; echo "DRY.$RANDOM"; else qsub "$@"; fi; }
@@ -34,7 +36,7 @@ RES_ARG=()
 
 JOB_IDS=""
 for SEED in ${SEEDS}; do
-  W=$(Q -v SEED=${SEED},EXTRA_ARGS="--config ${CFG} --write-root ${ROOT} --match ${MATCH} --out-dir ${OUT}" pbs/pbs_zreion_on_21cmfast.sh)
+  W=$(Q -v SEED=${SEED},EXTRA_ARGS="--config configs/fiducial.yaml --write-root ${ROOT} --match ${MATCH} --out-dir ${OUT}" pbs/pbs_zreion_on_21cmfast.sh)
   J=$(Q "${RES_ARG[@]}" -W depend=afterok:${W} -v SEED=${SEED},WRAP_OFFSET=0,SAVE_MAPS=1,EXTRA_ARGS="--config ${CFG}" pbs/pbs_ksz_wrapcycle.sh)
   echo "  seed ${SEED}: write ${W} -> wrap-cycle ${J}"
   JOB_IDS="${JOB_IDS}:${J}"
