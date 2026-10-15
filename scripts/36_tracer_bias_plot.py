@@ -7,7 +7,9 @@ Plots + one table from the per-seed CSVs of scripts/35 (no cluster access needed
   tracer_bias_vs_z.png        b_lin(z) of every cut (halo mass | LAE luminosity | LBG MUV), seed mean +- s.e.m., dashed =
                               analytic Sheth-Mo-Tormen bias of the same sample, black = the La Plante / Waters+16 bias
                               b_g(z) = 2.1 (1+z) - 5.3 that their delta_g assumes.
-  tracer_number_density.png   n(z) [Mpc^-3] and the number of objects in the 300 Mpc box (right axis).
+  tracer_number_density.png   n(>cut)(z) [Mpc^-3] and the number of objects in the 300 Mpc box (right axis).  Halo panel: dashed =
+                              Sheth-Tormen n(>M).  LBG / LAE panels: open diamonds = the same cut integrated over the published
+                              UV (Bouwens+21, Donnan+24) / Lya (Umeda+25, Kageura+25) luminosity-function fits.
   tracer_bias_vs_number.png   the pitch plot: objects in the box against bias, at z = 6, 7, 8, 10, with the Waters+16 bias
                               marked -- how many objects are left when a sample is as biased as their galaxies?
   tracer_bias_summary.csv     seed-aggregated numbers behind the plots.
@@ -27,7 +29,9 @@ import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from ksz_lae_xcorr.io import luminosity_functions as lfref
 from ksz_lae_xcorr.snr.roman_hls_benchmark import bluetides_bias_gz
+from ksz_lae_xcorr.tracers import suite
 from ksz_lae_xcorr.tracers.suite import spec_from_name
 from ksz_lae_xcorr.utils.figio import save_fig
 
@@ -97,14 +101,53 @@ def fig_bias_vs_z(agg, min_obj=30):
             ax.plot(a["z"][ok], a["b_st"][ok], "--", color=col[n], lw=1.0)
         ax.plot(zz, bluetides_bias_gz(zz), "-", color="k", lw=3, label=r"Waters+16 / La Plante+22: $2.1(1+z)-5.3$")
         ax.set_xlim(5, 14); ax.set_ylim(0, 26)
-        ax.set_xlabel("z"); ax.set_title(title); ax.grid(alpha=0.2); ax.legend(fontsize=7, loc="lower right")
+        ax.set_xlabel("z"); ax.set_title(title); ax.legend(fontsize=7, loc="lower right")
     axes[0].set_ylabel(r"linear bias $b$ (tracer vs matter, $k<0.15$ Mpc$^{-1}$)")
     fig.suptitle("Bias of the 21cmFAST tracers (solid, seed mean) vs analytic Sheth-Mo-Tormen (dashed) and the La Plante+22 bias (black)\n"
                  "curves hidden where fewer than 30 objects are in the 300 Mpc box", fontsize=10)
     return fig
 
 
-def fig_number_density(agg, boxlen=300.0):
+def make_sigma(config=None):
+    """sigma(M) for the Sheth-Tormen overlay (cosmology of the config, else the 21cmFAST defaults); None if unavailable."""
+    try:
+        try:
+            from ksz_lae_xcorr.utils.config import load_config
+            c = load_config(config).cosmology
+            args = dict(Om=c.Om0, Ob=c.Ob0, h=c.H0 / 100.0, ns=c.ns)
+        except Exception:
+            args = dict(Om=0.3086, Ob=0.0489, h=0.6777, ns=0.9665)
+        return suite.SigmaOfM(sigma8=suite.SIGMA8_21CMFAST, backend="auto", **args)
+    except Exception as e:                                        # pragma: no cover
+        print("(!) no Sheth-Tormen overlay:", e)
+        return None
+
+
+def _literature_markers(ax, kind, names, col, agg, boxlen):
+    """open diamonds: n(<M_UV cut) or n(>L cut) from the published fits, at the redshift of each fit."""
+    vol = boxlen ** 3
+    if kind == "lbg":
+        fits = lfref.uvlf_fits()
+        keep = np.isin(fits["ref_key"], ("Bouwens21", "Donnan24")) & (np.asarray(fits["z"], dtype=float) >= 5.5)
+    else:
+        fits = lfref.lae_lf_fits()
+        keep = np.isin(fits["ref_key"], ("Umeda25", "Kageura25")) & (np.asarray(fits["z"], dtype=float) >= 5.5)
+    for n in names:
+        cut = agg[n]["cut"]
+        zs, ns = [], []
+        for i in np.where(keep)[0]:
+            if kind == "lbg":
+                if fits["ref_key"][i] == "Bouwens21" and fits["z"][i] > 9.5:
+                    continue
+                val = lfref.uv_cumulative(fits, i, cut)
+            else:
+                val = lfref.lya_cumulative(fits, i, np.log10(cut))
+            zs.append(float(fits["z"][i])); ns.append(val)
+        if zs:
+            ax.plot(zs, ns, "D", color=col[n], mfc="none", mew=1.4, ms=6, ls="", zorder=5)
+
+
+def fig_number_density(agg, boxlen=300.0, sig=None, literature=True):
     fig, axes = plt.subplots(1, 3, figsize=(16, 4.6), sharey=True, constrained_layout=True)
     vol = boxlen ** 3
     for ax, (kind, title, cmap) in zip(axes, KINDS):
@@ -113,8 +156,20 @@ def fig_number_density(agg, boxlen=300.0):
         for n in names:
             a = agg[n]; ok = a["n"] > 0
             ax.plot(a["z"][ok], a["n"][ok], "-", color=col[n], lw=1.8, label=spec_from_name(n).label)
-        ax.set_yscale("log"); ax.set_xlim(5, 20); ax.set_xlabel("z"); ax.set_title(title); ax.grid(alpha=0.2, which="both")
-        ax.legend(fontsize=7, loc="lower left")
+            if kind == "halo" and sig is not None:
+                ok2 = a["z"] > 0
+                ax.plot(a["z"][ok2], [suite.sheth_tormen_n_gt(a["cut"], z, sig) for z in a["z"][ok2]], "--", color=col[n], lw=1.0)
+        if literature and kind in ("lbg", "lae"):
+            _literature_markers(ax, kind, names, col, agg, boxlen)
+        ax.set_yscale("log"); ax.set_xlim(5, 20); ax.set_ylim(0.3 / vol, None); ax.set_xlabel("z"); ax.set_title(title)
+        extra = []
+        if kind == "halo" and sig is not None:
+            extra = [plt.Line2D([], [], color="k", ls="--", lw=1.0, label="Sheth-Tormen $n(>M)$")]
+        elif literature and kind in ("lbg", "lae"):
+            extra = [plt.Line2D([], [], color="k", marker="D", mfc="none", ls="", ms=6,
+                                label="published LF fits (Bouwens+21, Donnan+24)" if kind == "lbg" else "published LF fits (Umeda+25, Kageura+25)")]
+        h, _ = ax.get_legend_handles_labels()
+        ax.legend(handles=h + extra, fontsize=7, loc="lower left")
         sec = ax.secondary_yaxis("right", functions=(lambda y: y * vol, lambda y: y / vol))
         sec.set_ylabel(f"objects in the {boxlen:.0f} Mpc box")
     axes[0].set_ylabel(r"number density [Mpc$^{-3}$]")
@@ -146,7 +201,7 @@ def fig_bias_vs_number(agg, z_list=(6.0, 7.0, 8.0, 10.0)):
         ax.text(bw - 0.3, 0.97, "La Plante bias", rotation=90, ha="right", va="top", fontsize=8, transform=ax.get_xaxis_transform())
         ax.axhline(N_TARGET, color="0.5", ls=":", lw=1)
         ax.set_yscale("log"); ax.set_xlim(0, 26); ax.set_xlabel("linear bias b")
-        ax.set_title(f"z = {zn:.1f}"); ax.grid(alpha=0.2, which="both")
+        ax.set_title(f"z = {zn:.1f}")
     axes[0].set_ylabel("objects in the 300 Mpc box")
     axes[0].text(0.3, N_TARGET * 1.15, rf"$N=10^{{{np.log10(N_TARGET):.0f}}}$", fontsize=8, color="0.4")
     order = [n for k, _, _ in KINDS for n in _ordered(agg, k) if n in handles]
@@ -182,12 +237,13 @@ def main(argv=None):
     ap.add_argument("--in-dir", required=True, help="folder with tracer_bias_seed*.csv (from scripts/35)")
     ap.add_argument("--out-dir", default=None)
     ap.add_argument("--box-len", type=float, default=300.0)
+    ap.add_argument("--config", default="configs/fiducial.yaml", help="cosmology for the Sheth-Tormen overlay")
     args = ap.parse_args(argv)
     out_dir = args.out_dir or args.in_dir
     os.makedirs(out_dir, exist_ok=True)
     agg = aggregate(load_all(args.in_dir))
     print(f"{len(agg)} tracers, seeds per snapshot: {int(next(iter(agg.values()))['n_seeds'].max())}")
-    for fn, name in ((fig_bias_vs_z(agg), "tracer_bias_vs_z"), (fig_number_density(agg, args.box_len), "tracer_number_density"),
+    for fn, name in ((fig_bias_vs_z(agg), "tracer_bias_vs_z"), (fig_number_density(agg, args.box_len, make_sigma(args.config)), "tracer_number_density"),
                      (fig_bias_vs_number(agg), "tracer_bias_vs_number")):
         print("figure:", *save_fig(fn, os.path.join(out_dir, name)))
         plt.close(fn)

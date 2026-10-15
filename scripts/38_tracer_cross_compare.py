@@ -95,7 +95,6 @@ def make_figure(runs, paper, ref=None, ref_label="matter x Waters+16", dz=1.0, e
             ax.set_ylabel(r"$D_\ell^{\rm cross}\ [\mu{\rm K}^2]$")
             if r == len(ells) - 1:
                 ax.set_xlabel(r"$x_{\rm HII}$")
-            ax.grid(alpha=0.2)
             if r == 0:
                 ax.legend(fontsize=7, loc="upper left")
     return fig

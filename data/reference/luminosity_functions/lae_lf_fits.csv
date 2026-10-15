@@ -1,0 +1,26 @@
+ref_key,z,log_phistar,log_phistar_up,log_phistar_lo,log_Lstar,log_Lstar_up,log_Lstar_lo,alpha,alpha_err,table,note
+Umeda25,4.9,-2.79,0.11,0.12,42.69,0.06,0.06,-1.61,0.07,Table 3,
+Umeda25,5.7,-2.91,0.05,0.05,42.75,0.03,0.03,-1.39,0.06,Table 3,
+Umeda25,6.6,-4.62,0.5,0.74,43.28,0.26,0.18,-2.82,0.32,Table 3,
+Umeda25,7,-4.49,0.85,1.27,43.23,0.49,0.39,-2.49,0.82,Table 3,
+Umeda25,7.3,-5,1.4,1.51,43.03,0.62,0.61,-2.56,0.93,Table 3,
+Kageura25,5.01,-2.5,0.06,0.06,42.69,,,-1.61,,Table 3,L* and alpha fixed
+Kageura25,5.9,-3.03,0.07,0.13,42.75,,,-1.39,,Table 3,L* and alpha fixed
+Kageura25,6.96,-4.45,0.09,0.1,43.23,,,-2.49,,Table 3,L* and alpha fixed
+Kageura25,8.41,-4.98,0.21,0.35,43.03,,,-2.56,,Table 3,L* and alpha fixed
+Kageura25,11,-6.33,0.44,0.5,43.03,,,-2.56,,Table 3,L* and alpha fixed
+Konno18,5.7,-3.6090649,0.38285134,0.61278386,43.029384,0.23543405,0.19053469,-2.26,0.76,"Table 4 (classical, fit range logL=42.4-43.5)",reader flagged OCR garbling of some cells
+Konno18,6.6,-3.5482136,0.35098729,0.79857392,42.913814,0.31149543,0.19781051,-1.86,0.79,"Table 4 (classical, fit range logL=42.4-43.5)",reader flagged OCR garbling of some cells
+Konno18,5.7,-4.0710923,0.50550152,1.0368131,43.214844,0.36493975,0.20624368,-2.56,0.53,"Table 4 (classical, fit range logL=42.4-44.0)",reader flagged OCR garbling of some cells
+Konno18,6.6,-4.3306831,0.61103381,1.2713769,43.220108,0.072147983,0.23333635,-2.49,0.5,"Table 4 (classical, fit range logL=42.4-44.0)",reader flagged OCR garbling of some cells
+Santos16,5.7,-4.02,0.48,0.93,43.42,0.5,0.22,-2.3,0.35,Table 4,alpha free
+Santos16,5.7,-3.25,0.09,0.1,43.06,0.05,0.04,-1.5,,Table 4,alpha fixed
+Santos16,5.7,-3.63,0.12,0.16,43.25,0.09,0.06,-2,,Table 4,alpha fixed
+Santos16,6.6,-4.48,0.43,0.68,43.45,0.35,0.18,-2.3,0.35,Table 4,alpha free
+Santos16,6.6,-3.73,0.07,0.06,43.12,0.04,0.03,-1.5,,Table 4,alpha fixed
+Santos16,6.6,-4.13,0.1,0.1,43.3,0.07,0.05,-2,,Table 4,alpha fixed
+Itoh18,7,-4.3467875,0.19804583,0.22184875,43.176091,0.10720997,0.065501549,-2.5,,Table 3,alpha fixed fiducial
+Itoh18,7,-3.8507809,0.25732107,0.34303914,42.963788,0.15015552,0.077297102,-2,,Table 3,alpha fixed 
+Itoh18,7,-3.552842,0.22586288,0.16840443,42.799341,0.06989117,0.091770373,-1.5,,Table 3,alpha fixed 
+Ouchi10,6.6,-3.0705811,0.13127891,0.13007838,42.643453,0.055517328,0.06366908,-1.5,,Table 3,alpha fixed; apparent L*
+Konno14,7.3,-3.4317983,0.76017788,0.96614173,42.431364,0.59802001,0.25527251,-1.5,,Table 4,alpha fixed; huge errors

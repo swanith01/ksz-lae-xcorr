@@ -75,3 +75,37 @@ def test_sheth_tormen_bias_trends():
     assert S.sheth_tormen_bias(np.array([1e12]), 8.0, sig)[0] > 5.0       # rare haloes at z=8 are strongly biased
     assert np.isnan(S.mean_bias_of_masses(np.array([]), 8.0, sig))
     assert np.isclose(S.mean_bias_of_masses(np.full(10, 1e11), 8.0, sig), S.sheth_tormen_bias(np.array([1e11]), 8.0, sig)[0])
+
+
+class _PowerLawSigma:
+    """stub sigma(M) = (M / 1e13)^-0.2 (D = 1 at z=0): wide dynamic range in nu without needing a power spectrum."""
+    Om = 0.3
+    rho_m = 4e10
+
+    def __call__(self, m):
+        return (np.asarray(m, dtype=float) / 1e13) ** -0.2
+
+    def dlnsigma_dlnm(self, m):
+        return np.full_like(np.asarray(m, dtype=float), -0.2)
+
+
+def test_sheth_tormen_mass_function_is_normalised():
+    """integral of M dn/dlnM / rho_m over ln M = integral of f(nu) dnu = 1 (the multiplicity function is normalised)."""
+    from ksz_lae_xcorr.tracers.suite import sheth_tormen_dndlnm
+    sig = _PowerLawSigma()
+    lnm = np.linspace(np.log(1e-25), np.log(1e45), 20000)         # nu from ~1e-5 to >30
+    m = np.exp(lnm)
+    f = sheth_tormen_dndlnm(m, 0.0, sig) * m / sig.rho_m
+    assert abs(np.sum(0.5 * (f[1:] + f[:-1]) * np.diff(lnm)) - 1.0) < 0.02
+
+
+def test_sheth_tormen_abundance_trends_with_the_real_sigma_of_m():
+    from ksz_lae_xcorr.tracers.suite import SigmaOfM, sheth_tormen_n_gt
+    sig = SigmaOfM(Om=0.3086, Ob=0.0489, h=0.6777, ns=0.9665, sigma8=0.8102, backend="auto")
+    n = {(z, m): sheth_tormen_n_gt(m, z, sig) for z in (6.0, 8.0, 10.0) for m in (1e9, 1e10, 1e11)}
+    for z in (6.0, 8.0, 10.0):
+        assert n[(z, 1e9)] > n[(z, 1e10)] > n[(z, 1e11)] > 0
+    for m in (1e9, 1e10, 1e11):
+        assert n[(6.0, m)] > n[(8.0, m)] > n[(10.0, m)]
+    assert 0.02 < n[(6.0, 1e10)] < 0.12                  # ~0.06 Mpc^-3 (comoving) at z=6
+    assert sig.dlnsigma_dlnm(1e10) < 0

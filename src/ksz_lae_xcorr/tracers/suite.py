@@ -185,6 +185,7 @@ class SigmaOfM:
         pk = linear_pk(dict(Om=Om, Ob=Ob, h=h, ns=ns, sigma8=sigma8), backend=backend)
         rho_m = Om * RHO_CRIT0_H2 * h ** 2                 # comoving Msun / Mpc^3
         self.Om = Om
+        self.rho_m = rho_m
         self.logm = np.linspace(*log10m_range, n)
         R = (3.0 * 10 ** self.logm / (4.0 * np.pi * rho_m)) ** (1.0 / 3.0)
         self.sig = np.array([sigma_R(pk, r) for r in R])
@@ -192,12 +193,35 @@ class SigmaOfM:
     def __call__(self, m):
         return np.interp(np.log10(m), self.logm, self.sig)
 
+    def dlnsigma_dlnm(self, m):
+        """d ln sigma / d ln M (negative), from the tabulated curve."""
+        g = np.gradient(np.log(self.sig), self.logm * np.log(10.0))
+        return np.interp(np.log10(m), self.logm, g)
+
 
 def sheth_tormen_bias(m, z: float, sigma_of_m: SigmaOfM, a: float = 0.707, p: float = 0.3) -> np.ndarray:
     """Sheth, Mo & Tormen (2001) halo bias b(M, z)."""
     nu = DELTA_C / (sigma_of_m(m) * float(growth_factor_ratio(sigma_of_m.Om, z)))
     anu2 = a * nu ** 2
     return 1.0 + (anu2 - 1.0) / DELTA_C + 2.0 * p / (DELTA_C * (1.0 + anu2 ** p))
+
+
+def sheth_tormen_dndlnm(m, z: float, sigma_of_m: SigmaOfM, a: float = 0.707, p: float = 0.3, A: float = 0.3222) -> np.ndarray:
+    """Sheth & Tormen (1999) halo mass function dn/dlnM [Mpc^-3] (comoving, per unit ln M):
+    dn/dlnM = (rho_m / M) nu f(nu) |dln sigma / dln M|,  f(nu) = A sqrt(2a/pi) [1 + (a nu^2)^-p] exp(-a nu^2 / 2)."""
+    m = np.asarray(m, dtype=float)
+    D = float(growth_factor_ratio(sigma_of_m.Om, z))
+    nu = DELTA_C / (sigma_of_m(m) * D)
+    f = A * np.sqrt(2.0 * a / np.pi) * (1.0 + (a * nu ** 2) ** (-p)) * np.exp(-0.5 * a * nu ** 2)
+    rho_m = sigma_of_m.rho_m
+    return rho_m / m * nu * f * np.abs(sigma_of_m.dlnsigma_dlnm(m))
+
+
+def sheth_tormen_n_gt(m_cut, z: float, sigma_of_m: SigmaOfM, m_max: float = 10 ** 15.5, n: int = 600) -> float:
+    """n(> M_cut) [Mpc^-3] = integral of the Sheth-Tormen dn/dlnM."""
+    lnm = np.linspace(np.log(m_cut), np.log(m_max), n)
+    f = sheth_tormen_dndlnm(np.exp(lnm), z, sigma_of_m)
+    return float(np.sum(0.5 * (f[1:] + f[:-1]) * np.diff(lnm)))
 
 
 def mean_bias_of_masses(masses, z: float, sigma_of_m: SigmaOfM, max_n: int = 200_000, seed: int = 0) -> float:

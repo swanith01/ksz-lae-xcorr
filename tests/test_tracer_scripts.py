@@ -164,3 +164,31 @@ def test_script38_compares_tracer_cross_csvs(tmp_path, capsys):
     rows = np.genfromtxt(root / "tracer_cross_summary.csv", delimiter=",", names=True, dtype=None, encoding=None)
     r = [q for q in rows if q["name"] == "halo_M10.0" and q["ell"] == 1000][0]
     assert abs(r["peak"] - 0.3) < 0.02 and 0.3 < r["x_hii_at_peak"] < 0.5
+
+
+def test_script39_and_40_lf_pipeline(tmp_path, capsys):
+    """scripts/39 on the mock seed (halo mass function vs ST, UV LF, Lya LF) and scripts/40 plotting from two copies."""
+    import shutil
+    cfgp, _ = build_mock(tmp_path)
+    m39 = _load("s39", "39_tracer_luminosity_functions.py")
+    out = tmp_path / "lf"
+    m39.main(["--config", str(cfgp), "--seed", "1", "--out-dir", str(out)])
+    rows = np.genfromtxt(out / "lf_seed1.csv", delimiter=",", names=True, dtype=None, encoding=None)
+    kinds = set(rows["kind"])
+    assert kinds == {"halo_mf", "uvlf", "lae_lf"}
+    r = rows[rows["kind"] == "halo_mf"]
+    z8 = r[np.isclose(r["z"], 8.0)]
+    assert z8["n"].sum() == 40000                              # all mock haloes (masses uniform in log M over 8..12)
+    assert np.all(np.isfinite(z8["phi_ST"])) and np.all(z8["phi_ST"] > 0)
+    u = rows[(rows["kind"] == "uvlf") & np.isclose(rows["z"], 8.0)]
+    assert u["n"].sum() == 8000 and np.isfinite(u["median_log10M"][u["n"] > 50]).all()
+    # Lya LF: 8000 mock LAEs with log L uniform in 41..44 -> phi per dex flat ~ 8000/3/vol
+    l = rows[(rows["kind"] == "lae_lf") & np.isclose(rows["z"], 8.0) & (rows["x"] > 41.2) & (rows["x"] < 43.8)]
+    assert np.allclose(l["phi"], 8000 / 3.0 / 50.0 ** 3, rtol=0.35)
+    shutil.copy(out / "lf_seed1.csv", out / "lf_seed2.csv")
+    m40 = _load("s40", "40_tracer_lf_plots.py")
+    m40.main(["--in-dir", str(out), "--out-dir", str(tmp_path / "lfplots")])
+    for f in ("halo_mass_function_vs_ST", "uv_luminosity_function_vs_lit", "lya_luminosity_function_vs_lit"):
+        assert (tmp_path / "lfplots" / f"{f}.png").exists()
+    assert (tmp_path / "lfplots" / "lf_summary.csv").exists()
+    assert "cat/obs" in capsys.readouterr().out
