@@ -9,7 +9,8 @@ matter x Waters+16 reference and each tracer cut, and overlays them.  Light; run
 
 Outputs (--out-dir):
     coeval_vs_lightcone.png/.pdf      rows = ell (500, 1000, 3000), columns = matter | one cut per tracer kind
-                                      line + band = stitched lightcone (seed mean +- s.e.m.), dots with bars = coeval boxes
+                                      line + band = stitched lightcone (seed mean +- s.e.m.), dots with bars = coeval boxes,
+                                      dashed black = La Plante+22 Fig. 7 fiducial curve (matter x their bias; --no-paper to drop)
     coeval_vs_lightcone_summary.csv   per tracer and ell: pooled ratio coeval / lightcone over --xrange (seed bootstrap, paired
                                       by seed), and the RMS over windows of the paired difference in units of its s.e.m.
     coeval_<tracer>.csv               z0, dz, x_hii, mean/sem of both estimators at every ell
@@ -29,6 +30,7 @@ import numpy as np
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from ksz_lae_xcorr.io.la_plante_reference import load_fig7_vs_xhii
 from ksz_lae_xcorr.tracers.suite import spec_from_name
 from ksz_lae_xcorr.utils.figio import save_fig
 
@@ -117,14 +119,19 @@ def _symlog(ax, lin):
     ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: "0" if v == 0 else f"{v:.2g}"))
 
 
-def make_figure(data, cols, targets, yscale="symlog"):
+def make_figure(data, cols, targets, yscale="symlog", paper=None):
+    """paper: {ell: (x_HII, D_ell)} (La Plante+22 Fig. 7, fiducial); drawn dashed black in every panel when given."""
+    paper = paper or {}
     fig, axes = plt.subplots(len(targets), len(cols), figsize=(4.6 * len(cols), 3.6 * len(targets)), sharex=True,
                              sharey="row", squeeze=False, constrained_layout=True)
     for ti, ell in enumerate(targets):
         ref = data[cols[0]]
-        lin = float(f"{0.5 * np.nanmax(np.abs(mean_sem(ref['Dl'])[0][:, ti])):.1g}") if yscale == "symlog" else None
+        pk = max(float(np.nanmax(np.abs(mean_sem(ref["Dl"])[0][:, ti]))), float(np.max(paper[int(ell)][1])) if int(ell) in paper else 0.0)
+        lin = float(f"{0.5 * pk:.1g}") if yscale == "symlog" else None
         for ci, name in enumerate(cols):
             d = data[name]; ax = axes[ti, ci]
+            if int(ell) in paper:
+                ax.plot(*paper[int(ell)], color="k", ls="--", lw=2.0, zorder=1, label="La Plante+22 Fig. 7 (fiducial)")
             ml, sl = mean_sem(d["Dl"]); mc, sc = mean_sem(d["Dc"])
             ax.fill_between(d["x"], ml[:, ti] - sl[:, ti], ml[:, ti] + sl[:, ti], color=LC_COLOR, alpha=0.25, lw=0)
             ax.plot(d["x"], ml[:, ti], color=LC_COLOR, lw=2, label="stitched lightcone")
@@ -152,6 +159,7 @@ def main(argv=None):
     ap.add_argument("--cuts", default=None, help="comma-separated tracer names to draw besides matter (default: one per kind)")
     ap.add_argument("--xrange", type=float, nargs=2, default=(0.1, 0.7))
     ap.add_argument("--yscale", choices=("symlog", "linear"), default="symlog")
+    ap.add_argument("--no-paper", action="store_true", help="do not overplot the La Plante+22 Fig. 7 (fiducial) curve")
     args = ap.parse_args(argv)
     out = args.out_dir or args.coeval_dir
     os.makedirs(out, exist_ok=True)
@@ -175,9 +183,18 @@ def main(argv=None):
     with open(os.path.join(out, "coeval_vs_lightcone_summary.csv"), "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
     cols = pick_columns(names, args.cuts.split(",") if args.cuts else None)
-    fig = make_figure(data, cols, targets, args.yscale)
+    paper = {} if args.no_paper else load_fig7_vs_xhii()
+    fig = make_figure(data, cols, targets, args.yscale, paper)
     print("figure:", *save_fig(fig, os.path.join(out, "coeval_vs_lightcone")))
     plt.close(fig)
+    if paper:
+        print(f"\n  peak D_ell [uK^2] over x_HII (seed-mean curves) vs the paper's Fig. 7 peak")
+        print(f"  {'tracer':>16} {'ell':>5} {'lightcone':>10} {'coeval':>9} {'paper':>8} {'LC/paper':>9} {'coeval/paper':>13}")
+        for n in names:
+            for ti, t in enumerate(targets):
+                pl, pc = np.nanmax(mean_sem(data[n]["Dl"])[0][:, ti]), np.nanmax(mean_sem(data[n]["Dc"])[0][:, ti])
+                pp = float(np.max(paper[int(t)][1])) if int(t) in paper else np.nan
+                print(f"  {n:>16} {t:5.0f} {pl:10.4f} {pc:9.4f} {pp:8.4f} {pl / pp:9.2f} {pc / pp:13.2f}")
     print(f"\n  {'tracer':>16} {'ell':>5} {'coeval/lightcone':>18} {'RMS z':>7}   (x_HII {args.xrange[0]}-{args.xrange[1]}; paired by seed)")
     for r in rows:
         print(f"  {r['tracer']:>16} {r['ell']:5.0f} {r['ratio_coeval_over_lightcone']:7.2f} [{r['lo16']:5.2f},{r['hi84']:5.2f}] {r['rms_paired_z']:7.2f}")
