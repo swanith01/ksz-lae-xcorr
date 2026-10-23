@@ -156,11 +156,13 @@ def test_script38_compares_tracer_cross_csvs(tmp_path, capsys):
         write(root / name / "lp_cross_vs_z0_SO_wo0.csv", amp)
     write(tmp_path / "ref.csv", 0.25)
     (root / "not_a_tracer").mkdir()
-    rc = m.main(["--root", str(root), "--ref-csv", str(tmp_path / "ref.csv")])
+    rc = m.main(["--root", str(root), "--ref-csv", str(tmp_path / "ref.csv"), "--panels"])
     assert rc is None or rc == 0
     out = capsys.readouterr().out
     assert "3 tracers" in out and "halo_M10.0" in out and "reference" in out
     assert (root / "tracer_cross_vs_xhii.png").exists() and (root / "tracer_cross_summary.csv").exists()
+    assert (root / "panels" / "cross_lae_l1000.png").exists() and len(list((root / "panels").glob("*.png"))) == 6
+    assert m.main(["--root", str(root), "--yscale", "linear", "--out-dir", str(tmp_path / "lin")]) is None
     rows = np.genfromtxt(root / "tracer_cross_summary.csv", delimiter=",", names=True, dtype=None, encoding=None)
     r = [q for q in rows if q["name"] == "halo_M10.0" and q["ell"] == 1000][0]
     assert abs(r["peak"] - 0.3) < 0.02 and 0.3 < r["x_hii_at_peak"] < 0.5

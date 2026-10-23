@@ -143,6 +143,52 @@ def component_maps(cfg, fd: dict, f2d: np.ndarray, kSZ_z_min: float = lp_maps.DE
     return out
 
 
+def window_chunk_maps(cfg, fd: dict, f2d: np.ndarray, windows: list, kSZ_z_min: float = lp_maps.DEFAULT_KSZ_Z_MIN,
+                      chunk: int = 32, weights: dict | None = None) -> list:
+    """For every window {z_lo, z_hi, ...}: the maps built from the window's LOS pixels ALONE (z >= kSZ_z_min), to look at
+    the kSZ^2 pattern of one redshift chunk next to the tracer map of the same chunk.
+
+    Returns a list (one dict per window) with float32 (n, n) maps
+      th_full, th_x, th_v        the linear projections  sum_i X_i  (full integrand, x_e only, v only)
+      A_full, A_x, A_v           [F sum_i X_i]^2          (project, then square)
+      B_full, B_x, B_v           sum_i [F X_i]^2          (square every slice, then project)
+    and 'n_pix'.  The definitions of X_i are those of component_maps."""
+    wt = weights or ksz_slice_weights(cfg, fd)
+    W, xe_mean, zi_lo0, zi_hi0 = wt["W"], wt["xe_mean"], wt["zi_lo"], wt["zi_hi"]
+    z_lc = fd["z_lc"]
+    c_mpc_s = constants.c_mpc_per_s()
+    n = fd["xHI_lc"].shape[0]
+    floor = int(np.searchsorted(z_lc, kSZ_z_min))
+    comps = ("full", "x", "v")
+    out = []
+    for w in windows:
+        lo = max(int(np.searchsorted(z_lc, w["z_lo"])), zi_lo0, floor)
+        hi = min(int(np.searchsorted(z_lc, w["z_hi"])), zi_hi0)
+        if hi - lo < 1:
+            raise ValueError(f"window z {w['z_lo']}-{w['z_hi']} has no LOS pixels in the kSZ range")
+        sumA = {c: np.zeros((n, n)) for c in comps}
+        sumB = {c: np.zeros((n, n)) for c in comps}
+        for s0 in range(lo, hi, chunk):
+            gi = np.arange(s0, min(s0 + chunk, hi))
+            idx = gi - zi_lo0
+            xe = 1.0 - fd["xHI_lc"][:, :, gi]
+            dens = fd["density_lc"][:, :, gi]
+            vc = fd["velocity_lc"][:, :, gi] / c_mpc_s
+            wgt = W[idx][None, None, :]
+            xm = xe_mean[idx][None, None, :]
+            stacks = {"x": wgt * xe, "v": wgt * xm * vc, "full": -(wgt * dens * xe * vc)}
+            for c, X in stacks.items():
+                sumA[c] += X.sum(axis=2)
+                sumB[c] += (apply_filter(X, f2d) ** 2).sum(axis=2)
+        m = {"n_pix": hi - lo}
+        for c in comps:
+            m[f"th_{c}"] = sumA[c].astype(np.float32)
+            m[f"A_{c}"] = (apply_filter(sumA[c], f2d) ** 2).astype(np.float32)
+            m[f"B_{c}"] = sumB[c].astype(np.float32)
+        out.append(m)
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # Fractional cross-power
 # --------------------------------------------------------------------------- #
