@@ -109,7 +109,7 @@ def main(argv=None):
     xb = tm.history_fn(h["z"], h["x_HII"])
     paper = load_fig7_vs_xhii()
     z0 = np.arange(5.6, 14.01, 0.2)
-    eps_grid = np.logspace(-1, 2.5, 22)
+    eps_grid = np.logspace(-1, 2.0, 37)
     mis = scan_eps(cfg, xb, paper, ells, eps_grid, z0, args.zmean, args.r_v)
     eps = args.eps if args.eps is not None else float(eps_grid[int(np.argmin(mis))])
     print("eps scan (rms log misfit vs La Plante, x_HII 0.1-0.9):")

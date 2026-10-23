@@ -15,7 +15,7 @@ cross-power of La Plante+22.  It is a squeezed-limit response picture, not a bis
   * the response to a long-wavelength density mode has two parts
         density/velocity:  (1+delta)^2 -> 2 delta_L (+ r_v delta_L from the velocity variance; r_v = 0 by default)
         ionisation:        zreion: z_re -> z_re + (1+z) b_zm(k) delta_L(z_mean) shifts the ionised fraction by
-                           dxbar/ddelta = (1+z) b_zm (D(z_mean)/D(z)) p(z),  p = -dxbar/dz
+                           dxbar/ddelta = (1+z_mean) b_zm (D(z_mean)/D(z)) p(z),  p = -dxbar/dz
     so   s' R = K^2 v^2 { [xbar^2 + eps xbar(1-xbar)] (2 + r_v)  +  [2 xbar + eps (1 - 2 xbar)] dxbar/ddelta }.
   The overall amplitude (T_CMB^2, the filter's share of the slice power, v_rms) is one multiplicative constant A, fitted.
 
@@ -93,7 +93,7 @@ class Toy:
         base = self.K ** 2 * self.v2
         s = base * (x ** 2 + e * x * (1 - x))
         bz = bias_zm(k) if self.use_zm_bias else B0
-        x_delta = (1 + z) * bz * (self.Dm / self.D) * self.p
+        x_delta = (1 + self.zmean) * bz * (self.Dm / self.D) * self.p
         r_dens = s * (2.0 + self.r_v)
         r_ion = base * (2 * x + e * (1 - 2 * x)) * x_delta
         return s, r_dens, r_ion
