@@ -9,6 +9,9 @@ Per window (z0, dz = 1; the windows, chi_eff and filter are those of scripts/26 
   coeval    : every snapshot overlapping the window contributes the cross-power of  [F Theta_slab]^2  with the tracer
               map of the SAME slab of its own box; summed over snapshots (no stitching, no interpolation, no rotations)
   lightcone : [F Theta_lightcone]^2 x the window's tracer map from scripts/37  (what scripts/28 computes)
+  box       : the Limber ("integrated bispectrum", Kramer et al. 2025 Eq. 9-10) version: per snapshot the WHOLE periodic box is
+              projected, filtered, squared and crossed with the box's tracer map -> T per LOS cell; the window sums T x W_i^2 w_i
+              over its pixels (no slab edges).  Saved as D_box next to the slab estimate D_coeval.
 Both use the same filter, the same weights W_i and the same window top hat, so any difference is the stitching / cross-snapshot
 pairs.  Tracers: `matter` (b_g(z) delta_m, as scripts/26) and the suite specs (scripts/37; tracer overdensity n/nbar - 1).
 
@@ -116,18 +119,22 @@ def main(argv=None):
         for si, idx in cc.window_groups(assign, zi_lo, zi_hi):
             plan.setdefault(si, []).append((wi, idx))
     D_acc = {n: [None] * len(wins) for n in names}
-    ell_ref = None
+    D_box = {n: [None] * len(wins) for n in names}          # full-box Limber estimator (coeval_cross.snapshot_box_T)
+    ell_win = [None] * len(wins)                            # ell = k chi_eff is window-dependent
     t0 = time.time()
     for si in sorted(plan):
         z = float(snap[si])
         theta, cubes = snapshot_boxes(st, args.seed, z, specs, True)
+        bt = cc.snapshot_box_T(theta, {n: cubes[n] for n in names}, f2d, kg, sorted({wins[wi]["chi_eff"] for wi, _ in plan[si]}))
         for wi, idx in plan[si]:
             wz = wmeta[wi]["wz"][idx - wmeta[wi]["zi"][0]]
             w_gal = {n: wz * (bluetides_bias_gz(z_trim[idx]) if n == MATTER else 1.0) for n in names}
             res = cc.snapshot_group_cross(theta, {n: cubes[n] for n in names}, W[idx], w_gal, f2d, kg, wins[wi]["chi_eff"])
-            ell_ref = res["ell"]
+            ell_win[wi] = res["ell"]
             for n in names:
                 D_acc[n][wi] = res["D"][n] if D_acc[n][wi] is None else D_acc[n][wi] + res["D"][n]
+                tb = bt["T"][wins[wi]["chi_eff"]][n] * cc.limber_weight(W[idx], w_gal[n])
+                D_box[n][wi] = tb if D_box[n][wi] is None else D_box[n][wi] + tb
         log(f"  snapshot z={z:.3f}: {len(plan[si])} window(s), {sum(len(i) for _, i in plan[si])} pixel-slabs ({time.time() - t0:.0f}s)")
 
     # ---- results at the ell targets + the lightcone estimate of the same seed ----
@@ -136,10 +143,11 @@ def main(argv=None):
     out = {"seed": args.seed, "windows": [{k: w[k] for k in ("z0", "dz", "z_lo", "z_hi", "chi_eff")} | {"x_hii_coeval": wmeta[i]["x_hii"],
                                                                                                   "x_hii_lightcone": w["x_hii"]}
                                           for i, w in enumerate(wins)],
-           "ell_targets": np.array(targets), "names": names, "D_coeval": {}, "D_lightcone": {}, "chi_ref": chi_ref}
+           "ell_targets": np.array(targets), "names": names, "D_coeval": {}, "D_box": {}, "D_lightcone": {}, "chi_ref": chi_ref}
     for n in names:
         Dc = np.full((len(wins), len(targets)), np.nan)
         Dl = np.full((len(wins), len(targets)), np.nan)
+        Db = np.full((len(wins), len(targets)), np.nan)
         if n == MATTER:
             gmaps = {(w["dz"], w["z0"]): w["gal_map"] for w in prod["windows"]}
         else:
@@ -152,14 +160,16 @@ def main(argv=None):
                 log(f"  (no lightcone tracer maps for {n}: {p})")
         for wi, w in enumerate(wins):
             if D_acc[n][wi] is not None:
-                Dc[wi] = lp_maps.interp_at_ell(ell_ref, D_acc[n][wi], targets)
+                Dc[wi] = lp_maps.interp_at_ell(ell_win[wi], D_acc[n][wi], targets)
+            if D_box[n][wi] is not None:
+                Db[wi] = lp_maps.interp_at_ell(ell_win[wi], D_box[n][wi], targets)
             g = gmaps.get((w["dz"], w["z0"]))
             if g is not None:
                 c = lp_maps.lp_cross_dell(f2_lc, g, kg, w["chi_eff"])
                 Dl[wi] = lp_maps.interp_at_ell(c["ell"], c["D_ell"], targets)
-        out["D_coeval"][n], out["D_lightcone"][n] = Dc, Dl
+        out["D_coeval"][n], out["D_box"][n], out["D_lightcone"][n] = Dc, Db, Dl
         i = int(np.nanargmax(np.nanmax(np.abs(Dl), axis=1))) if np.isfinite(Dl).any() else 0
-        log(f"  {n:>16}: window z0={wins[i]['z0']}: coeval {np.round(Dc[i], 4)}  lightcone {np.round(Dl[i], 4)} uK^2 at ell {list(map(int, targets))}")
+        log(f"  {n:>16}: window z0={wins[i]['z0']}: slab {np.round(Dc[i], 4)}  box {np.round(Db[i], 4)}  lightcone {np.round(Dl[i], 4)} uK^2 at ell {list(map(int, targets))}")
     os.makedirs(args.out_dir, exist_ok=True)
     path = os.path.join(args.out_dir, f"seed{args.seed}_wo{args.wrap_offset}_coeval.pkl")
     with open(path, "wb") as f:

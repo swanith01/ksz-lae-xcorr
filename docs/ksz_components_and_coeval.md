@@ -40,3 +40,14 @@ s.e.m. (≈ 1 = consistent within the seed noise).
 
 Limits: the slab thickness is set by the snapshot spacing (Δz ≈ 0.14–0.2, 50–70 Mpc), so for the k∥ = 0 modes the slab is thinner than
 the box; the 300 Mpc box gives ℓ_min ≈ 190, ℓ = 500 has only a few modes (as in the lightcone).
+
+### 2b. Full-box Limber estimate (`D_box`, added 2026-10-26)
+
+The slab estimate is the Limber / "integrated bispectrum" sum of Kramer et al. (2025, arXiv 2501.07623, Eqs. 9–10, with a tracer in
+place of τ): C_L = ∫dχ W_g g² T(L/χ, χ)/χ², T = the filtered hybrid bispectrum tracer × momentum × momentum at one distance.  With
+50–70 Mpc slabs, LOS pairs that straddle a slab edge are lost.  `D_box` removes the edges: per snapshot the WHOLE periodic box is
+projected, filtered, squared and crossed with the box's tracer map, T_s = C_ℓ([F Σ_box θ]² × Σ_box δ_g)/N_box (per LOS cell), and the
+window gets D = Σ_i Wᵢ² wᵢ T_s(i) over its pixels (`coeval_cross.snapshot_box_T`, `limber_weight`).  Scripts/44 saves it next to the
+slab estimate; scripts/45 draws both (green squares = box, orange = slabs; `--estimators slab,box`).
+Fixed at the same time: scripts/44 interpolated every window onto the ℓ grid of the LAST window computed (ℓ = k χ_eff is
+window-dependent), shifting the lower-z windows by up to ~15% in ℓ.  Re-run scripts/44 for all seeds.

@@ -9,7 +9,8 @@ matter x Waters+16 reference and each tracer cut, and overlays them.  Light; run
 
 Outputs (--out-dir):
     coeval_vs_lightcone.png/.pdf      rows = ell (500, 1000, 3000), columns = matter | one cut per tracer kind
-                                      line + band = stitched lightcone (seed mean +- s.e.m.), dots with bars = coeval boxes,
+                                      line + band = stitched lightcone (seed mean +- s.e.m.), orange dots = coeval slabs,
+                                      green squares = coeval full-box Limber estimate (scripts/44 D_box; --estimators to choose),
                                       dashed black = La Plante+22 Fig. 7 fiducial curve (matter x their bias; --no-paper to drop)
     coeval_vs_lightcone_summary.csv   per tracer and ell: pooled ratio coeval / lightcone over --xrange (seed bootstrap, paired
                                       by seed), and the RMS over windows of the paired difference in units of its s.e.m.
@@ -35,7 +36,8 @@ from ksz_lae_xcorr.tracers.suite import spec_from_name
 from ksz_lae_xcorr.utils.figio import save_fig
 
 MATTER = "matter_Waters"
-LC_COLOR, CO_COLOR = "#0072B2", "#D55E00"
+LC_COLOR, CO_COLOR, BOX_COLOR = "#0072B2", "#D55E00", "#009E73"
+EST = {"slab": ("D_coeval", "coeval slabs", CO_COLOR, "o"), "box": ("D_box", "coeval full box (Limber)", BOX_COLOR, "s")}
 
 
 def load_seeds(coeval_dir, offset=0):
@@ -49,8 +51,9 @@ def load_seeds(coeval_dir, offset=0):
     return out
 
 
-def stack(seeds_data, name):
-    """(seeds, Dc, Dl, x_hii, z0, targets): Dc/Dl (n_seed, n_window, n_ell); windows matched by (z0, dz)."""
+def stack(seeds_data, name, key="D_coeval"):
+    """(seeds, Dc, Dl, x_hii, z0, targets): Dc/Dl (n_seed, n_window, n_ell); windows matched by (z0, dz).
+    key: which coeval estimate ('D_coeval' = slabs, 'D_box' = full-box Limber); NaN for seeds whose pickle lacks it."""
     seeds = sorted(seeds_data)
     keys = sorted({(w["dz"], w["z0"]) for s in seeds for w in seeds_data[s]["windows"]}, key=lambda k: k[1])
     shape = (len(seeds), len(keys), len(seeds_data[seeds[0]]["ell_targets"]))
@@ -60,10 +63,13 @@ def stack(seeds_data, name):
         d = seeds_data[s]
         if name not in d["names"]:
             continue
+        has = key in d and name in d[key]
         idx = {(w["dz"], w["z0"]): i for i, w in enumerate(d["windows"])}
         for ki, k in enumerate(keys):
             if k in idx:
-                Dc[si, ki], Dl[si, ki] = d["D_coeval"][name][idx[k]], d["D_lightcone"][name][idx[k]]
+                Dl[si, ki] = d["D_lightcone"][name][idx[k]]
+                if has:
+                    Dc[si, ki] = d[key][name][idx[k]]
                 xh[si, ki] = d["windows"][idx[k]]["x_hii_lightcone"]
     return seeds, Dc, Dl, np.nanmean(xh, axis=0), np.array([k[1] for k in keys]), np.array(seeds_data[seeds[0]]["ell_targets"])
 
@@ -132,11 +138,15 @@ def make_figure(data, cols, targets, yscale="symlog", paper=None):
             d = data[name]; ax = axes[ti, ci]
             if int(ell) in paper:
                 ax.plot(*paper[int(ell)], color="k", ls="--", lw=2.0, zorder=1, label="La Plante+22 Fig. 7 (fiducial)")
-            ml, sl = mean_sem(d["Dl"]); mc, sc = mean_sem(d["Dc"])
+            ml, sl = mean_sem(d["Dl"])
             ax.fill_between(d["x"], ml[:, ti] - sl[:, ti], ml[:, ti] + sl[:, ti], color=LC_COLOR, alpha=0.25, lw=0)
             ax.plot(d["x"], ml[:, ti], color=LC_COLOR, lw=2, label="stitched lightcone")
-            ax.errorbar(d["x"], mc[:, ti], yerr=sc[:, ti], color=CO_COLOR, ls="none", marker="o", ms=4, elinewidth=1, capsize=0,
-                        label="coeval boxes")
+            for j, (est, D) in enumerate(d["coeval"].items()):
+                mc, sc = mean_sem(D)
+                _, lab, col, mk = EST[est]
+                dx = 0.006 * (j - 0.5 * (len(d["coeval"]) - 1))
+                ax.errorbar(d["x"] + dx, mc[:, ti], yerr=sc[:, ti], color=col, ls="none", marker=mk, ms=4, elinewidth=1, capsize=0,
+                            label=lab)
             ax.axhline(0, color="k", lw=0.5)
             ax.set_xlim(1.0, 0.0)
             if ti == 0:
@@ -160,26 +170,36 @@ def main(argv=None):
     ap.add_argument("--xrange", type=float, nargs=2, default=(0.1, 0.7))
     ap.add_argument("--yscale", choices=("symlog", "linear"), default="symlog")
     ap.add_argument("--no-paper", action="store_true", help="do not overplot the La Plante+22 Fig. 7 (fiducial) curve")
+    ap.add_argument("--estimators", default=None, help="comma-separated: slab,box (default: those present in the pickles)")
     args = ap.parse_args(argv)
     out = args.out_dir or args.coeval_dir
     os.makedirs(out, exist_ok=True)
     sd = load_seeds(args.coeval_dir, args.wrap_offset)
     names = sd[sorted(sd)[0]]["names"]
-    print(f"seeds {sorted(sd)}; tracers {names}")
+    present = [e for e in EST if any(EST[e][0] in d for d in sd.values())]
+    ests = [e for e in (args.estimators.split(",") if args.estimators else present) if e in present]
+    print(f"seeds {sorted(sd)}; tracers {names}; coeval estimators {ests}")
     data, rows = {}, []
     for n in names:
-        seeds, Dc, Dl, x, z0, targets = stack(sd, n)
-        data[n] = {"Dc": Dc, "Dl": Dl, "x": x, "z0": z0}
-        mc, sc = mean_sem(Dc); ml, sl = mean_sem(Dl)
-        cols = {"z0": z0, "x_hii": x}
-        for ti, t in enumerate(targets):
-            for lab, m, s in (("coeval", mc, sc), ("lightcone", ml, sl)):
-                cols[f"mean_{lab}_l{int(t)}"], cols[f"sem_{lab}_l{int(t)}"] = m[:, ti], s[:, ti]
+        data[n] = {"coeval": {}}
+        cols = {}
+        for est in ests:
+            seeds, Dc, Dl, x, z0, targets = stack(sd, n, EST[est][0])
+            data[n]["coeval"][est] = Dc
+            data[n].update({"Dl": Dl, "x": x, "z0": z0})
+            if not cols:
+                cols = {"z0": z0, "x_hii": x}
+            mc, sc = mean_sem(Dc); ml, sl = mean_sem(Dl)
+            for ti, t in enumerate(targets):
+                for lab, m, s_ in ((est, mc, sc), ("lightcone", ml, sl)):
+                    cols[f"mean_{lab}_l{int(t)}"], cols[f"sem_{lab}_l{int(t)}"] = m[:, ti], s_[:, ti]
+            for t, (R, lo, hi, zr) in zip(targets, agreement(Dc, Dl, x, tuple(args.xrange))):
+                rows.append({"tracer": n, "estimator": est, "ell": t, "ratio_coeval_over_lightcone": R, "lo16": lo, "hi84": hi,
+                             "rms_paired_z": zr, "n_seeds": int(np.isfinite(Dc[:, :, 0]).any(axis=1).sum()),
+                             "x_hii_lo": args.xrange[0], "x_hii_hi": args.xrange[1]})
+        data[n]["Dc"] = data[n]["coeval"][ests[0]]
         with open(os.path.join(out, f"coeval_{n}.csv"), "w", newline="") as f:
             w = csv.writer(f); w.writerow(list(cols)); w.writerows(zip(*[np.asarray(c) for c in cols.values()]))
-        for t, (R, lo, hi, zr) in zip(targets, agreement(Dc, Dl, x, tuple(args.xrange))):
-            rows.append({"tracer": n, "ell": t, "ratio_coeval_over_lightcone": R, "lo16": lo, "hi84": hi, "rms_paired_z": zr,
-                         "n_seeds": len(seeds), "x_hii_lo": args.xrange[0], "x_hii_hi": args.xrange[1]})
     with open(os.path.join(out, "coeval_vs_lightcone_summary.csv"), "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
     cols = pick_columns(names, args.cuts.split(",") if args.cuts else None)
@@ -189,15 +209,17 @@ def main(argv=None):
     plt.close(fig)
     if paper:
         print(f"\n  peak D_ell [uK^2] over x_HII (seed-mean curves) vs the paper's Fig. 7 peak")
-        print(f"  {'tracer':>16} {'ell':>5} {'lightcone':>10} {'coeval':>9} {'paper':>8} {'LC/paper':>9} {'coeval/paper':>13}")
+        print(f"  {'tracer':>16} {'ell':>5} {'lightcone':>10} " + " ".join(f"{e:>9}" for e in ests) + f" {'paper':>8}")
         for n in names:
             for ti, t in enumerate(targets):
-                pl, pc = np.nanmax(mean_sem(data[n]["Dl"])[0][:, ti]), np.nanmax(mean_sem(data[n]["Dc"])[0][:, ti])
+                pl = np.nanmax(mean_sem(data[n]["Dl"])[0][:, ti])
+                pcs = [np.nanmax(mean_sem(data[n]["coeval"][e])[0][:, ti]) for e in ests]
                 pp = float(np.max(paper[int(t)][1])) if int(t) in paper else np.nan
-                print(f"  {n:>16} {t:5.0f} {pl:10.4f} {pc:9.4f} {pp:8.4f} {pl / pp:9.2f} {pc / pp:13.2f}")
-    print(f"\n  {'tracer':>16} {'ell':>5} {'coeval/lightcone':>18} {'RMS z':>7}   (x_HII {args.xrange[0]}-{args.xrange[1]}; paired by seed)")
+                print(f"  {n:>16} {t:5.0f} {pl:10.4f} " + " ".join(f"{v:9.4f}" for v in pcs) + f" {pp:8.4f}")
+    print(f"\n  {'tracer':>16} {'est':>5} {'ell':>5} {'coeval/lightcone':>18} {'RMS z':>7}   (x_HII {args.xrange[0]}-{args.xrange[1]}; paired by seed)")
     for r in rows:
-        print(f"  {r['tracer']:>16} {r['ell']:5.0f} {r['ratio_coeval_over_lightcone']:7.2f} [{r['lo16']:5.2f},{r['hi84']:5.2f}] {r['rms_paired_z']:7.2f}")
+        print(f"  {r['tracer']:>16} {r['estimator']:>5} {r['ell']:5.0f} {r['ratio_coeval_over_lightcone']:7.2f} [{r['lo16']:5.2f},{r['hi84']:5.2f}] "
+              f"{r['rms_paired_z']:7.2f}")
 
 
 if __name__ == "__main__":

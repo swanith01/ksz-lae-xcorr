@@ -92,3 +92,38 @@ def snapshot_group_cross(theta_cube: np.ndarray, gal_cubes: dict, W_theta: np.nd
             ell = c["ell"]
             acc[name] = c["D_ell"] / len(offs) if acc[name] is None else acc[name] + c["D_ell"] / len(offs)
     return {"ell": ell, "D": acc, "n_offsets": len(offs)}
+
+
+# ---- full-box (Limber / "integrated bispectrum") estimator ---------------------------------------------------------------
+#
+# Kramer et al. (2025, arXiv 2501.07623) Eq. 9-10, for a tracer instead of tau:
+#     C_L = int dchi  W_g(chi) g(chi)^2  T(k = L/chi, chi) / chi^2,
+#     T(k, chi) = int d^2q/(2pi)^2 W(q chi) W(|k+q| chi) B_{delta_g p p}(k, q, -k-q)      (all wavevectors transverse)
+# i.e. the observable [F Theta_lightcone]^2 x g_window is, in the Limber limit, a sum of LOCAL pieces: the hybrid bispectrum
+# tracer x momentum x momentum at one distance, weighted by the kSZ visibility squared and the tracer window.  In a periodic coeval
+# box the LOS-projected (k_par = 0) bispectrum of the WHOLE box is exactly that local piece per unit LOS length:
+#     T_s = C_ell( [F sum_box theta]^2  x  sum_box delta_g ) / N_box                         (per LOS cell, no weights)
+# and the window's cross-power is   D = sum over the window's LOS pixels i of  W_i^2 w_i T_{s(i)}
+# (W_i the kSZ weight, w_i the galaxy-map weight of pixel i, s(i) its nearest snapshot).  Compared with the slab estimator
+# (snapshot_group_cross) there are no slab edges: every LOS pair inside the 300 Mpc periodic box is kept.
+
+def snapshot_box_T(theta_cube: np.ndarray, gal_cubes: dict, f2d: np.ndarray, kg, chi_effs) -> dict:
+    """One snapshot: {'ell': {chi: ell}, 'T': {chi: {tracer: D_ell per LOS cell}}} for each requested chi_eff (k -> ell mapping).
+
+    theta_cube : (n, n, n) the kSZ integrand WITHOUT W_i  (z axis = LOS);  gal_cubes: {name: (n, n, n) tracer overdensity}."""
+    n_box = theta_cube.shape[2]
+    S = kc.apply_filter(theta_cube.sum(axis=2), f2d) ** 2
+    g = {name: cube.sum(axis=2) for name, cube in gal_cubes.items()}
+    out_ell, out_T = {}, {}
+    for chi in chi_effs:
+        out_T[chi] = {}
+        for name, gm in g.items():
+            c = lp_maps.lp_cross_dell(S, gm, kg, chi)
+            out_ell[chi] = c["ell"]
+            out_T[chi][name] = c["D_ell"] / n_box
+    return {"ell": out_ell, "T": out_T, "n_box": n_box}
+
+
+def limber_weight(W_theta: np.ndarray, w_gal: np.ndarray) -> float:
+    """sum_i W_i^2 w_i over the pixels a snapshot serves in a window (the Limber weight of T)."""
+    return float(np.sum(np.asarray(W_theta, float) ** 2 * np.asarray(w_gal, float)))

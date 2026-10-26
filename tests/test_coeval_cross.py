@@ -148,6 +148,8 @@ def test_scripts_41_and_44_end_to_end_on_a_tiny_tree(tmp_path, monkeypatch):
     Dc, Dl = out["D_coeval"]["matter_Waters"], out["D_lightcone"]["matter_Waters"]
     assert Dc.shape == Dl.shape == (len(out["windows"]), 3)
     assert np.isfinite(Dl).any() and np.isfinite(Dc).any()
+    Db = out["D_box"]["matter_Waters"]
+    assert Db.shape == Dc.shape and np.isfinite(Db).any()
     assert all(0 <= w["x_hii_coeval"] <= 1 for w in out["windows"])
     # the x_HII of the window agrees between the two constructions (interpolated snapshot means vs lightcone pixels)
     for w in out["windows"]:
@@ -164,11 +166,12 @@ def test_script45_aggregates_and_overlays(tmp_path, capsys):
         d = {"seed": seed, "ell_targets": np.array([500.0, 1000.0, 3000.0]), "names": names, "chi_ref": 9000.0,
              "windows": [{"z0": float(a), "dz": 1.0, "z_lo": a - 0.5, "z_hi": a + 0.5, "chi_eff": 9000.0,
                           "x_hii_coeval": float(b), "x_hii_lightcone": float(b)} for a, b in zip(z0, x)],
-             "D_coeval": {}, "D_lightcone": {}}
+             "D_coeval": {}, "D_box": {}, "D_lightcone": {}}
         for n in names:
             lc = base[n][:, None] * np.array([1.0, 0.8, 0.5])[None, :] + rng.normal(0, 0.003, (len(z0), 3))
             d["D_lightcone"][n] = lc
             d["D_coeval"][n] = lc * 0.9 + rng.normal(0, 0.003, (len(z0), 3))        # coeval = 90% of the lightcone
+            d["D_box"][n] = lc * 1.1 + rng.normal(0, 0.003, (len(z0), 3))           # box = 110%
         with open(tmp_path / f"seed{seed}_wo0_coeval.pkl", "wb") as f:
             pickle.dump(d, f)
     m45 = _load("s45", "45_coeval_vs_lightcone.py")
@@ -176,6 +179,49 @@ def test_script45_aggregates_and_overlays(tmp_path, capsys):
     m45.main(["--coeval-dir", str(tmp_path), "--out-dir", str(out), "--xrange", "0.1", "0.9"])
     assert (out / "coeval_vs_lightcone.png").exists() and (out / "coeval_matter_Waters.csv").exists()
     rows = np.genfromtxt(out / "coeval_vs_lightcone_summary.csv", delimiter=",", names=True, dtype=None, encoding=None)
-    r = [q for q in rows if q["tracer"] == "halo_M10.0" and q["ell"] == 500][0]
+    r = [q for q in rows if q["tracer"] == "halo_M10.0" and q["ell"] == 500 and q["estimator"] == "slab"][0]
     assert 0.8 < r["ratio_coeval_over_lightcone"] < 1.0 and r["lo16"] <= r["ratio_coeval_over_lightcone"] <= r["hi84"]
+    rb = [q for q in rows if q["tracer"] == "halo_M10.0" and q["ell"] == 500 and q["estimator"] == "box"][0]
+    assert 1.0 < rb["ratio_coeval_over_lightcone"] < 1.2
     assert "matter_Waters" in capsys.readouterr().out
+
+
+def test_full_box_limber_equals_whole_box_slab_with_constant_weights():
+    """With constant weights and a slab = the whole periodic box, the slab estimate is W^2 w N T: the two estimators coincide."""
+    n = 32
+    cfg, kg, f2d, ell, fl = _setup(n)
+    rng = np.random.default_rng(11)
+    theta = rng.normal(size=(n, n, n)).astype(np.float32)
+    gal = {"g": rng.normal(size=(n, n, n)).astype(np.float32)}
+    W, wg = np.full(n, 0.7), {"g": np.full(n, 1.0 / n)}
+    slab = cc.snapshot_group_cross(theta, gal, W, wg, f2d, kg, 9000.0)["D"]["g"]
+    bt = cc.snapshot_box_T(theta, gal, f2d, kg, [9000.0])
+    box = bt["T"][9000.0]["g"] * cc.limber_weight(W, wg["g"])
+    np.testing.assert_allclose(box, slab, rtol=1e-4, atol=1e-30, equal_nan=True)
+    assert cc.limber_weight([1.0, 2.0], [0.5, 0.25]) == pytest.approx(1.5)
+
+
+def test_full_box_and_slabs_agree_when_the_signal_is_local_along_the_los():
+    """Limber regime: the tracer modulation is smooth across the sky but uncorrelated from one LOS cell to the next.  Then thin
+    slabs lose nothing and the full-box T x Limber weight agrees with the slab estimate; T is also linear in the weights."""
+    n = 32
+    cfg, kg, f2d, ell, fl = _setup(n)
+    kx = np.fft.fftfreq(n)[:, None, None]; ky = np.fft.fftfreq(n)[None, :, None]
+    W = np.ones(8)
+    tot_s = tot_b = 0.0
+    for seed in range(8):                                                     # the two agree in expectation, not per realisation
+        rng = np.random.default_rng(100 + seed)
+        g3 = np.real(np.fft.ifft2(np.fft.fft2(rng.normal(size=(n, n, n)), axes=(0, 1)) * np.exp(-(kx ** 2 + ky ** 2) / 0.004),
+                                  axes=(0, 1)))
+        g3 /= g3.std()
+        theta = ((1 + 0.5 * g3) * rng.normal(size=(n, n, n))).astype(np.float32)
+        gal = {"g": g3.astype(np.float32)}
+        bt = cc.snapshot_box_T(theta, gal, f2d, kg, [9000.0])["T"][9000.0]["g"]
+        d1 = bt * cc.limber_weight(W, np.full(8, 1 / 8))
+        if seed == 0:
+            d2 = bt * (cc.limber_weight(W[:4], np.full(4, 1 / 8)) + cc.limber_weight(W[4:], np.full(4, 1 / 8)))
+            np.testing.assert_allclose(d1, d2, rtol=1e-12, equal_nan=True)
+        slab = cc.snapshot_group_cross(theta, gal, W, {"g": np.full(8, 1 / 8)}, f2d, kg, 9000.0)["D"]["g"]
+        tot_s += np.nansum(slab[:3]); tot_b += np.nansum(d1[:3])
+    r = tot_s / tot_b
+    assert 0.7 < r < 1.3, r
