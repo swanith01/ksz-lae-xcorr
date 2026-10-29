@@ -26,3 +26,11 @@ Caveats: eps ~ 8 is the best of a scan and sharp (the ionisation response change
 x_HII < 0.1 is controlled by the digitised history's first points; the toy is a diagonal-slice model (no cross-slice pairs); b_g(z) is
 the Waters/BlueTides shape for every tracer (amplitude fitted).
     python scripts/50_toy_model.py --out-dir data/plots/2026-10-23_toy [--ours-root data/plots/2026-10-16_tracer_cross]
+
+## 3. Teaching GIF (scripts/51, 2026-10-28)
+Three panels: filtered whole-lightcone kSZ^2 map | tracer map of one dz = 1 window, stepping from high z to low z, with z, x_HII, D_ell and the
+Pearson r | D_ell(x_HII) of the seed with a marker synced to the window shown (--no-curve for two panels, --paper adds La Plante Fig. 7).  Arrow (both panels, same pixel) = where (kSZ^2 fluctuation) x (tracer overdensity), both smoothed at chi/ell, is largest in that window; the
+product map is normalised so its mean is r.  The window where this seed's D_ell(x_HII) peaks gets a big flashing arrow + banner (cf. Guo et al.
+2026 Fig. 9, which shows the 21-cm slice at the redshift of the peak).  One seed: the flashing window is that seed's own peak (--peak-z to force one).
+    python scripts/51_pedagogy_gif.py --seed 1 [--cltt-file ell,Cl_uK2.csv] --out-dir data/plots/2026-10-28_gif       # needs lpmaps of >= 2 seeds + the tracer maps
+    python scripts/51_pedagogy_gif.py --chunks data/products_tracers/chunks/seed1_wo0_chunks.pkl                       # alternative: 6 windows from scripts/48
