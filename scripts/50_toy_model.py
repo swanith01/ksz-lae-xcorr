@@ -127,7 +127,9 @@ def main(argv=None):
         ax.plot(c["x_hii"], A * c["D"], color=TOY_COLOR, lw=1.8, label=f"toy, $\\epsilon$={eps:.3g}")
         ax.plot(c["x_hii"], A * c["D_dens"], color=TOY_COLOR, ls="--", lw=1.2, label="  density/velocity response")
         ax.plot(c["x_hii"], A * c["D_ion"], color=TOY_COLOR, ls=":", lw=1.4, label="  ionisation response")
-        ax.set_xlim(0, 1); ax.set_ylim(0, 1.4 * np.max(paper[ell][1]))
+        lo = min(0.0, float(np.min(A * c["D"])), float(np.min(A * c["D_dens"])), float(np.min(A * c["D_ion"])))
+        ax.axhline(0, color="0.5", lw=0.6)                                            # negative values are shown, not hidden
+        ax.set_xlim(0, 1); ax.set_ylim(1.1 * lo, 1.4 * np.max(paper[ell][1]))
         ax.set_xlabel("$x_{\\rm HII}$"); ax.set_title(f"$\\ell$ = {ell}   (A = {A:.3g}, misfit {rms:.2f})", fontsize=9)
         ax.set_ylabel("$D_\\ell^{\\rm cross}$ [$\\mu$K$^2$]") if ax is axes[0] else None
         print(f"  ell={ell}: amplitude A = {A:.4g}; peak x_HII  LP {peak_x(*paper[ell]):.2f}  toy {peak_x(c['x_hii'], c['D']):.2f}"
@@ -161,6 +163,7 @@ def main(argv=None):
                 ax.plot(c["x_hii"], A * c["D"], color=TOY_COLOR, lw=1.6, label="toy (A fitted)")
                 ax.plot(c["x_hii"], A * c["D_dens"], color=TOY_COLOR, ls="--", lw=1.0)
                 ax.plot(c["x_hii"], A * c["D_ion"], color=TOY_COLOR, ls=":", lw=1.2)
+                ax.axhline(0, color="0.5", lw=0.6)
                 ax.set_title(f"{name}, $\\ell$={ell}", fontsize=9); ax.set_xlabel("$x_{\\rm HII}$")
                 print(f"  {name:>16}: A = {A:.3g}  misfit {rms:.2f}   peak x_HII  data {peak_x(d['x_hii'], y):.2f}  toy {peak_x(c['x_hii'], c['D']):.2f}")
             axes[0, 0].legend(fontsize=7, frameon=False); axes[0, 0].set_ylabel("$D_\\ell^{\\rm cross}$ [$\\mu$K$^2$]")
