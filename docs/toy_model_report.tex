@@ -1,41 +1,77 @@
 \documentclass[10pt,a4paper]{article}
-\usepackage[margin=2cm]{geometry}
-\usepackage{amsmath,amssymb,graphicx,booktabs,hyperref}
+\usepackage[margin=1.9cm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,booktabs,array,longtable,hyperref}
 \setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
 \newcommand{\xb}{\bar x}
+\newcommand{\dens}{{\rm dens}}
+\newcommand{\ion}{{\rm ion}}
 \title{An analytic toy for the shape of $D_\ell^{\rm cross}(x_{\rm HII})$\\\large kSZ$^2\times$galaxy cross-power during reionisation: what sets the curve?}
 \author{S.\ Upadhye \;--\; \texttt{ksz-lae-xcorr}, \texttt{correlation/toy\_model.py}, \texttt{scripts/50\_toy\_model.py}}
-\date{23 October 2026}
+\date{29 October 2026 (v2: symbols defined, notation cleaned)}
 \begin{document}\maketitle
 
 \section{Question}
-La Plante, Sipple \& Lidz (2022) Fig.~7 plots $D_\ell^{\rm cross}$ (cross-power of the filtered kSZ$^2$ map with a galaxy window of width $\Delta z=1$) against the mean ionised fraction $x_{\rm HII}$ of the window. It rises from $x_{\rm HII}\simeq0$, peaks near $x_{\rm HII}\simeq 0.1$--$0.2$ and has fallen to almost nothing by $x_{\rm HII}\simeq0.8$. Is that shape already explained by a few lines of algebra, and which ingredient makes it?
+La Plante, Sipple \& Lidz (2022) Fig.~7 plots $D_\ell^{\rm cross}$, the cross-power of a filtered, squared kSZ map with a galaxy map from a redshift window of width $\Delta z=1$, against the mean ionised fraction $x_{\rm HII}$ of that window. It rises from $x_{\rm HII}\simeq0$, peaks near $x_{\rm HII}\simeq 0.1$--$0.2$ and has fallen to almost nothing by $x_{\rm HII}\simeq0.8$. Is that shape already explained by a few lines of algebra, and which ingredient makes it?
 
-\section{The model}
-\textbf{Estimator.} $S=[F\Theta]^2$ with $\Theta=\sum_i\theta_i$, $\theta_i=-W_i(1+\delta_i)x_{e,i}v_i/c$, $W_i=\tau'(1+z)^2e^{-\tau_i}ds_i$. The toy treats the lightcone as independent slices (the ``diagonal'', square-then-project ordering) and works in the squeezed limit: the small-scale kSZ$^2$ power $s(z)$ of a slice is modulated by the long-wavelength density $\delta_L$ of that slice, $s\to s\,(1+R\,\delta_L)$, and the galaxy map is $g=\int w\,b_g\,\delta_m$.
+\section{Symbols (every symbol, once)}
+Notation rules used throughout: the \emph{pixel} index is always $j$; the words ``dens'' and ``ion'' (never an index) label the density and ionisation effects; $Q$ is the slice power; $\chi$ is a distance; $G$ is the growth factor; $D_\ell$ is the angular power; $R$ is not used.
 
-\textbf{Slice power.} With $K(z)=\tau_{\rm pref}(1+z)^2e^{-\tau(z)}$ and $v(z)=E(z)\,\Omega_m(z)^{0.55}D(z)/(1+z)$ (i.e.\ $aHfD$ in units of $H_0$),
+{\small
+\begin{longtable}{>{$}p{2.4cm}<{$} p{14.0cm}}\toprule
+\multicolumn{2}{l}{\textbf{Maps and the estimator}}\\\midrule
+\Theta(\hat n) & the kSZ map: the kSZ temperature fluctuation (units of $T_{\rm CMB}$) summed along the line of sight from all pixels at $z\ge6$, $\Theta=\sum_j\theta_j$.\\
+\theta_j & kSZ contribution of line-of-sight pixel $j$ (1 Mpc long): $\theta_j=-W_j\,(1+\delta_j)\,x_{e,j}\,v_j/c$.\\
+W_j & kSZ weight of pixel $j$: $W_j=K(z_j)\,\Delta\chi_j$, the optical depth per pixel, damped by $e^{-\tau}$ (see $K$).\\
+\delta_j,\ x_{e,j},\ v_j & matter overdensity, free-electron fraction and line-of-sight peculiar velocity at pixel $j$; $c$ = speed of light.\\
+F(\ell) & the CMB filter, a function of multipole. It keeps the multipoles where the kSZ is not drowned by the primary CMB and noise. $F\Theta$ means: the map $\Theta$ with this filter applied in Fourier space.\\
+S & the \emph{squared filtered map}, $S=[F\Theta]^2$. After filtering only small scales remain, so $S$ is the local small-scale kSZ power: bright where the small-scale kSZ is strong.\\
+g(\hat n) & the galaxy (tracer) map of one redshift window: $g=\int dz\,w(z)\,b_g(z)\,\delta_m$, a mean-zero overdensity map.\\
+w(z) & window weight, a top hat of width $\Delta z=1$ with $\int w\,dz=1$.\\
+C_\ell^{Sg},\ D_\ell & $C_\ell^{Sg}$ is the angular cross-power of $S$ with $g$; $D_\ell\equiv D_\ell^{\rm cross}=\ell(\ell+1)C_\ell^{Sg}/2\pi$ (times $T_{\rm CMB}^2$ for $\mu$K$^2$; in the toy this is absorbed in $A$).\\\midrule
+\multicolumn{2}{l}{\textbf{Functions of redshift (all ordinary numbers at each $z$)}}\\\midrule
+z,\ \chi(z) & redshift; comoving distance to $z$. Multipole and wavenumber are linked by $k=\ell/\chi$.\\
+\bar x(z) & mean ionised fraction of the universe at $z$ (the reionisation history). $x_{\rm HII}$ of a window is $\bar x$ averaged over it.\\
+\tau(z),\ K(z) & optical depth to $z$, $\tau=\int\tau_{\rm pref}\,\bar x\,(1+z)^2\,d\chi$; and $K=\tau_{\rm pref}(1+z)^2e^{-\tau}$, the kSZ weight per unit length ($\tau_{\rm pref}=n_{H,0}\sigma_T$).\\
+G(z) & linear growth factor of matter fluctuations, normalised to $G(0)=1$.\\
+v(z) & growth scaling of the peculiar velocity, $v=E\,\Omega_m(z)^{0.55}G/(1+z)$ ($=aHfG$ in units of $H_0$; $E=H/H_0$). Only its redshift dependence is used.\\
+b_g(z) & tracer bias: $\delta_{\rm tracer}\simeq b_g\,\delta_m$ on large scales. $b_g=2.1(1+z)-5.3$ (BlueTides fit) for every tracer.\\
+P_{\rm lin}(k) & linear matter power spectrum at $z=0$ (Eisenstein--Hu), so $G^2P_{\rm lin}$ is the power at $z$.\\
+p(z) & how fast reionisation is going at $z$: $p=-d\bar x/dz\ge0$.\\
+b_{zm}(k) & zreion bias, $b_0/(1+k/k_0)^{0.2}$, $b_0=1/1.686$, $k_0=0.9\,h$Mpc$^{-1}$. $z_{\rm mean}=8$ is the reference redshift of the zreion model and $z_{\rm re}(\mathbf x)$ is the redshift at which the point $\mathbf x$ reionises: $z_{\rm re}=z_{\rm mean}+(1+z_{\rm mean})\,b_{zm}\,\delta_L(z_{\rm mean})$.\\\midrule
+\multicolumn{2}{l}{\textbf{The toy's own quantities}}\\\midrule
+Q(z) & small-scale kSZ$^2$ power of the slice of sky at $z$, \emph{per unit redshift}, at the filter scale (this replaces the symbol $s$ of v1, which clashed with a distance).\\
+\delta_L & the long-wavelength (large-scale) matter overdensity of that slice: the part the galaxies trace.\\
+Q_{\delta}(z) & the response of $Q$ to $\delta_L$: $Q_\delta=\partial Q/\partial\delta_L$, i.e.\ $Q\to Q+Q_\delta\,\delta_L$. It has the same units as $Q$ and is an \textbf{ordinary function of $z$, not an operator}. $Q_\delta=Q_\dens+Q_\ion$.\\
+Q_\dens,\ Q_\ion & the two parts of $Q_\delta$: the effect of density (more matter, more electrons) and the effect of ionisation (denser regions reionise earlier). Both are ordinary numbers at each $z$.\\
+\epsilon & ratio of patchy-bubble power to smooth-ionisation power at the filter scale. Fitted ($\simeq8$).\\
+r_v & small optional correction from the velocity variance; set to $0$.\\
+A & overall amplitude per $\ell$ (fitted; absorbs $T_{\rm CMB}^2$, the filter's share of the power and the velocity normalisation).\\
+\Delta z,\ z_0 & width ($=1$) and centre of the galaxy window.\\\bottomrule
+\end{longtable}}
+
+\section{The model, in four steps}
+\textbf{Step 1: power of one slice.} With $K$, $v$ and $\bar x$ as above,
 \begin{equation}
- s(z)=K^2v^2\left[\xb^2+\epsilon\,\xb(1-\xb)\right].
+ Q(z)=K^2v^2\left[\xb^2+\epsilon\,\xb(1-\xb)\right].
 \end{equation}
-The first term is the kSZ of a uniformly ionised slice with fraction $\xb(z)$ moving with the velocity field. The second is the patchy term: a binary ionisation field has variance $\xb(1-\xb)$, and $\epsilon$ is the ratio of patchy to homogeneous power at the filter scale. \emph{$\epsilon$ is the only shape parameter.}
+The first term is the kSZ of a smoothly ionised slice with ionised fraction $\xb$. The second is the extra power of the bubbles: a binary ionisation field has variance $\xb(1-\xb)$, which is zero when the slice is fully neutral or fully ionised and largest when half ionised. $\epsilon$ sets its size and is the only shape parameter.
 
-\textbf{Response to a long mode} ($\partial s/\partial\delta_L=R\,s$):
+\textbf{Step 2: how $Q$ responds to the large-scale density $\delta_L$.}
 \begin{align}
- \text{density/velocity:}&\quad (1+\delta)^2\to 2\delta_L \;\Rightarrow\; R_{\rm d}\,s=(2+r_v)\,K^2v^2\left[\xb^2+\epsilon\xb(1-\xb)\right],\quad r_v=0,\\
- \text{ionisation (zreion):}&\quad z_{\rm re}=z_{\rm mean}+(1+z_{\rm mean})\,b_{zm}(k)\,\delta_L(z_{\rm mean}),\\
- &\quad\frac{\partial\xb}{\partial\delta_L}=(1+z_{\rm mean})\,b_{zm}(k)\,\frac{D(z_{\rm mean})}{D(z)}\,p(z),\qquad p=-\frac{d\xb}{dz},\\
- &\quad R_{\rm i}\,s=K^2v^2\left[2\xb+\epsilon(1-2\xb)\right]\frac{\partial\xb}{\partial\delta_L}.
+ Q_\dens &= (2+r_v)\,Q, \\
+ Q_\ion &= \frac{\partial Q}{\partial \xb}\;\frac{\partial \xb}{\partial\delta_L}, \qquad \frac{\partial Q}{\partial \xb}=K^2v^2\left[2\xb+\epsilon(1-2\xb)\right], \\
+ \frac{\partial \xb}{\partial\delta_L} &=(1+z_{\rm mean})\,b_{zm}(k)\,\frac{G(z_{\rm mean})}{G(z)}\;p(z).
 \end{align}
-Here $b_{zm}(k)=b_0/(1+k/k_0)^{0.2}$ with $b_0=1/1.686$, $k_0=0.9\,h\,{\rm Mpc}^{-1}$, $z_{\rm mean}=8$ (La Plante Eqs.~1--3, as in \texttt{zreion/box.py}).
+In words: $Q_\dens$ is the first line because the power goes as $(1+\delta)^2$, which grows by $2\delta_L$ when the slice is denser ($r_v=0$). $Q_\ion$ is the change of $Q$ with $\xb$ times the change of $\xb$ with $\delta_L$; the latter is zreion: a denser region reionises earlier ($z_{\rm re}$ shifts up), so at redshift $z$ its ionised fraction is higher by the shift times $p$.
+$Q_\dens$ and $Q_\ion$ are plain numbers at each $z$, added together; nothing is applied to anything. The sign of $Q_\ion$ is that of $2\xb+\epsilon(1-2\xb)$, which is positive for $\xb<\epsilon/[2(\epsilon-1)]\simeq0.57$ and \emph{negative} above it.
 
-\textbf{Cross-power} (Limber, top-hat galaxy window of width $\Delta z$, $k=\ell/\chi$):
+\textbf{Step 3: cross-power with the galaxies.} The galaxies trace $\delta_L$ with bias $b_g$. In the Limber approximation only the slice at the same redshift as the galaxies correlates with them (Kramer et al.\ 2025, Eqs.~9--10, with a tracer in place of $\tau$):
 \begin{equation}
- D_\ell=\frac{\ell(\ell+1)}{2\pi}\,\frac{A}{\Delta z}\int_{z_0-\Delta z/2}^{z_0+\Delta z/2}\!dz\;\left(R_{\rm d}s+R_{\rm i}s\right)\,b_g(z)\,\frac{D(z)^2P_{\rm lin}(\ell/\chi)}{\chi^2},
+ D_\ell=\frac{\ell(\ell+1)}{2\pi}\,\frac{A}{\Delta z}\int_{z_0-\Delta z/2}^{z_0+\Delta z/2}\!dz\;\big(Q_\dens+Q_\ion\big)\,b_g(z)\,\frac{G(z)^2\,P_{\rm lin}(\ell/\chi)}{\chi^2}.
 \end{equation}
-with $P_{\rm lin}$ Eisenstein--Hu, $b_g=2.1(1+z)-5.3$ (the BlueTides fit used by the repo; $\simeq9.4$ at $z=6$, $22$ at $z=12$) for every tracer, and one overall amplitude $A$ per $\ell$ (it absorbs $T_{\rm CMB}^2$, the filter's share of the slice power and the velocity normalisation). The $x_{\rm HII}$ of a window is $\langle\xb\rangle$ over it. Simplification: the power is taken per unit redshift; the factor $d\chi/dz$ is omitted (including it leaves the best $\epsilon$ unchanged, misfit $0.33\to0.43$).
+The power is taken per unit redshift; the factor $d\chi/dz$ is omitted (including it leaves the best $\epsilon$ unchanged, misfit $0.33\to0.43$).
 
-\textbf{History.} La Plante's digitised fiducial history, made monotonic, Gaussian-smoothed ($\sigma_z=0.3$) so that $p=-d\xb/dz$ is usable, with $\xb=1$ below the table and an $e^{-(z-11.86)}$ tail above its end ($\xb=0.06$). $\tau(z)=\int\tau_{\rm pref}\,\xb\,(1+z)^2d\chi$ from $z=0$.
+\textbf{Step 4: the reionisation history.} La Plante's digitised fiducial $\bar x(z)$, made monotonic and Gaussian-smoothed ($\sigma_z=0.3$) so that $p$ is usable, with $\bar x=1$ below the table and an $e^{-(z-11.86)}$ tail above its end ($\bar x=0.06$).
 
 \begin{table}[h]\centering\small
 \begin{tabular}{r|rrrrrr}\toprule
@@ -45,7 +81,7 @@ $\tau$ & 0.046 & 0.062 & 0.066 & 0.068 & 0.070 & 0.071\\
 $K^2v^2\;[10^{-10}]$ & 0.42 & 0.87 & 1.2 & 1.6 & 2.0 & 2.6\\
 $p=-d\xb/dz$ & 0.10 & 0.26 & 0.15 & 0.07 & 0.03 & 0.04\\
 $b_g$ & 9.4 & 13.6 & 15.7 & 17.8 & 19.9 & 22.0\\
-$D(z)$ & 0.18 & 0.14 & 0.13 & 0.12 & 0.11 & 0.10\\\bottomrule
+$G(z)$ & 0.18 & 0.14 & 0.13 & 0.12 & 0.11 & 0.10\\\bottomrule
 \end{tabular}
 \\[2pt]{\small Redshift functions entering the integrand (fiducial history).}
 \end{table}
@@ -54,22 +90,29 @@ $D(z)$ & 0.18 & 0.14 & 0.13 & 0.12 & 0.11 & 0.10\\\bottomrule
 For each $\epsilon$ and each $\ell\in\{500,1000,3000\}$ the amplitude $A$ is the log-space least-squares value against La Plante's digitised Fig.~7 curve over $x_{\rm HII}=0.1$--$0.9$ (40 points); the misfit is the rms of $\ln D_{\rm LP}-\ln(A\,D_{\rm toy})$. $\epsilon$ is the value minimising the misfit averaged over the three $\ell$.
 
 \begin{center}\includegraphics[width=\linewidth]{toy_vs_laplante.pdf}\end{center}
-Orange: La Plante (fiducial). Black: toy ($\epsilon=8.25$), with its density/velocity part (dashed) and ionisation part (dotted). Right: misfit versus $\epsilon$.
+Orange: La Plante (fiducial). Black: toy ($\epsilon=8.25$), with its density part ($Q_\dens$, dashed) and ionisation part ($Q_\ion$, dotted). Right: misfit versus $\epsilon$. The plot axis stops at zero, so the dotted curve appears to end near $x_{\rm HII}\simeq0.58$; in fact it continues \emph{below zero} there.
 
 \section{Results}
 \begin{itemize}\setlength\itemsep{1pt}
 \item \textbf{Best $\epsilon\simeq8$} (misfit 0.28/0.34/0.36 in log at $\ell=500/1000/3000$; $A=7.0,3.4,1.7\times10^{6}$). Peak at $x_{\rm HII}\simeq0.24$ (La Plante: 0.12--0.19); falls to $\sim0$ by $x_{\rm HII}\simeq0.8$. The shape is therefore reproduced to within the digitisation and the toy's crudeness; the peak sits slightly too late.
-\item For $\epsilon\lesssim3$ (homogeneous velocity term competitive) the misfit is $\gtrsim0.7$: the peak moves to $x_{\rm HII}\simeq0.3$ ($\epsilon=3$), 0.55 ($\epsilon=1$), 0.7 ($\epsilon=0$) and the curve keeps 30--70\% of its peak value at $x_{\rm HII}=0.9$, whereas La Plante keeps $\sim2\%$ (toy at $\epsilon=8$: 6\%).
-\item The \emph{density/velocity} part alone peaks at $x_{\rm HII}\simeq0.4$--$0.45$ and cannot fall fast enough. The \emph{ionisation} part alone peaks at $x_{\rm HII}\simeq0.2$ and goes to zero where $2\xb+\epsilon(1-2\xb)$ changes sign, $\xb=\epsilon/[2(\epsilon-1)]\simeq0.57$; this, together with $p\to0$ as reionisation ends, produces the late fall.
-\item Robustness: $z_{\rm mean}=7,8,9$ give the same $\epsilon$ and misfit, because $(1+z_{\rm mean})D(z_{\rm mean})$ is nearly constant. The minimum in $\epsilon$ is sharp (misfit 0.33 at 8.25, 0.50 at 10, 1.0 at 11, $\ge1.3$ for $\epsilon\ge12$) because the total goes through zero; $\epsilon$ should not be quoted as a measurement.
+\item For $\epsilon\lesssim3$ (smooth term competitive) the misfit is $\gtrsim0.7$: the peak moves to $x_{\rm HII}\simeq0.3$ ($\epsilon=3$), 0.55 ($\epsilon=1$), 0.7 ($\epsilon=0$) and the curve keeps 30--70\% of its peak value at $x_{\rm HII}=0.9$, whereas La Plante keeps $\sim2\%$ (toy at $\epsilon=8$: 6\%).
+\item The two parts at $\ell=1000$, relative to the peak of the total ($\epsilon=8.25$):
+\begin{center}\small\begin{tabular}{r|rrrrrr}\toprule
+$x_{\rm HII}$ & 0.05 & 0.13 & 0.24 & 0.45 & 0.72 & 0.91\\\midrule
+$Q_\dens$ part & 0.19 & 0.32 & 0.43 & 0.49 & 0.37 & 0.20\\
+$Q_\ion$ part & 0.44 & 0.49 & 0.57 & 0.26 & $-0.20$ & $-0.14$\\
+total & 0.63 & 0.81 & 1.00 & 0.75 & 0.17 & 0.06\\\bottomrule
+\end{tabular}\end{center}
+The density part alone peaks near $x_{\rm HII}\simeq0.45$ and cannot fall fast enough. The ionisation part peaks near 0.2 and turns \emph{negative} above $\xb\simeq0.57$: a dense region is then already almost fully ionised, so it has \emph{fewer} bubbles than an average region and less small-scale power. This cancels most of the positive density part, and together with $p\to0$ as reionisation ends produces the late fall.
+\item Robustness: $z_{\rm mean}=7,8,9$ give the same $\epsilon$ and misfit, because $(1+z_{\rm mean})G(z_{\rm mean})$ is nearly constant. The minimum in $\epsilon$ is sharp (misfit 0.33 at 8.25, 0.50 at 10, 1.0 at 11, $\ge1.3$ for $\epsilon\ge12$) because the total depends on this cancellation; $\epsilon$ should not be quoted as a measurement.
 \end{itemize}
 
 \section{What it says}
-The early rise and the late fall of $D_\ell^{\rm cross}(x_{\rm HII})$ are produced by \emph{patchy} ionisation: the kSZ$^2$ power of a slice that is partly ionised (growing as $\xb(1-\xb)$) is correlated with the large-scale density mainly through where bubbles form (the zreion response $\propto p(z)$), not through the homogeneous velocity term. This is consistent with the component study, where $v_{\rm los}$ and the ionisation morphology both follow the kSZ curve. A tracer that is a better proxy for $\delta_L$ at the patchy epoch (larger effective $b_g$, less noise) therefore carries more of this signal.
+The early rise and the late fall of $D_\ell^{\rm cross}(x_{\rm HII})$ are produced by \emph{patchy} ionisation: the kSZ$^2$ power of a partly ionised slice (growing as $\xb(1-\xb)$) is correlated with the large-scale density mainly through where bubbles form (the zreion response, $\propto p(z)$), not through the smooth density term. This is consistent with the component study, where $v_{\rm los}$ and the ionisation morphology both follow the kSZ curve. A tracer that is a better proxy for $\delta_L$ at the patchy epoch (larger effective $b_g$, less noise) therefore carries more of this signal.
 
 \section{Caveats and checks to do}
 \begin{itemize}\setlength\itemsep{1pt}
-\item Squeezed-limit, slice-diagonal toy: no cross-slice pairs, no LOS cancellation of the homogeneous term. $\epsilon\sim8$ may partly stand in for that cancellation, so it is a statement about the relative size of the patchy and homogeneous terms in the \emph{estimator}, not a measured physical ratio.
+\item Squeezed-limit, slice-diagonal toy: no cross-slice pairs, no line-of-sight cancellation of the smooth term. $\epsilon\sim8$ may partly stand in for that cancellation, so it is a statement about the relative size of the patchy and smooth terms in the \emph{estimator}, not a measured physical ratio.
 \item $x_{\rm HII}<0.1$ is controlled by the first points of the digitised history (a small wiggle remains); $b_g(z)$ is one shape for all tracers; only the shape is fitted, the amplitude is not predicted.
 \item Not yet done: the same overlay on our own measured curves (\texttt{--ours-root}) and a direct test of $\epsilon$ from the simulation (power of the $x_e$-only versus $v$-only kSZ$^2$ maps per window, scripts 48/49).
 \end{itemize}
