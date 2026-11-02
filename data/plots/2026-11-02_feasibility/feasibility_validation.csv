@@ -1,0 +1,7 @@
+noise,experiment,La_Plante_Table2,ours,ratio,used_for_calibration
+post-ILC,SO,2.4,2.43,1.01,yes (one common factor 1.45)
+post-ILC,CMB-S4,4.8,4.82,1.0,yes (one common factor 1.45)
+post-ILC,CMB-HD,23.0,22.65,0.98,yes (one common factor 1.45)
+white (instrument),SO,2.9,3.19,1.1,no
+white (instrument),CMB-S4,18.0,21.5,1.19,no
+white (instrument),CMB-HD,64.0,54.31,0.85,no

@@ -1,0 +1,7 @@
+survey,z,dz,L_min_erg_s,LF,area_deg2,n_Mpc3,N_per_deg2,N_in_survey,M_min_ST_Msun,b_ST_matched,b_low,x_HII_fiducial,x_HII_late,shot_noise_C_SN,clustering_b2Cmm_ell1000_bST,shot_over_clustering,D_ell1000_fiducial_uK2,D_ell1000_late_uK2
+HSC SILVERRUSH (NB816+NB921),5.7,0.1,6.30e+42,Umeda25 z=5.7,14.0,1.81e-04,174.3,2441,4.48e+11,4.8,2.16,0.94,0.8,1.75e-06,2.19e-06,0.8,7.97e-04,5.58e-04
+HSC SILVERRUSH (NB816+NB921),6.6,0.1,7.90e+42,Umeda25 z=6.6,21.0,3.20e-05,27.8,584,5.89e+11,6.47,2.91,0.82,0.55,1.10e-05,3.65e-06,3.0,3.24e-04,4.07e-03
+"Subaru PFS (SSP, repo value)",5.7,0.2,3.00e+42,Umeda25 z=5.7,15.0,6.53e-04,1256.0,18840,2.31e+11,4.07,1.83,0.94,0.8,2.43e-07,7.70e-07,0.3,6.89e-04,4.91e-04
+"Subaru PFS (SSP, repo value)",6.6,0.2,3.00e+42,Umeda25 z=6.6,15.0,2.83e-04,492.5,7388,2.26e+11,5.05,2.27,0.82,0.55,6.18e-07,1.09e-06,0.6,2.67e-04,3.26e-03
+"Roman grism deep, no evolution from z=7",8.0,1.5,1.00e+43,Umeda25 z=7.0,1.0,1.65e-05,186.7,187,3.63e+11,7.75,3.49,0.44,0.24,1.63e-06,3.00e-07,5.4,7.40e-03,7.79e-03
+"Roman grism deep, LF as observed at z=7.3-8.4",8.0,1.5,1.00e+43,Umeda25 z=7.3,1.0,1.52e-06,17.2,17,7.90e+11,9.6,4.32,0.44,0.24,1.77e-05,4.60e-07,38.5,9.17e-03,9.65e-03

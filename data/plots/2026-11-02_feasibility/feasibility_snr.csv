@@ -1,0 +1,129 @@
+survey,history,bias,cmb,SN_with_shot_noise,SN_clustering_only,area_for_3sigma_deg2,needs_more_than_whole_sky
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,ACT DR6 (white noise),0.0067,0.008,4.21e+06,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,SPT-3G Main (white noise),0.0515,0.06,7.13e+04,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,SO (post-ILC),0.0048,0.006,8.25e+06,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,SO (white noise),0.0063,0.007,4.77e+06,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,CMB-S4 (post-ILC),0.0095,0.011,2.09e+06,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,CMB-S4 (white noise),0.0436,0.051,9.94e+04,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,CMB-HD (post-ILC),0.0461,0.054,8.89e+04,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = ST-matched,CMB-HD (white noise),0.1249,0.146,1.21e+04,no
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,ACT DR6 (white noise),0.0051,0.008,7.38e+06,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,SPT-3G Main (white noise),0.0389,0.06,1.25e+05,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,SO (post-ILC),0.0036,0.006,1.45e+07,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,SO (white noise),0.0048,0.007,8.35e+06,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,CMB-S4 (post-ILC),0.0072,0.011,3.66e+06,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,CMB-S4 (white noise),0.033,0.051,1.74e+05,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,CMB-HD (post-ILC),0.0348,0.054,1.56e+05,yes
+HSC SILVERRUSH (NB816+NB921),fiducial,b = 0.45 x ST,CMB-HD (white noise),0.0943,0.146,2.12e+04,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,ACT DR6 (white noise),0.0259,0.036,2.82e+05,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,SPT-3G Main (white noise),0.199,0.28,4.77e+03,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,SO (post-ILC),0.0185,0.026,5.52e+05,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,SO (white noise),0.0243,0.034,3.19e+05,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,CMB-S4 (post-ILC),0.0367,0.052,1.40e+05,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,CMB-S4 (white noise),0.1686,0.237,6.65e+03,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,CMB-HD (post-ILC),0.1782,0.25,5.95e+03,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = ST-matched,CMB-HD (white noise),0.4816,0.676,8.15e+02,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,ACT DR6 (white noise),0.0157,0.036,7.62e+05,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,SPT-3G Main (white noise),0.121,0.28,1.29e+04,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,SO (post-ILC),0.0112,0.026,1.49e+06,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,SO (white noise),0.0148,0.034,8.63e+05,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,CMB-S4 (post-ILC),0.0223,0.052,3.79e+05,yes
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,CMB-S4 (white noise),0.1025,0.237,1.80e+04,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,CMB-HD (post-ILC),0.1083,0.25,1.61e+04,no
+HSC SILVERRUSH (NB816+NB921),late (z50~6.7),b = 0.45 x ST,CMB-HD (white noise),0.2932,0.676,2.20e+03,no
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,ACT DR6 (white noise),0.0108,0.012,1.15e+06,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,SPT-3G Main (white noise),0.0833,0.09,1.95e+04,no
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,SO (post-ILC),0.0077,0.008,2.25e+06,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,SO (white noise),0.0102,0.011,1.30e+06,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,CMB-S4 (post-ILC),0.0154,0.017,5.71e+05,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,CMB-S4 (white noise),0.0705,0.076,2.71e+04,no
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,CMB-HD (post-ILC),0.0745,0.08,2.43e+04,no
+"Subaru PFS (SSP, repo value)",fiducial,b = ST-matched,CMB-HD (white noise),0.2018,0.217,3.31e+03,no
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,ACT DR6 (white noise),0.0093,0.012,1.57e+06,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,SPT-3G Main (white noise),0.0714,0.09,2.65e+04,no
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,SO (post-ILC),0.0066,0.008,3.07e+06,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,SO (white noise),0.0087,0.011,1.77e+06,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,CMB-S4 (post-ILC),0.0132,0.017,7.78e+05,yes
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,CMB-S4 (white noise),0.0604,0.076,3.70e+04,no
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,CMB-HD (post-ILC),0.0639,0.08,3.31e+04,no
+"Subaru PFS (SSP, repo value)",fiducial,b = 0.45 x ST,CMB-HD (white noise),0.1729,0.217,4.51e+03,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,ACT DR6 (white noise),0.041,0.045,8.05e+04,yes
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,SPT-3G Main (white noise),0.3145,0.349,1.36e+03,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,SO (post-ILC),0.0293,0.032,1.58e+05,yes
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,SO (white noise),0.0385,0.043,9.11e+04,yes
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,CMB-S4 (post-ILC),0.0581,0.064,4.00e+04,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,CMB-S4 (white noise),0.2664,0.296,1.90e+03,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,CMB-HD (post-ILC),0.2816,0.312,1.70e+03,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = ST-matched,CMB-HD (white noise),0.7583,0.841,2.35e+02,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,ACT DR6 (white noise),0.0327,0.045,1.26e+05,yes
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,SPT-3G Main (white noise),0.2515,0.349,2.13e+03,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,SO (post-ILC),0.0234,0.032,2.47e+05,yes
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,SO (white noise),0.0308,0.043,1.43e+05,yes
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,CMB-S4 (post-ILC),0.0465,0.064,6.26e+04,yes
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,CMB-S4 (white noise),0.213,0.296,2.97e+03,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,CMB-HD (post-ILC),0.2251,0.312,2.66e+03,no
+"Subaru PFS (SSP, repo value)",late (z50~6.7),b = 0.45 x ST,CMB-HD (white noise),0.6071,0.841,3.66e+02,no
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,ACT DR6 (white noise),0.0132,0.028,5.16e+04,yes
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,SPT-3G Main (white noise),0.1015,0.217,8.74e+02,no
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,SO (post-ILC),0.0094,0.02,1.01e+05,yes
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,SO (white noise),0.0124,0.027,5.84e+04,yes
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,CMB-S4 (post-ILC),0.0187,0.04,2.56e+04,no
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,CMB-S4 (white noise),0.086,0.184,1.22e+03,no
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,CMB-HD (post-ILC),0.0909,0.195,1.09e+03,no
+"Roman grism deep, no evolution from z=7",fiducial,b = ST-matched,CMB-HD (white noise),0.2455,0.524,1.49e+02,no
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,ACT DR6 (white noise),0.0067,0.028,1.99e+05,yes
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,SPT-3G Main (white noise),0.0517,0.217,3.37e+03,no
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,SO (post-ILC),0.0048,0.02,3.90e+05,yes
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,SO (white noise),0.0063,0.027,2.25e+05,yes
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,CMB-S4 (post-ILC),0.0095,0.04,9.88e+04,yes
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,CMB-S4 (white noise),0.0438,0.184,4.69e+03,no
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,CMB-HD (post-ILC),0.0463,0.195,4.20e+03,no
+"Roman grism deep, no evolution from z=7",fiducial,b = 0.45 x ST,CMB-HD (white noise),0.1253,0.524,5.73e+02,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,ACT DR6 (white noise),0.014,0.03,4.61e+04,yes
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,SPT-3G Main (white noise),0.1073,0.229,7.82e+02,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,SO (post-ILC),0.01,0.021,9.04e+04,yes
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,SO (white noise),0.0131,0.028,5.23e+04,yes
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,CMB-S4 (post-ILC),0.0198,0.042,2.29e+04,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,CMB-S4 (white noise),0.0909,0.194,1.09e+03,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,CMB-HD (post-ILC),0.096,0.205,9.76e+02,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = ST-matched,CMB-HD (white noise),0.2594,0.552,1.34e+02,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,ACT DR6 (white noise),0.0071,0.03,1.78e+05,yes
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,SPT-3G Main (white noise),0.0547,0.229,3.01e+03,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,SO (post-ILC),0.0051,0.021,3.49e+05,yes
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,SO (white noise),0.0067,0.028,2.01e+05,yes
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,CMB-S4 (post-ILC),0.0101,0.042,8.84e+04,yes
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,CMB-S4 (white noise),0.0463,0.194,4.20e+03,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,CMB-HD (post-ILC),0.0489,0.205,3.76e+03,no
+"Roman grism deep, no evolution from z=7",late (z50~6.7),b = 0.45 x ST,CMB-HD (white noise),0.1324,0.552,5.13e+02,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,ACT DR6 (white noise),0.0057,0.028,2.79e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,SPT-3G Main (white noise),0.0437,0.217,4.72e+03,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,SO (post-ILC),0.0041,0.02,5.46e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,SO (white noise),0.0053,0.027,3.16e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,CMB-S4 (post-ILC),0.0081,0.04,1.38e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,CMB-S4 (white noise),0.037,0.184,6.58e+03,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,CMB-HD (post-ILC),0.0391,0.195,5.89e+03,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = ST-matched,CMB-HD (white noise),0.1058,0.524,8.03e+02,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,ACT DR6 (white noise),0.0026,0.028,1.32e+06,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,SPT-3G Main (white noise),0.0201,0.217,2.23e+04,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,SO (post-ILC),0.0019,0.02,2.58e+06,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,SO (white noise),0.0025,0.027,1.49e+06,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,CMB-S4 (post-ILC),0.0037,0.04,6.55e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,CMB-S4 (white noise),0.017,0.184,3.11e+04,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,CMB-HD (post-ILC),0.018,0.195,2.79e+04,no
+"Roman grism deep, LF as observed at z=7.3-8.4",fiducial,b = 0.45 x ST,CMB-HD (white noise),0.0487,0.524,3.80e+03,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,ACT DR6 (white noise),0.006,0.03,2.49e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,SPT-3G Main (white noise),0.0462,0.229,4.22e+03,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,SO (post-ILC),0.0043,0.021,4.89e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,SO (white noise),0.0056,0.028,2.82e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,CMB-S4 (post-ILC),0.0085,0.042,1.24e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,CMB-S4 (white noise),0.0391,0.194,5.88e+03,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,CMB-HD (post-ILC),0.0413,0.205,5.27e+03,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = ST-matched,CMB-HD (white noise),0.1119,0.552,7.19e+02,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,ACT DR6 (white noise),0.0028,0.03,1.18e+06,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,SPT-3G Main (white noise),0.0212,0.229,2.00e+04,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,SO (post-ILC),0.002,0.021,2.31e+06,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,SO (white noise),0.0026,0.028,1.34e+06,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,CMB-S4 (post-ILC),0.0039,0.042,5.86e+05,yes
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,CMB-S4 (white noise),0.018,0.194,2.78e+04,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,CMB-HD (post-ILC),0.019,0.205,2.49e+04,no
+"Roman grism deep, LF as observed at z=7.3-8.4",late (z50~6.7),b = 0.45 x ST,CMB-HD (white noise),0.0515,0.552,3.40e+03,no
