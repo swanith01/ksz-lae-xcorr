@@ -1,0 +1,37 @@
+tracer,experiment,noise,shot_noise,SN_ours,SN_LaPlante_Table2,ratio_ours_over_LP,best_bin_z,best_bin_z0,best_bin_dz
+matter_waters,SO,post-ILC,with,1.01,1.4,0.72,7-11,9.0,4.0
+matter_waters,SO,post-ILC,without,1.04,2.4,0.43,7-11,9.0,4.0
+matter_waters,SO,instrument (white),with,1.302,1.7,0.77,7-11,9.0,4.0
+matter_waters,SO,instrument (white),without,1.338,2.9,0.46,7-11,9.0,4.0
+matter_waters,CMB-S4,post-ILC,with,2.055,2.8,0.73,7-10,8.5,3.0
+matter_waters,CMB-S4,post-ILC,without,2.113,4.8,0.44,7-10,8.5,3.0
+matter_waters,CMB-S4,instrument (white),with,9.446,11,0.86,7-10,8.5,3.0
+matter_waters,CMB-S4,instrument (white),without,9.663,18,0.54,7-10,8.5,3.0
+matter_waters,CMB-HD,post-ILC,with,9.733,13,0.75,7-10,8.5,3.0
+matter_waters,CMB-HD,post-ILC,without,10.076,23,0.44,7-10,8.5,3.0
+matter_waters,CMB-HD,instrument (white),with,24.261,35,0.69,7-10,8.5,3.0
+matter_waters,CMB-HD,instrument (white),without,25.392,64,0.4,7-10,8.5,3.0
+lbg_MUV-21.0,SO,post-ILC,with,3.479,1.4,2.48,6.5-10.5,8.5,4.0
+lbg_MUV-21.0,SO,post-ILC,without,4.599,2.4,1.92,7.5-10.5,9.0,3.0
+lbg_MUV-21.0,SO,instrument (white),with,4.407,1.7,2.59,6.5-10.5,8.5,4.0
+lbg_MUV-21.0,SO,instrument (white),without,5.834,2.9,2.01,7.5-10.5,9.0,3.0
+lbg_MUV-21.0,CMB-S4,post-ILC,with,6.661,2.8,2.38,6.5-10.5,8.5,4.0
+lbg_MUV-21.0,CMB-S4,post-ILC,without,8.764,4.8,1.83,7.5-10.5,9.0,3.0
+lbg_MUV-21.0,CMB-S4,instrument (white),with,22.341,11,2.03,6.5-10.5,8.5,4.0
+lbg_MUV-21.0,CMB-S4,instrument (white),without,26.846,18,1.49,7.5-10.5,9.0,3.0
+lbg_MUV-21.0,CMB-HD,post-ILC,with,22.908,13,1.76,6.5-10.5,8.5,4.0
+lbg_MUV-21.0,CMB-HD,post-ILC,without,30.354,23,1.32,7.5-10.5,9.0,3.0
+lbg_MUV-21.0,CMB-HD,instrument (white),with,50.806,35,1.45,6.5-10.5,8.5,4.0
+lbg_MUV-21.0,CMB-HD,instrument (white),without,75.76,64,1.18,8-10,9.0,2.0
+lbg_MUV-19.0,SO,post-ILC,with,1.592,1.4,1.14,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,SO,post-ILC,without,1.849,2.4,0.77,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,SO,instrument (white),with,2.019,1.7,1.19,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,SO,instrument (white),without,2.334,2.9,0.8,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-S4,post-ILC,with,3.323,2.8,1.19,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-S4,post-ILC,without,3.979,4.8,0.83,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-S4,instrument (white),with,13.923,11,1.27,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-S4,instrument (white),without,16.398,18,0.91,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-HD,post-ILC,with,15.63,13,1.2,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-HD,post-ILC,without,19.421,23,0.84,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-HD,instrument (white),with,40.34,35,1.15,6.5-10.5,8.5,4.0
+lbg_MUV-19.0,CMB-HD,instrument (white),without,49.89,64,0.78,6.5-10.5,8.5,4.0

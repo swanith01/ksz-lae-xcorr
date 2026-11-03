@@ -57,3 +57,17 @@ from a vector PDF of the paper rather than a raster screenshot.
   D = 0 at y=192.6 pt, 0.030 at 61.7 pt). Checked by overlay on the figure. Peaks: ell=500 0.0157 at x_HII~0.21;
   ell=1000 0.0196 at ~0.12-0.2; ell=3000 0.0118 at ~0.12. Accuracy ~1-2% of the y range; least reliable at
   x_HII > ~0.8 (|D| < 0.002, all curves overlap there). Early/Short scenarios are NOT included.
+
+- **fig10_cumulative_snr_fiducial_digitized.csv** -- their Figure 10, the three FIDUCIAL (orange) curves: cumulative S/N vs
+  l_max for SO (solid), CMB-S4 (dashed), CMB-HD (dotted); post-ILC noise, with shot noise, best single bin. Columns: experiment,
+  ell_max, cumulative_SN. Extracted 2026-11-03 from the VECTOR stroke paths of the PDF (PyMuPDF get_drawings, matched by colour
+  and dash pattern); axes from the vector ticks (l = 500 per 35.63 pt from l = 100 at x = 74.25 pt; S/N = 0 at y = 209.75 pt,
+  11 pt per unit). Check: the end points are 1.41 / 2.78 / 12.76 against Table 2's 1.4 / 2.8 / 13.
+
+- **fig8_shot_noise_digitized.csv** -- their Figure 8 dotted lines: the Roman HLS shot noise C_SN for dz = 1 windows at
+  z0 = 7, 8, 9, 10, and the implied galaxies per deg2 (1/C_SN). The curves in this figure are filled outlines, so this one is a
+  pixel fit: page rendered at 8x, pixels of each line colour below D = 2e-4 and l = 22-800, mode of log10[2 pi D / l(l+1)];
+  axes from the vector ticks. Scatter ~0.015 dex; checked by eye against the dotted-line start points at l ~ 22.
+  Note: these densities (12,900 / 6,200 / 2,040 / 340 per deg2 per unit z) are what La Plante used; they follow the W16
+  Appendix A5-A7 cumulative-count fits at m_UV < 26.75 (geometric mean of intrinsic and dust-corrected) to within a factor ~2 at
+  z = 8-10, but sit well above W16's own Fig. 3 surface densities.
