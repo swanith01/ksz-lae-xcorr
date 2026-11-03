@@ -18,7 +18,8 @@ The same is done with the SIGNAL of simulated LBGs, rescaled from their own meas
 bias as biased matter?
 
 Outputs (--out-dir): lp_validation.csv; lp_validation_cumulative.png/pdf (cumulative S/N vs l_max, one panel per experiment,
-over La Plante Fig. 10); lp_validation.png/pdf (Table 2 bars, S/N(z0, dz) for CMB-S4 like their Fig. 9).  Needs only the committed sim_spectra .npz and data/reference.
+over La Plante Fig. 10); lp_validation.png/pdf (Table 2 bars, S/N(z0, dz) for CMB-S4 like their Fig. 9);
+lp_validation_per_bin.png/pdf + .csv (D_l and per-bin S/N in dz = 1 bins for CMB-HD, three l bands, over their Fig. 11).  Needs only the committed sim_spectra .npz and data/reference.
 
     python scripts/57_lp_validation.py --out-dir data/plots/2026-11-03_ksz_lae_snr/lp_validation
 """
@@ -106,6 +107,82 @@ def wide_window_terms(sp, wins, lab, edges, dndz, shot, r_of_z, sp_clust):
     if shot:
         Cg = Cg + 1.0 / N_sr
     return ss.snr_terms(ss.signal_sq(Cs, True), Cg, float(sp["CT2T2"][ei]), edges, F_SKY, 100.0, 10000.0)
+
+
+BANDS = ((500, 250, 750), (1000, 750, 1250), (3000, 1500, 4500))      # La Plante Fig. 11 / Sec. 4.1
+
+
+def per_bin_figure(s, dndz, out_dir, exp_label="CMB-HD (post-ILC)"):
+    """La Plante Fig. 11 analogue: D_l of independent dz = 1 bins with CMB-HD x Roman forecast errors in three l bands, and the
+    per-bin S/N, ours (matter x W16 bias, their shot noise, f_sky 0.053) against theirs."""
+    ei = [str(x) for x in s["experiments"]].index(exp_label)
+    CT = float(s["CT2T2"][ei])
+    lp = {}
+    with open(os.path.join(REF, "fig11_cmbhd_errors_digitized.csv")) as f:
+        for r in csv.DictReader(f):
+            D, hi, lo = float(r["D_ell_uK2"]), float(r["D_hi_uK2"]), float(r["D_lo_uK2"])
+            if r["hi_clipped"] == "0":
+                sig, lim = hi - D, False
+            elif r["lo_clipped"] == "0":
+                sig, lim = D - lo, False
+            else:
+                sig, lim = max(hi - D, D - lo), True
+            lp.setdefault(int(r["ell"]), []).append((float(r["z0"]), D, sig, lim))
+    rows = []
+    unit = [i for i in range(len(s["z0"])) if abs(s["dz"][i] - 1) < 1e-6]
+    for L, l0, l1 in BANDS:
+        for wi in unit:
+            e = s["edges"][wi]; lc = np.sqrt(e[1:] * e[:-1])
+            Cs = np.nanmean(s["Cs"][:, ei, wi, :], axis=0)
+            N_sr = dndz(float(s["z0"][wi])) * (s["z_hi"][wi] - s["z_lo"][wi]) / SQ
+            Cg = np.nanmean(s["Cg"][:, wi, :], axis=0) + 1.0 / N_sr
+            m = ss.modes_in_range(e, l0, l1)
+            ok = np.isfinite(Cs) & np.isfinite(Cg) & (m > 0)
+            if not ok.any():
+                continue
+            # error on D_l in the band: inverse-variance combination of the per-l Gaussian errors, D = l(l+1)C/2pi
+            fac = lc * (lc + 1) / (2 * np.pi)
+            varC = (CT * Cg + Cs ** 2) / (F_SKY * m)            # variance of C averaged over the modes of each bin
+            w = 1.0 / (fac ** 2 * varC)
+            sigD = 1.0 / np.sqrt(np.sum(w[ok]))
+            okc = np.isfinite(Cs)
+            Dc = float(np.interp(np.log(L), np.log(lc[okc]), (fac * Cs)[okc]))
+            rows.append({"ell": L, "z0": float(s["z0"][wi]), "x_hii": float(s["x_hii"][wi]), "D": Dc, "sigma": sigD})
+    with open(os.path.join(out_dir, "lp_validation_per_bin.csv"), "w", newline="") as f:
+        wr = csv.DictWriter(f, fieldnames=list(rows[0].keys())); wr.writeheader(); wr.writerows(rows)
+
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8.2), constrained_layout=True, sharex=True, gridspec_kw={"height_ratios": [1.6, 1]})
+    for k, (L, l0, l1) in enumerate(BANDS):
+        a, b = axes[0, k], axes[1, k]
+        r = [x for x in rows if x["ell"] == L]
+        z = np.array([x["z0"] for x in r]); D = np.array([x["D"] for x in r]); sg = np.array([x["sigma"] for x in r])
+        a.fill_between(z, D - sg, D + sg, color="#009E73", alpha=0.22, lw=0, label="ours: CMB-HD x Roman forecast error (1$\\sigma$)")
+        a.plot(z, D, color="#009E73", lw=2, marker="o", ms=3, label="ours: matter x W16 bias, dz = 1 bins")
+        P = lp.get(L, [])
+        zl = np.array([q[0] for q in P]); Dl = np.array([q[1] for q in P]); sl = np.array([q[2] for q in P]); lim = np.array([q[3] for q in P])
+        a.errorbar(zl[~lim], Dl[~lim], sl[~lim], fmt="s", color="0.15", ms=4.5, capsize=2.5, lw=1.2, label="La Plante Fig. 11")
+        if lim.any():
+            a.errorbar(zl[lim], Dl[lim], sl[lim], fmt="s", color="0.15", mfc="white", ms=4.5, capsize=0, lw=0.8, ls="none",
+                       label="La Plante Fig. 11 (error bar runs off their axis)")
+        a.axhline(0, color="0.5", lw=0.6)
+        a.set_ylim(-0.006, 0.036)
+        a.set_title(f"l = {L}  (band {l0}-{l1})", fontsize=10)
+        b.plot(z, D / sg, color="#009E73", lw=2, marker="o", ms=3, label="ours")
+        b.plot(zl[~lim], Dl[~lim] / sl[~lim], "s", color="0.15", ms=4.5, label="La Plante")
+        if lim.any():
+            b.plot(zl[lim], Dl[lim] / sl[lim], "s", color="0.15", mfc="white", ms=4.5, label="La Plante (upper limit)")
+        b.axhline(1, color="0.6", lw=0.8, ls=":", label="1$\\sigma$"); b.axhline(3, color="0.6", lw=0.8, ls="--", label="3$\\sigma$")
+        b.set_xlabel("bin centre $z_0$  ($\\Delta z = 1$)")
+        if k == 0:
+            a.set_ylabel(r"$D_\ell^{\rm cross}$ [$\mu$K$^2$]"); b.set_ylabel("S/N of the bin")
+        a.legend(fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.02), ncol=1) if False else None
+    h, l = axes[0, 0].get_legend_handles_labels()
+    h2, l2 = axes[1, 0].get_legend_handles_labels()
+    fig.legend(h + h2, l + ["S/N: " + x for x in l2], loc="lower center", ncol=4, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.07))
+    fig.suptitle("Per redshift bin (not cumulative): ours vs La Plante+22 Fig. 11, CMB-HD post-ILC x Roman HLS (f_sky 0.053, their shot noise)",
+                 fontsize=10.5)
+    print("figure:", *save_fig(fig, os.path.join(out_dir, "lp_validation_per_bin")))
+    plt.close(fig)
 
 
 def main(argv=None):
@@ -214,6 +291,8 @@ def main(argv=None):
     figc.suptitle("Cumulative S/N vs l_max: ours vs La Plante+22 Fig. 10 (Roman HLS, f_sky = 0.053, their shot noise)", fontsize=10)
     print("\nfigure:", *save_fig(figc, os.path.join(args.out_dir, "lp_validation_cumulative")))
     plt.close(figc)
+
+    per_bin_figure(sp["matter_waters"], dndz, args.out_dir)
 
     # (2) Table 2 and the single-bin S/N map
     fig, (a2, a3) = plt.subplots(1, 2, figsize=(13, 5.6), constrained_layout=True)

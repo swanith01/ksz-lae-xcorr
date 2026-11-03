@@ -71,3 +71,11 @@ from a vector PDF of the paper rather than a raster screenshot.
   Note: these densities (12,900 / 6,200 / 2,040 / 340 per deg2 per unit z) are what La Plante used; they follow the W16
   Appendix A5-A7 cumulative-count fits at m_UV < 26.75 (geometric mean of intrinsic and dust-corrected) to within a factor ~2 at
   z = 8-10, but sit well above W16's own Fig. 3 surface densities.
+
+- **fig11_cmbhd_errors_digitized.csv** -- their Figure 11: D_l of independent dz = 1 bins with the CMB-HD x Roman HLS forecast
+  error bars, for the l = 500 / 1000 / 3000 bands (250-750, 750-1250, 1500-4500). Columns: ell, z0 (bin centre; the paper offsets
+  the three l by -0.05 / 0 / +0.05 for clarity, removed here), D_ell_uK2, D_hi_uK2, D_lo_uK2, hi_clipped, lo_clipped, note.
+  Pixel extraction (page rendered at 6x, error-bar columns found by colour, centre from the connecting line next to each bar),
+  axes from the vector ticks (D: 0.005 per 18.5 pt, 0.035 at y = 71.0 pt; z: 29.6 pt per unit, z = 7 at x = 390.77 pt).
+  Where a bar runs off the axis or under the legend (z0 >= 11.3 for l = 1000 and 3000; the lower end at z0 = 12.5 for l = 500)
+  the error is only a lower limit (flagged).

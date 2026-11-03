@@ -1,0 +1,19 @@
+ell,z0,D_ell_uK2,D_hi_uK2,D_lo_uK2,hi_clipped,lo_clipped,note
+500,6.47,0.00126,0.00275,-0.00086,0,0,
+500,7.67,0.00595,0.0082,0.0036,0,0,
+500,8.87,0.01316,0.0159,0.01081,0,0,
+500,10.07,0.01302,0.01676,0.00959,0,0,
+500,11.27,0.00672,0.01671,-0.0032,0,0,
+500,12.47,0.00279,0.02081,-0.00482,0,1,lower end beyond axis (-0.005): error bar is a lower limit
+1000,6.47,0.00148,0.00455,-0.00248,0,0,
+1000,7.67,0.00751,0.01144,0.00338,0,0,
+1000,8.87,0.01716,0.02185,0.01288,0,0,
+1000,10.07,0.01819,0.02707,0.00982,0,0,
+1000,11.27,0.0091,0.02392,-0.00482,1,1,upper end hidden under legend / beyond axis: error bar is a lower limit; lower end beyond axis (-0.005): error bar is a lower limit
+1000,12.47,0.00494,0.02392,-0.00482,1,1,upper end hidden under legend / beyond axis: error bar is a lower limit; lower end beyond axis (-0.005): error bar is a lower limit
+3000,6.47,0.00141,0.00464,-0.00216,0,0,
+3000,7.67,0.00493,0.00775,0.00144,0,0,
+3000,8.87,0.01057,0.01446,0.00694,0,0,
+3000,10.07,0.0114,0.01991,0.00333,0,0,
+3000,11.27,0.00649,0.02392,-0.00482,1,1,upper end hidden under legend / beyond axis: error bar is a lower limit; lower end beyond axis (-0.005): error bar is a lower limit
+3000,12.47,0.00315,0.02392,-0.00482,1,1,upper end hidden under legend / beyond axis: error bar is a lower limit; lower end beyond axis (-0.005): error bar is a lower limit
