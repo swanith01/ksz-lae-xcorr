@@ -1,0 +1,27 @@
+pair,cmb,lae_survey,signal,shells_z,area_deg2,LAEs_per_deg2,b_survey,SN,area_for_3sigma_deg2
+1,ACT DR6 (white noise),HSC SILVERRUSH (NB816+NB921),La Plante's galaxy model (validated),6.6,21.0,41,6.5,0.0074,3.41e+06  (> whole sky)
+1,ACT DR6 (white noise),HSC SILVERRUSH (NB816+NB921),simulated LAEs (excess not yet confirmed),6.6,21.0,41,6.5,0.0159,7.5e+05  (> whole sky)
+2a,SO (post-ILC),HSC SILVERRUSH (NB816+NB921),La Plante's galaxy model (validated),6.6,21.0,41,6.5,0.0054,6.54e+06  (> whole sky)
+2a,SO (post-ILC),HSC SILVERRUSH (NB816+NB921),simulated LAEs (excess not yet confirmed),6.6,21.0,41,6.5,0.0118,1.36e+06  (> whole sky)
+2a,SO (white noise),HSC SILVERRUSH (NB816+NB921),La Plante's galaxy model (validated),6.6,21.0,41,6.5,0.007,3.81e+06  (> whole sky)
+2a,SO (white noise),HSC SILVERRUSH (NB816+NB921),simulated LAEs (excess not yet confirmed),6.6,21.0,41,6.5,0.015,8.37e+05  (> whole sky)
+2b,SO (post-ILC),LAGER (DECam NB964),La Plante's galaxy model (validated),6.9,10.19,17,6.1,0.0031,9.52e+06  (> whole sky)
+2b,SO (post-ILC),LAGER (DECam NB964),simulated LAEs (excess not yet confirmed),6.9,10.19,17,6.1,0.0112,7.26e+05  (> whole sky)
+2b,SO (white noise),LAGER (DECam NB964),La Plante's galaxy model (validated),6.9,10.19,17,6.1,0.004,5.6e+06  (> whole sky)
+2b,SO (white noise),LAGER (DECam NB964),simulated LAEs (excess not yet confirmed),6.9,10.19,17,6.1,0.0143,4.51e+05  (> whole sky)
+3,SO (post-ILC),"Roman grism deep z=7.5-10, no evolution from z=7",La Plante's galaxy model (validated),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,0.0068,1.94e+05  (> whole sky)
+3,SO (post-ILC),"Roman grism deep z=7.5-10, no evolution from z=7",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,0.0659,2.07e+03
+3,SO (white noise),"Roman grism deep z=7.5-10, no evolution from z=7",La Plante's galaxy model (validated),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,0.0088,1.16e+05  (> whole sky)
+3,SO (white noise),"Roman grism deep z=7.5-10, no evolution from z=7",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,0.0855,1.23e+03
+3,SO (post-ILC),"Roman grism deep z=7.5-10, LF as observed at z=7.3",La Plante's galaxy model (validated),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.0029,1.09e+06  (> whole sky)
+3,SO (post-ILC),"Roman grism deep z=7.5-10, LF as observed at z=7.3",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.0267,1.27e+04
+3,SO (white noise),"Roman grism deep z=7.5-10, LF as observed at z=7.3",La Plante's galaxy model (validated),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.0037,6.56e+05  (> whole sky)
+3,SO (white noise),"Roman grism deep z=7.5-10, LF as observed at z=7.3",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.0342,7.68e+03
+4,CMB-HD (post-ILC),"Roman grism deep z=7.5-10, no evolution from z=7",La Plante's galaxy model (validated),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,0.0833,1.3e+03
+4,CMB-HD (post-ILC),"Roman grism deep z=7.5-10, no evolution from z=7",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,0.4678,41.1
+4,CMB-HD (white noise),"Roman grism deep z=7.5-10, no evolution from z=7",La Plante's galaxy model (validated),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,0.2156,194
+4,CMB-HD (white noise),"Roman grism deep z=7.5-10, no evolution from z=7",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,124 112 52,7.8 8.3 8.7,1.171,6.56
+4,CMB-HD (post-ILC),"Roman grism deep z=7.5-10, LF as observed at z=7.3",La Plante's galaxy model (validated),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.0361,6.9e+03
+4,CMB-HD (post-ILC),"Roman grism deep z=7.5-10, LF as observed at z=7.3",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.2179,190
+4,CMB-HD (white noise),"Roman grism deep z=7.5-10, LF as observed at z=7.3",La Plante's galaxy model (validated),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.0933,1.03e+03
+4,CMB-HD (white noise),"Roman grism deep z=7.5-10, LF as observed at z=7.3",simulated LAEs (excess not yet confirmed),8 9 9.75,1.0,11 10 5,9.6 10.2 10.6,0.5817,26.6

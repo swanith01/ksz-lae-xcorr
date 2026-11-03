@@ -106,13 +106,24 @@ SURVEYS = {s.name: s for s in [
         Shell(6.6, 0.20, 3.0e42, ("Umeda25", 6.6), 15.0),
     ], note="Area and z-range from configs/lae_surveys.yaml; the L_min = 3e42 erg/s is an ASSUMPTION (the repo has no flux-cut for PFS). "
             "Spectroscopic redshifts, so dz is a chosen slab, not the survey depth."),
-    Survey("Roman grism deep, no evolution from z=7", 1.0, status="planned", shells=[
-        Shell(8.0, 1.5, 1.0e43, ("Umeda25", 7.0), 1.0),
-    ], note="1 deg2, z = 7.25-8.75, L > 1e43 erg/s (flux limit ~8e-18 erg/s/cm2, Wold+23 arXiv 2305.01562, who predict ~395 LAEs/deg2 "
-            "assuming no evolution from z~7). Number density from the z=7.0 LF fit (~215/deg2)."),
-    Survey("Roman grism deep, LF as observed at z=7.3-8.4", 1.0, status="planned", shells=[
-        Shell(8.0, 1.5, 1.0e43, ("Umeda25", 7.3), 1.0),
-    ], note="Same survey, but with the z=7.3 LF fit (the observed decline of the LAE density into reionisation): ~20 LAEs/deg2."),
+    Survey("LAGER (DECam NB964)", 10.19, status="current", shells=[
+        Shell(6.9, 0.076, 10 ** 42.8, ("Wold22", 6.9), 10.19, n_obs_deg2=174 / 10.19,
+              n_obs_src="Wold+22 (arXiv 2105.12191): 174 LAE candidates in four fields, 10.19 deg2"),
+    ], note="Wold+22: WIDE12 3.24, GAMA15A 2.91, COSMOS 1.90, CDFS 2.14 deg2; NB964 FWHM 92 A (dz ~ 0.076); faintest LAEs ~10^42.8 "
+            "erg/s; LF = their four-field Schechter fit with alpha fixed at -2.5 (L* 8.95e42, phi* 2.19e-4). All four fields are at "
+            "Dec > -30, inside the ACT / SO footprints."),
+    Survey("Roman grism deep z=7.5-10, no evolution from z=7", 1.0, status="planned", shells=[
+        Shell(8.0, 1.0, 1.0e43, ("Umeda25", 7.0), 1.0),
+        Shell(9.0, 1.0, 1.0e43, ("Umeda25", 7.0), 1.0),
+        Shell(9.75, 0.5, 1.0e43, ("Umeda25", 7.0), 1.0),
+    ], note="1 deg2 grism deep field, Lya at z = 7.5-10 (Girish, 3 Nov 2026), L > 1e43 erg/s (Wold+23 arXiv 2305.01562: 50% "
+            "completeness at 0.7-1.4e-17 erg/s/cm2, L_lim 7.4-9.9e42 at z = 7.5-10.5; they predict ~395 LAEs/deg2 at z = 7.25-8.75 "
+            "assuming no evolution from z~7). Number density from the z=7.0 LF fit at every z (optimistic)."),
+    Survey("Roman grism deep z=7.5-10, LF as observed at z=7.3", 1.0, status="planned", shells=[
+        Shell(8.0, 1.0, 1.0e43, ("Umeda25", 7.3), 1.0),
+        Shell(9.0, 1.0, 1.0e43, ("Umeda25", 7.3), 1.0),
+        Shell(9.75, 0.5, 1.0e43, ("Umeda25", 7.3), 1.0),
+    ], note="Same survey with the z=7.3 LF fit (the observed decline of the LAE density into reionisation) at every z."),
 ]}
 
 
@@ -120,10 +131,14 @@ SURVEYS = {s.name: s for s in [
 # HSC SSP Deep/UltraDeep fields (SXDS/XMM-LSS, COSMOS, DEEP2-3, ELAIS-N1) all lie at Dec > -10 deg; SPT-3G Main covers
 # Dec ~ -42 to -70 deg, so the two do not overlap.  ACT DR6 (Dec ~ -63 to +23) covers all of them but ELAIS-N1 (Dec +54):
 # left at 1 (the ELAIS-N1 share of the SILVERRUSH area was not checked).  PFS SSP Galaxy Evolution fields are the same HSC
-# Deep fields.  Roman deep-field location: not fixed here -> 1.
+# Deep fields.  LAGER fields (WIDE12, GAMA15A, COSMOS, CDFS) are at Dec > -30: inside ACT / SO.  Roman deep-field location:
+# not fixed here -> 1.
+# CMB-S4 is not used in the forecasts: DOE and NSF ended support for the project in July 2025.
+FORECAST_EXPERIMENTS = ("ACT DR6", "SPT-3G Main", "SO", "CMB-HD")
 OVERLAP = {
     ("HSC SILVERRUSH (NB816+NB921)", "SPT-3G Main"): 0.0,
     ("Subaru PFS (SSP, repo value)", "SPT-3G Main"): 0.0,
+    ("LAGER (DECam NB964)", "SPT-3G Main"): 0.0,
 }
 
 
