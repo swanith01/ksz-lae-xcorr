@@ -1,6 +1,8 @@
 pair,cmb,lae_survey,signal,shells_z,area_deg2,LAEs_per_deg2,b_survey,SN,area_for_3sigma_deg2
 1,ACT DR6 (white noise),HSC SILVERRUSH (NB816+NB921),La Plante's galaxy model (validated),6.6,21.0,41,6.5,0.0074,3.41e+06  (> whole sky)
 1,ACT DR6 (white noise),HSC SILVERRUSH (NB816+NB921),simulated LAEs (excess not yet confirmed),6.6,21.0,41,6.5,0.0159,7.5e+05  (> whole sky)
+1s,SPT-3G Main (white noise),HSC SILVERRUSH (NB816+NB921) [as if overlapping: real S/N = 0],La Plante's galaxy model (validated),6.6,21.0,41,6.5,0.0619,4.93e+04  (> whole sky)
+1s,SPT-3G Main (white noise),HSC SILVERRUSH (NB816+NB921) [as if overlapping: real S/N = 0],simulated LAEs (excess not yet confirmed),6.6,21.0,41,6.5,0.1066,1.66e+04
 2a,SO (post-ILC),HSC SILVERRUSH (NB816+NB921),La Plante's galaxy model (validated),6.6,21.0,41,6.5,0.0054,6.54e+06  (> whole sky)
 2a,SO (post-ILC),HSC SILVERRUSH (NB816+NB921),simulated LAEs (excess not yet confirmed),6.6,21.0,41,6.5,0.0118,1.36e+06  (> whole sky)
 2a,SO (white noise),HSC SILVERRUSH (NB816+NB921),La Plante's galaxy model (validated),6.6,21.0,41,6.5,0.007,3.81e+06  (> whole sky)
