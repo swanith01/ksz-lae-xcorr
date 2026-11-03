@@ -188,22 +188,22 @@ def main(argv=None):
     with open(os.path.join(REF, "fig10_cumulative_snr_fiducial_digitized.csv")) as f:
         for r in csv.DictReader(f):
             lp10.setdefault(r["experiment"], []).append((float(r["ell_max"]), float(r["cumulative_SN"])))
-    fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(16, 4.6), constrained_layout=True)
+    fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(16, 6.4), constrained_layout=True)
     lgrid = edges[1:]
     for exp in LP_TABLE2:
         sn, wins, tt, _ = best[("matter_waters", exp, "ilc", True)]
-        a1.plot(lgrid, np.sqrt(np.cumsum(tt)), color=COL[exp], lw=2, label=f"{exp}: ours {sn:.2g}")
+        a1.plot(lgrid, np.sqrt(np.cumsum(tt)), color=COL[exp], lw=2, label=f"{exp} ours (matter x W16): {sn:.2g}")
         if exp in lp10:
             x, y = np.array(sorted(lp10[exp])).T
-            a1.plot(x, y, color=COL[exp], ls=":", lw=1.6, label=f"{exp}: La Plante Fig. 10 ({LP_TABLE2[exp][('ilc', True)]:g})")
+            a1.plot(x, y, color=COL[exp], ls=":", lw=1.6, label=f"{exp} La Plante Fig. 10: {LP_TABLE2[exp][('ilc', True)]:g}")
         for t, ls in zip(tracers[1:], ("--", "-.")):
             sn2, _, tt2, _ = best[(t, exp, "ilc", True)]
-            a1.plot(lgrid, np.sqrt(np.cumsum(tt2)), color=COL[exp], ls=ls, lw=1, alpha=0.8, label=f"   {t} (bias -> W16): {sn2:.2g}" if exp == "CMB-HD" else None)
+            a1.plot(lgrid, np.sqrt(np.cumsum(tt2)), color=COL[exp], ls=ls, lw=1, alpha=0.8, label=f"{exp} sim LBG M_UV<{t.split('MUV')[1].rstrip('0').rstrip('.')}: {sn2:.2g}")
     a1.set_xscale("log"); a1.set_yscale("log"); a1.set_xlim(100, 10000); a1.set_ylim(0.05, 40)
     a1.axhline(1, color="0.6", lw=0.6, ls=":"); a1.axhline(3, color="0.6", lw=0.6, ls="--")
     a1.set_xlabel(r"$\ell_{\max}$"); a1.set_ylabel("cumulative S/N (best single bin)")
-    a1.set_title("post-ILC noise, with shot noise: solid ours (matter x W16 bias), dotted La Plante", fontsize=8.5)
-    a1.legend(fontsize=6.5, frameon=False, loc="upper left")
+    a1.set_title("cumulative S/N, post-ILC noise, with shot noise\nsolid: ours, matter x W16 bias | dotted: La Plante | dashed / dash-dot: simulated LBGs", fontsize=8.5)
+    a1.legend(fontsize=7, frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.16))
 
     # Table 2 bars
     cases = [(n, s_) for n in ("ilc", "white") for s_ in (True, False)]
@@ -215,7 +215,7 @@ def main(argv=None):
         a2.bar(x + wbar / 2, [best[("matter_waters", exp) + c][0] for c in cases], wbar, color=COL[exp], label=f"{exp} ours")
     a2.set_yscale("log"); a2.set_xticks(range(len(cases)), xl, fontsize=8); a2.set_ylabel("S/N (best single bin)")
     a2.set_title("La Plante Table 2 (light) vs ours (dark), fiducial history", fontsize=8.5)
-    a2.legend(fontsize=6.5, frameon=False, ncol=2)
+    a2.legend(fontsize=7, frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.16))
 
     # S/N(z0, dz) for CMB-S4, ILC, with shot noise (their Fig. 9)
     _, _, _, cand = best[("matter_waters", "CMB-S4", "ilc", True)]
@@ -227,7 +227,7 @@ def main(argv=None):
     a3.plot(zc[i], dzs[i], "o", mfc="none", mec="k", ms=12, label=f"ours: max {cand[i][0]:.2g} at z0={zc[i]:.1f}, dz={dzs[i]:.0f}")
     a3.plot(9.2, 4.2, "x", color="#D55E00", ms=10, mew=2, label="La Plante Fig. 9: max 2.8 at z0~9.2, dz~4.2")
     fig.colorbar(sc, ax=a3, label="S/N")
-    a3.set_xlabel("bin centre $z_0$"); a3.set_ylabel(r"bin width $\Delta z$"); a3.legend(fontsize=7, frameon=False, loc="upper right")
+    a3.set_xlabel("bin centre $z_0$"); a3.set_ylabel(r"bin width $\Delta z$"); a3.legend(fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.16))
     a3.set_title("CMB-S4 post-ILC with shot noise: S/N per single bin", fontsize=8.5)
     fig.suptitle("Validation against La Plante+22: same galaxy model (matter x Waters+16 bias), Roman HLS f_sky = 0.053, "
                  "their Fig. 8 shot noise, one bin maximising S/N", fontsize=10)
