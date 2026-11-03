@@ -130,3 +130,44 @@ def survey_cg(Cg_sim: np.ndarray, shot_sim: float, r: float, dchi_win: float, dc
 
 
 T_CMB_UK2 = constants.T_CMB_UK ** 2
+
+
+# --------------------------------------------------------------------------------------------------------------------- #
+# survey helpers (scripts/55)
+# --------------------------------------------------------------------------------------------------------------------- #
+def load_bias_table(path):
+    """{tracer name: (z array, b array)} from tracer_bias_summary.csv (scripts/36)."""
+    import csv
+    import os
+    if not path or not os.path.exists(path):
+        return {}
+    tab = {}
+    with open(path) as f:
+        for r in csv.DictReader(f):
+            tab.setdefault(r["name"], []).append((float(r["z"]), float(r["b"])))
+    return {k: (np.array([a for a, _ in sorted(v)]), np.array([b for _, b in sorted(v)])) for k, v in tab.items()}
+
+
+def sim_bias(name, z, btab):
+    """Large-scale bias of the simulated tracer at z: Waters+16 for the matter run, else the measured one (scripts/35-36),
+    linear in z, held constant outside the measured range."""
+    if name.startswith("matter"):
+        from ksz_lae_xcorr.snr.roman_hls_benchmark import bluetides_bias_gz
+        return float(bluetides_bias_gz(np.array([z]))[0])
+    if name not in btab:
+        return np.nan
+    zz, bb = btab[name]
+    return float(np.interp(z, zz, bb))
+
+
+def shell_window(sp, z):
+    """Index of the simulated window (from a scripts/53 .npz) that contains z, nearest z0; None if none does."""
+    inside = [i for i in range(len(sp["z0"])) if sp["z_lo"][i] <= z <= sp["z_hi"][i]]
+    return min(inside, key=lambda i: abs(sp["z0"][i] - z)) if inside else None
+
+
+def survey_shell_snr2(sp, ei, wi, r, f_sky, n2d_per_sr, dchi_win, dchi_shell, ell_min, ell_max, debias=True):
+    """(S/N)^2 of one survey shell from the simulated window wi, signal and clustering rescaled by r = b_survey / b_sim."""
+    Cg = survey_cg(np.nanmean(sp["Cg"][:, wi, :], axis=0), float(sp["shot_sim"][wi]), r, dchi_win, dchi_shell, n2d_per_sr)
+    Cs2 = signal_sq(sp["Cs"][:, ei, wi, :] * r, debias)
+    return float(snr_terms(Cs2, Cg, float(sp["CT2T2"][ei]), sp["edges"][wi], f_sky, ell_min, ell_max).sum())

@@ -51,3 +51,11 @@ def test_survey_cg_and_shot_noise():
     n = lambda z: np.full_like(np.asarray(z, float), 1e-3)
     C = ss.window_shot_noise(n, 7.0, 8.0, chi, 7500.0)
     assert np.isclose(C, 1.0 / (1e-3 * 1000.0 * 7500.0 ** 2))   # 1/N per sr
+
+
+def test_field_ell_min_and_overlap():
+    from ksz_lae_xcorr.snr import feasibility as fe
+    assert np.isclose(fe.field_ell_min(1.0), 2 * np.pi / np.deg2rad(1.0))       # ~360 for 1 deg2
+    assert fe.field_ell_min(1e4) == 100.0
+    assert fe.overlap("HSC SILVERRUSH (NB816+NB921)", "SPT-3G Main") == 0.0
+    assert fe.overlap("HSC SILVERRUSH (NB816+NB921)", "ACT DR6") == 1.0

@@ -230,8 +230,9 @@ def main(argv=None):
                 r = b_sv / b_sim if (args.bias_rescale == "st" and np.isfinite(b_sim) and b_sim > 0) else 1.0
                 dchi_w = chi(sp["z_hi"][wi]) - chi(sp["z_lo"][wi])
                 Cg = ss.survey_cg(np.nanmean(sp["Cg"][:, wi, :], axis=0), float(sp["shot_sim"][wi]), r, dchi_w, hi - lo, n2d)
+                lmin = fe.field_ell_min(area, args.ell_min)          # a small field cannot measure l < 2 pi / sqrt(Omega)
                 for ei, lab in enumerate(str(e) for e in sp["experiments"]):
-                    sn = {d: float(np.sqrt(window_terms(sp, ei, wi, area / SQ_DEG, d, args.ell_min, args.ell_max, Cs_scale=r, Cg=Cg).sum()))
+                    sn = {d: float(np.sqrt(window_terms(sp, ei, wi, area / SQ_DEG, d, lmin, args.ell_max, Cs_scale=r, Cg=Cg).sum()))
                           for d in (True, False)}
                     rows_s.append({"signal_tracer": name, "survey": sname, "shell_z": sh.z, "window_z0": sp["z0"][wi], "cmb": lab,
                                    "area_deg2": area, "n2d_per_deg2": round(n2d * (np.pi / 180) ** 2, 2),

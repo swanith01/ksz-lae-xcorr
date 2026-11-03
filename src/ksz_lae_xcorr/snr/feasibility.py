@@ -80,6 +80,8 @@ class Shell:
     L_min: float             # erg/s (observed Lya luminosity limit)
     lf: tuple                # (ref_key, z) row of the LAE LF fits to use for the number density
     area_deg2: float | None = None
+    n_obs_deg2: float | None = None   # LAEs per deg2 actually in the survey's catalogue (realistic shot noise); None = use the LF
+    n_obs_src: str = ""
 
 
 @dataclass
@@ -93,8 +95,10 @@ class Survey:
 
 SURVEYS = {s.name: s for s in [
     Survey("HSC SILVERRUSH (NB816+NB921)", 14.0, status="current", shells=[
-        Shell(5.7, 0.10, 6.3e42, ("Umeda25", 5.7), 14.0),
-        Shell(6.6, 0.10, 7.9e42, ("Umeda25", 6.6), 21.0),
+        Shell(5.7, 0.10, 6.3e42, ("Umeda25", 5.7), 14.0, n_obs_deg2=959 / 13.8,
+              n_obs_src="Ouchi+18 (SILVERRUSH I, arXiv 1704.07455) homogeneous sample: 959 LAEs in 13.8 deg2"),
+        Shell(6.6, 0.10, 7.9e42, ("Umeda25", 6.6), 21.0, n_obs_deg2=873 / 21.2,
+              n_obs_src="Ouchi+18 (SILVERRUSH I, arXiv 1704.07455) homogeneous sample: 873 LAEs in 21.2 deg2"),
     ], note="Konno+18: 14 deg2 (z=5.7) and 21 deg2 (z=6.6), 1,266 LAEs in total; narrow bands ~120 A wide (dz ~ 0.1); L_min from "
             "Weinberger+19 Table 1. NB973/NB101 (z=7.0, 7.3) are CHORUS/Subaru pencil beams of ~1-2 deg2 and are left out."),
     Survey("Subaru PFS (SSP, repo value)", 15.0, status="planned", shells=[
@@ -110,6 +114,27 @@ SURVEYS = {s.name: s for s in [
         Shell(8.0, 1.5, 1.0e43, ("Umeda25", 7.3), 1.0),
     ], note="Same survey, but with the z=7.3 LF fit (the observed decline of the LAE density into reionisation): ~20 LAEs/deg2."),
 ]}
+
+
+# Footprint overlap of each LAE survey with each CMB map (fraction of the LAE area inside the CMB map).  Default 1 (not checked).
+# HSC SSP Deep/UltraDeep fields (SXDS/XMM-LSS, COSMOS, DEEP2-3, ELAIS-N1) all lie at Dec > -10 deg; SPT-3G Main covers
+# Dec ~ -42 to -70 deg, so the two do not overlap.  ACT DR6 (Dec ~ -63 to +23) covers all of them but ELAIS-N1 (Dec +54):
+# left at 1 (the ELAIS-N1 share of the SILVERRUSH area was not checked).  PFS SSP Galaxy Evolution fields are the same HSC
+# Deep fields.  Roman deep-field location: not fixed here -> 1.
+OVERLAP = {
+    ("HSC SILVERRUSH (NB816+NB921)", "SPT-3G Main"): 0.0,
+    ("Subaru PFS (SSP, repo value)", "SPT-3G Main"): 0.0,
+}
+
+
+def overlap(survey_name: str, experiment_name: str) -> float:
+    return OVERLAP.get((survey_name, experiment_name), 1.0)
+
+
+def field_ell_min(area_deg2: float, ell_min: float = 100.0) -> float:
+    """Lowest usable multipole of a field of this area: max(ell_min, 2 pi / sqrt(Omega))."""
+    omega = area_deg2 * (np.pi / 180) ** 2
+    return max(ell_min, 2 * np.pi / np.sqrt(omega))
 
 
 # =====================================================================================================================
