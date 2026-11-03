@@ -17,8 +17,8 @@ The same is done with the SIGNAL of simulated LBGs, rescaled from their own meas
 (r = b_W16 / b_sim; bins limited to z <= 10.5, where b_sim is measured), keeping La Plante's clustering and shot noise: does a real galaxy sample give the same kSZ^2 response per unit
 bias as biased matter?
 
-Outputs (--out-dir): lp_validation.csv, lp_validation.png/pdf (cumulative S/N vs l_max over La Plante Fig. 10, Table 2 bars,
-S/N(z0, dz) for CMB-S4 like their Fig. 9).  Needs only the committed sim_spectra .npz and data/reference.
+Outputs (--out-dir): lp_validation.csv; lp_validation_cumulative.png/pdf (cumulative S/N vs l_max, one panel per experiment,
+over La Plante Fig. 10); lp_validation.png/pdf (Table 2 bars, S/N(z0, dz) for CMB-S4 like their Fig. 9).  Needs only the committed sim_spectra .npz and data/reference.
 
     python scripts/57_lp_validation.py --out-dir data/plots/2026-11-03_ksz_lae_snr/lp_validation
 """
@@ -188,23 +188,34 @@ def main(argv=None):
     with open(os.path.join(REF, "fig10_cumulative_snr_fiducial_digitized.csv")) as f:
         for r in csv.DictReader(f):
             lp10.setdefault(r["experiment"], []).append((float(r["ell_max"]), float(r["cumulative_SN"])))
-    fig, (a1, a2, a3) = plt.subplots(1, 3, figsize=(16, 6.4), constrained_layout=True)
+    # (1) cumulative S/N vs l_max: one panel per experiment
     lgrid = edges[1:]
-    for exp in LP_TABLE2:
+    lbg_ls = ("--", "-.")
+    figc, axc = plt.subplots(1, 3, figsize=(15, 5.2), constrained_layout=True, sharey=True)
+    for ax, exp in zip(axc, LP_TABLE2):
+        c = COL[exp]
         sn, wins, tt, _ = best[("matter_waters", exp, "ilc", True)]
-        a1.plot(lgrid, np.sqrt(np.cumsum(tt)), color=COL[exp], lw=2, label=f"{exp} ours (matter x W16): {sn:.2g}")
         if exp in lp10:
             x, y = np.array(sorted(lp10[exp])).T
-            a1.plot(x, y, color=COL[exp], ls=":", lw=1.6, label=f"{exp} La Plante Fig. 10: {LP_TABLE2[exp][('ilc', True)]:g}")
-        for t, ls in zip(tracers[1:], ("--", "-.")):
+            ax.plot(x, y, color="0.25", ls=":", lw=2, label=f"La Plante Fig. 10 (Table 2: {LP_TABLE2[exp][('ilc', True)]:g})")
+        ax.plot(lgrid, np.sqrt(np.cumsum(tt)), color=c, lw=2.2, label=f"ours, La Plante's galaxy model (matter x W16 bias): {sn:.2g}")
+        for t, ls in zip(tracers[1:], lbg_ls):
             sn2, _, tt2, _ = best[(t, exp, "ilc", True)]
-            a1.plot(lgrid, np.sqrt(np.cumsum(tt2)), color=COL[exp], ls=ls, lw=1, alpha=0.8, label=f"{exp} sim LBG M_UV<{t.split('MUV')[1].rstrip('0').rstrip('.')}: {sn2:.2g}")
-    a1.set_xscale("log"); a1.set_yscale("log"); a1.set_xlim(100, 10000); a1.set_ylim(0.05, 40)
-    a1.axhline(1, color="0.6", lw=0.6, ls=":"); a1.axhline(3, color="0.6", lw=0.6, ls="--")
-    a1.set_xlabel(r"$\ell_{\max}$"); a1.set_ylabel("cumulative S/N (best single bin)")
-    a1.set_title("cumulative S/N, post-ILC noise, with shot noise\nsolid: ours, matter x W16 bias | dotted: La Plante | dashed / dash-dot: simulated LBGs", fontsize=8.5)
-    a1.legend(fontsize=7, frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.16))
+            ax.plot(lgrid, np.sqrt(np.cumsum(tt2)), color=c, ls=ls, lw=1.2,
+                    label=f"ours, simulated LBGs M_UV < {t.split('MUV')[1].rstrip('0').rstrip('.')} (signal rescaled to W16 bias): {sn2:.2g}")
+        ax.axvspan(100, float(edges[:-1][np.argmax(tt > 0)]), color="0.93", zorder=0)
+        ax.text(105, 25, "no modes in our\n300 Mpc box", fontsize=7, color="0.4", va="top")
+        ax.axhline(1, color="0.6", lw=0.6, ls=":"); ax.axhline(3, color="0.6", lw=0.6, ls="--")
+        ax.set_xscale("log"); ax.set_yscale("log"); ax.set_xlim(100, 10000); ax.set_ylim(0.05, 40)
+        ax.set_xlabel(r"$\ell_{\max}$"); ax.set_title(f"{exp} (post-ILC noise, with shot noise)", fontsize=9.5, color=c)
+        ax.legend(fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.14))
+    axc[0].set_ylabel("cumulative S/N (best single redshift bin)")
+    figc.suptitle("Cumulative S/N vs l_max: ours vs La Plante+22 Fig. 10 (Roman HLS, f_sky = 0.053, their shot noise)", fontsize=10)
+    print("\nfigure:", *save_fig(figc, os.path.join(args.out_dir, "lp_validation_cumulative")))
+    plt.close(figc)
 
+    # (2) Table 2 and the single-bin S/N map
+    fig, (a2, a3) = plt.subplots(1, 2, figsize=(13, 5.6), constrained_layout=True)
     # Table 2 bars
     cases = [(n, s_) for n in ("ilc", "white") for s_ in (True, False)]
     xl = [f"{'ILC' if n == 'ilc' else 'instr.'}\n{'with SN' if s_ else 'no SN'}" for n, s_ in cases]
