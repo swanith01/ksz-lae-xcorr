@@ -18,7 +18,7 @@ The same is done with the SIGNAL of simulated LBGs, rescaled from their own meas
 bias as biased matter?
 
 Outputs (--out-dir): lp_validation.csv; lp_validation_cumulative.png/pdf (cumulative S/N vs l_max, one panel per experiment,
-over La Plante Fig. 10); lp_validation.png/pdf (Table 2 bars, S/N(z0, dz) for CMB-S4 like their Fig. 9);
+over La Plante Fig. 10, + Table 2 bars); lp_validation_best_bin.png/pdf (S/N(z0, dz) for CMB-S4 like their Fig. 9);
 lp_validation_per_bin.png/pdf + .csv (D_l and per-bin S/N in dz = 1 bins for CMB-HD, three l bands, over their Fig. 11).  Needs only the committed sim_spectra .npz and data/reference.
 
     python scripts/57_lp_validation.py --out-dir data/plots/2026-11-03_ksz_lae_snr/lp_validation
@@ -268,7 +268,8 @@ def main(argv=None):
     # (1) cumulative S/N vs l_max: one panel per experiment
     lgrid = edges[1:]
     lbg_ls = ("--", "-.")
-    figc, axc = plt.subplots(1, 3, figsize=(15, 5.2), constrained_layout=True, sharey=True)
+    figc, axall = plt.subplots(1, 4, figsize=(20, 5.6), constrained_layout=True, gridspec_kw={"width_ratios": [1, 1, 1, 1.1]})
+    axc, a2 = axall[:3], axall[3]
     for ax, exp in zip(axc, LP_TABLE2):
         c = COL[exp]
         sn, wins, tt, _ = best[("matter_waters", exp, "ilc", True)]
@@ -288,15 +289,9 @@ def main(argv=None):
         ax.set_xlabel(r"$\ell_{\max}$"); ax.set_title(f"{exp} (post-ILC noise, with shot noise)", fontsize=9.5, color=c)
         ax.legend(fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.14), ncol=1)
     axc[0].set_ylabel("cumulative S/N (best single redshift bin)")
-    figc.suptitle("Cumulative S/N vs l_max: ours vs La Plante+22 Fig. 10 (Roman HLS, f_sky = 0.053, their shot noise)", fontsize=10)
-    print("\nfigure:", *save_fig(figc, os.path.join(args.out_dir, "lp_validation_cumulative")))
-    plt.close(figc)
-
-    per_bin_figure(sp["matter_waters"], dndz, args.out_dir)
-
-    # (2) Table 2 and the single-bin S/N map
-    fig, (a2, a3) = plt.subplots(1, 2, figsize=(13, 5.6), constrained_layout=True)
-    # Table 2 bars
+    for ax in axc[1:]:
+        ax.tick_params(labelleft=False)
+    # 4th panel: the end points of all of these, for every La Plante Table 2 column
     cases = [(n, s_) for n in ("ilc", "white") for s_ in (True, False)]
     xl = [f"{'ILC' if n == 'ilc' else 'instr.'}\n{'with SN' if s_ else 'no SN'}" for n, s_ in cases]
     wbar = 0.13
@@ -305,8 +300,17 @@ def main(argv=None):
         a2.bar(x - wbar / 2, [LP_TABLE2[exp][c] for c in cases], wbar, color=COL[exp], alpha=0.45, edgecolor=COL[exp], label=f"{exp} La Plante")
         a2.bar(x + wbar / 2, [best[("matter_waters", exp) + c][0] for c in cases], wbar, color=COL[exp], label=f"{exp} ours")
     a2.set_yscale("log"); a2.set_xticks(range(len(cases)), xl, fontsize=8); a2.set_ylabel("S/N (best single bin)")
-    a2.set_title("La Plante Table 2 (light) vs ours (dark), fiducial history", fontsize=8.5)
-    a2.legend(fontsize=7, frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.16))
+    a2.set_title("totals (l_max = all): La Plante Table 2 (light) vs ours (dark)", fontsize=9.5)
+    a2.legend(fontsize=7.5, frameon=False, ncol=2, loc="upper center", bbox_to_anchor=(0.5, -0.14))
+    figc.suptitle("Cumulative S/N: ours (La Plante's galaxy model, matter x W16 bias) vs La Plante+22 Fig. 10 and Table 2 "
+                  "(Roman HLS, f_sky = 0.053, their shot noise, best single redshift bin)", fontsize=10.5)
+    print("\nfigure:", *save_fig(figc, os.path.join(args.out_dir, "lp_validation_cumulative")))
+    plt.close(figc)
+
+    per_bin_figure(sp["matter_waters"], dndz, args.out_dir)
+
+    # (2) which single bin: S/N(z0, dz) map
+    fig, a3 = plt.subplots(1, 1, figsize=(7.5, 6.0), constrained_layout=True)
 
     # S/N(z0, dz) for CMB-S4, ILC, with shot noise (their Fig. 9)
     _, _, _, cand = best[("matter_waters", "CMB-S4", "ilc", True)]
@@ -320,9 +324,8 @@ def main(argv=None):
     fig.colorbar(sc, ax=a3, label="S/N")
     a3.set_xlabel("bin centre $z_0$"); a3.set_ylabel(r"bin width $\Delta z$"); a3.legend(fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.16))
     a3.set_title("CMB-S4 post-ILC with shot noise: S/N per single bin", fontsize=8.5)
-    fig.suptitle("Validation against La Plante+22: same galaxy model (matter x Waters+16 bias), Roman HLS f_sky = 0.053, "
-                 "their Fig. 8 shot noise, one bin maximising S/N", fontsize=10)
-    print("\nfigure:", *save_fig(fig, os.path.join(args.out_dir, "lp_validation")))
+    fig.suptitle("Which redshift bin wins: ours vs La Plante+22 Fig. 9\n(matter x W16 bias, Roman HLS f_sky = 0.053, their shot noise)", fontsize=10)
+    print("\nfigure:", *save_fig(fig, os.path.join(args.out_dir, "lp_validation_best_bin")))
     plt.close(fig)
 
 
