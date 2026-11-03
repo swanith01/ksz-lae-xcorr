@@ -1,0 +1,1793 @@
+tracer,cmb,z0,dz,x_hii,SN_debiased,SN_raw
+halo_M10.0,ACT DR6 (white noise),6.5,1.0,0.724,0.5209,0.6974
+halo_M10.0,ACT DR6 (white noise),7.0,1.0,0.581,0.5626,0.8167
+halo_M10.0,ACT DR6 (white noise),7.5,1.0,0.445,0.6089,0.9165
+halo_M10.0,ACT DR6 (white noise),8.0,1.0,0.334,1.1264,1.2937
+halo_M10.0,ACT DR6 (white noise),8.5,1.0,0.252,1.1655,1.3361
+halo_M10.0,ACT DR6 (white noise),9.0,1.0,0.191,1.0742,1.287
+halo_M10.0,ACT DR6 (white noise),9.5,1.0,0.147,0.8951,1.1356
+halo_M10.0,ACT DR6 (white noise),10.0,1.0,0.111,0.6177,0.8762
+halo_M10.0,ACT DR6 (white noise),10.5,1.0,0.084,0.457,0.7056
+halo_M10.0,ACT DR6 (white noise),11.0,1.0,0.063,0.4961,0.7697
+halo_M10.0,ACT DR6 (white noise),11.5,1.0,0.046,0.4438,0.7224
+halo_M10.0,ACT DR6 (white noise),12.0,1.0,0.034,0.4458,0.6603
+halo_M10.0,ACT DR6 (white noise),12.5,1.0,0.025,0.2594,0.4776
+halo_M10.0,ACT DR6 (white noise),13.0,1.0,0.017,0.305,0.6207
+halo_M10.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.4322,4.5921
+halo_M10.0,SPT-3G Main (white noise),7.0,1.0,0.581,4.6883,6.5946
+halo_M10.0,SPT-3G Main (white noise),7.5,1.0,0.445,4.8187,6.9468
+halo_M10.0,SPT-3G Main (white noise),8.0,1.0,0.334,7.9376,9.2496
+halo_M10.0,SPT-3G Main (white noise),8.5,1.0,0.252,8.8548,10.1277
+halo_M10.0,SPT-3G Main (white noise),9.0,1.0,0.191,8.7027,10.1784
+halo_M10.0,SPT-3G Main (white noise),9.5,1.0,0.147,7.6911,9.3138
+halo_M10.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.7174,6.1257
+halo_M10.0,SPT-3G Main (white noise),10.5,1.0,0.084,3.4519,4.8521
+halo_M10.0,SPT-3G Main (white noise),11.0,1.0,0.063,2.0666,4.3992
+halo_M10.0,SPT-3G Main (white noise),11.5,1.0,0.046,3.7704,5.0418
+halo_M10.0,SPT-3G Main (white noise),12.0,1.0,0.034,4.1571,5.4354
+halo_M10.0,SPT-3G Main (white noise),12.5,1.0,0.025,2.1588,3.9207
+halo_M10.0,SPT-3G Main (white noise),13.0,1.0,0.017,2.1976,4.4605
+halo_M10.0,SO (post-ILC),6.5,1.0,0.724,0.3827,0.5109
+halo_M10.0,SO (post-ILC),7.0,1.0,0.581,0.4042,0.5849
+halo_M10.0,SO (post-ILC),7.5,1.0,0.445,0.4383,0.6579
+halo_M10.0,SO (post-ILC),8.0,1.0,0.334,0.8209,0.94
+halo_M10.0,SO (post-ILC),8.5,1.0,0.252,0.8564,0.974
+halo_M10.0,SO (post-ILC),9.0,1.0,0.191,0.773,0.9223
+halo_M10.0,SO (post-ILC),9.5,1.0,0.147,0.6552,0.8177
+halo_M10.0,SO (post-ILC),10.0,1.0,0.111,0.4474,0.6293
+halo_M10.0,SO (post-ILC),10.5,1.0,0.084,0.333,0.5067
+halo_M10.0,SO (post-ILC),11.0,1.0,0.063,0.3622,0.554
+halo_M10.0,SO (post-ILC),11.5,1.0,0.046,0.3124,0.5092
+halo_M10.0,SO (post-ILC),12.0,1.0,0.034,0.3116,0.4731
+halo_M10.0,SO (post-ILC),12.5,1.0,0.025,0.1854,0.3311
+halo_M10.0,SO (post-ILC),13.0,1.0,0.017,0.2218,0.4474
+halo_M10.0,SO (white noise),6.5,1.0,0.724,0.4941,0.6619
+halo_M10.0,SO (white noise),7.0,1.0,0.581,0.5295,0.7653
+halo_M10.0,SO (white noise),7.5,1.0,0.445,0.5726,0.8601
+halo_M10.0,SO (white noise),8.0,1.0,0.334,1.0579,1.2147
+halo_M10.0,SO (white noise),8.5,1.0,0.252,1.0928,1.2527
+halo_M10.0,SO (white noise),9.0,1.0,0.191,1.0016,1.2008
+halo_M10.0,SO (white noise),9.5,1.0,0.147,0.8381,1.0615
+halo_M10.0,SO (white noise),10.0,1.0,0.111,0.5779,0.8227
+halo_M10.0,SO (white noise),10.5,1.0,0.084,0.4269,0.6605
+halo_M10.0,SO (white noise),11.0,1.0,0.063,0.4721,0.7266
+halo_M10.0,SO (white noise),11.5,1.0,0.046,0.411,0.6751
+halo_M10.0,SO (white noise),12.0,1.0,0.034,0.4141,0.6205
+halo_M10.0,SO (white noise),12.5,1.0,0.025,0.2432,0.4456
+halo_M10.0,SO (white noise),13.0,1.0,0.017,0.2816,0.5842
+halo_M10.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.7241,0.9264
+halo_M10.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.8106,1.1992
+halo_M10.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.8923,1.3324
+halo_M10.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.6502,1.8919
+halo_M10.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.7613,1.9983
+halo_M10.0,CMB-S4 (post-ILC),9.0,1.0,0.191,1.692,1.9844
+halo_M10.0,CMB-S4 (post-ILC),9.5,1.0,0.147,1.4085,1.7512
+halo_M10.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.9358,1.2609
+halo_M10.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.6937,1.0346
+halo_M10.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6084,1.0119
+halo_M10.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.6877,1.0241
+halo_M10.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.7157,0.9399
+halo_M10.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.3633,0.699
+halo_M10.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.4526,0.8524
+halo_M10.0,CMB-S4 (white noise),6.5,1.0,0.724,3.0132,4.0012
+halo_M10.0,CMB-S4 (white noise),7.0,1.0,0.581,4.0355,5.7112
+halo_M10.0,CMB-S4 (white noise),7.5,1.0,0.445,4.1043,6.0167
+halo_M10.0,CMB-S4 (white noise),8.0,1.0,0.334,6.839,7.9998
+halo_M10.0,CMB-S4 (white noise),8.5,1.0,0.252,7.6436,8.7394
+halo_M10.0,CMB-S4 (white noise),9.0,1.0,0.191,7.4089,8.7221
+halo_M10.0,CMB-S4 (white noise),9.5,1.0,0.147,6.4074,7.8807
+halo_M10.0,CMB-S4 (white noise),10.0,1.0,0.111,3.9931,5.2384
+halo_M10.0,CMB-S4 (white noise),10.5,1.0,0.084,2.9716,4.2444
+halo_M10.0,CMB-S4 (white noise),11.0,1.0,0.063,1.6985,3.8725
+halo_M10.0,CMB-S4 (white noise),11.5,1.0,0.046,3.3505,4.47
+halo_M10.0,CMB-S4 (white noise),12.0,1.0,0.034,3.6774,4.7154
+halo_M10.0,CMB-S4 (white noise),12.5,1.0,0.025,1.9591,3.4881
+halo_M10.0,CMB-S4 (white noise),13.0,1.0,0.017,1.7597,3.7397
+halo_M10.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.9974,3.9341
+halo_M10.0,CMB-HD (post-ILC),7.0,1.0,0.581,3.9744,5.5485
+halo_M10.0,CMB-HD (post-ILC),7.5,1.0,0.445,4.2008,5.9683
+halo_M10.0,CMB-HD (post-ILC),8.0,1.0,0.334,7.1317,8.1843
+halo_M10.0,CMB-HD (post-ILC),8.5,1.0,0.252,7.9277,9.013
+halo_M10.0,CMB-HD (post-ILC),9.0,1.0,0.191,8.1328,9.3142
+halo_M10.0,CMB-HD (post-ILC),9.5,1.0,0.147,7.4119,8.6924
+halo_M10.0,CMB-HD (post-ILC),10.0,1.0,0.111,4.5846,5.72
+halo_M10.0,CMB-HD (post-ILC),10.5,1.0,0.084,3.0389,4.298
+halo_M10.0,CMB-HD (post-ILC),11.0,1.0,0.063,2.0005,3.7953
+halo_M10.0,CMB-HD (post-ILC),11.5,1.0,0.046,3.146,4.2452
+halo_M10.0,CMB-HD (post-ILC),12.0,1.0,0.034,3.3371,4.5071
+halo_M10.0,CMB-HD (post-ILC),12.5,1.0,0.025,1.7617,3.1431
+halo_M10.0,CMB-HD (post-ILC),13.0,1.0,0.017,2.1353,3.98
+halo_M10.0,CMB-HD (white noise),6.5,1.0,0.724,7.1395,10.1016
+halo_M10.0,CMB-HD (white noise),7.0,1.0,0.581,9.5848,13.0641
+halo_M10.0,CMB-HD (white noise),7.5,1.0,0.445,10.2648,14.2823
+halo_M10.0,CMB-HD (white noise),8.0,1.0,0.334,17.4588,19.6614
+halo_M10.0,CMB-HD (white noise),8.5,1.0,0.252,19.3587,22.0578
+halo_M10.0,CMB-HD (white noise),9.0,1.0,0.191,20.7785,23.4999
+halo_M10.0,CMB-HD (white noise),9.5,1.0,0.147,20.0419,23.0451
+halo_M10.0,CMB-HD (white noise),10.0,1.0,0.111,12.7331,15.4627
+halo_M10.0,CMB-HD (white noise),10.5,1.0,0.084,7.5688,10.3392
+halo_M10.0,CMB-HD (white noise),11.0,1.0,0.063,5.9479,9.3772
+halo_M10.0,CMB-HD (white noise),11.5,1.0,0.046,6.5906,9.6646
+halo_M10.0,CMB-HD (white noise),12.0,1.0,0.034,7.5404,10.4896
+halo_M10.0,CMB-HD (white noise),12.5,1.0,0.025,3.9434,7.2723
+halo_M10.0,CMB-HD (white noise),13.0,1.0,0.017,7.0459,10.8792
+halo_M10.5,ACT DR6 (white noise),6.5,1.0,0.724,0.53,0.7141
+halo_M10.5,ACT DR6 (white noise),7.0,1.0,0.581,0.5734,0.8087
+halo_M10.5,ACT DR6 (white noise),7.5,1.0,0.445,0.6149,0.9081
+halo_M10.5,ACT DR6 (white noise),8.0,1.0,0.334,1.1038,1.282
+halo_M10.5,ACT DR6 (white noise),8.5,1.0,0.252,1.0845,1.2575
+halo_M10.5,ACT DR6 (white noise),9.0,1.0,0.191,0.9923,1.255
+halo_M10.5,ACT DR6 (white noise),9.5,1.0,0.147,0.895,1.0805
+halo_M10.5,ACT DR6 (white noise),10.0,1.0,0.111,0.703,0.8563
+halo_M10.5,ACT DR6 (white noise),10.5,1.0,0.084,0.5078,0.7543
+halo_M10.5,ACT DR6 (white noise),11.0,1.0,0.063,0.5412,0.8121
+halo_M10.5,ACT DR6 (white noise),11.5,1.0,0.046,0.5324,0.7138
+halo_M10.5,ACT DR6 (white noise),12.0,1.0,0.034,0.264,0.5782
+halo_M10.5,ACT DR6 (white noise),12.5,1.0,0.025,0.4706,0.7853
+halo_M10.5,ACT DR6 (white noise),13.0,1.0,0.017,0.3856,0.7276
+halo_M10.5,SPT-3G Main (white noise),6.5,1.0,0.724,3.5348,4.6867
+halo_M10.5,SPT-3G Main (white noise),7.0,1.0,0.581,4.6958,6.5848
+halo_M10.5,SPT-3G Main (white noise),7.5,1.0,0.445,5.0264,7.0849
+halo_M10.5,SPT-3G Main (white noise),8.0,1.0,0.334,7.8518,9.1784
+halo_M10.5,SPT-3G Main (white noise),8.5,1.0,0.252,8.488,9.7903
+halo_M10.5,SPT-3G Main (white noise),9.0,1.0,0.191,7.5605,9.0642
+halo_M10.5,SPT-3G Main (white noise),9.5,1.0,0.147,5.5451,6.9777
+halo_M10.5,SPT-3G Main (white noise),10.0,1.0,0.111,4.8115,5.9696
+halo_M10.5,SPT-3G Main (white noise),10.5,1.0,0.084,4.1539,5.8615
+halo_M10.5,SPT-3G Main (white noise),11.0,1.0,0.063,2.9581,4.7918
+halo_M10.5,SPT-3G Main (white noise),11.5,1.0,0.046,2.3046,3.7429
+halo_M10.5,SPT-3G Main (white noise),12.0,1.0,0.034,3.1526,4.8712
+halo_M10.5,SPT-3G Main (white noise),12.5,1.0,0.025,2.9288,4.7649
+halo_M10.5,SPT-3G Main (white noise),13.0,1.0,0.017,2.3769,4.0025
+halo_M10.5,SO (post-ILC),6.5,1.0,0.724,0.3898,0.5247
+halo_M10.5,SO (post-ILC),7.0,1.0,0.581,0.4126,0.5797
+halo_M10.5,SO (post-ILC),7.5,1.0,0.445,0.4428,0.652
+halo_M10.5,SO (post-ILC),8.0,1.0,0.334,0.8003,0.9264
+halo_M10.5,SO (post-ILC),8.5,1.0,0.252,0.7972,0.9175
+halo_M10.5,SO (post-ILC),9.0,1.0,0.191,0.723,0.9062
+halo_M10.5,SO (post-ILC),9.5,1.0,0.147,0.6521,0.7852
+halo_M10.5,SO (post-ILC),10.0,1.0,0.111,0.4892,0.6059
+halo_M10.5,SO (post-ILC),10.5,1.0,0.084,0.3534,0.5329
+halo_M10.5,SO (post-ILC),11.0,1.0,0.063,0.3832,0.575
+halo_M10.5,SO (post-ILC),11.5,1.0,0.046,0.3717,0.4992
+halo_M10.5,SO (post-ILC),12.0,1.0,0.034,0.189,0.4064
+halo_M10.5,SO (post-ILC),12.5,1.0,0.025,0.3364,0.5651
+halo_M10.5,SO (post-ILC),13.0,1.0,0.017,0.2857,0.5237
+halo_M10.5,SO (white noise),6.5,1.0,0.724,0.5043,0.6791
+halo_M10.5,SO (white noise),7.0,1.0,0.581,0.5404,0.7586
+halo_M10.5,SO (white noise),7.5,1.0,0.445,0.5794,0.8526
+halo_M10.5,SO (white noise),8.0,1.0,0.334,1.0356,1.2025
+halo_M10.5,SO (white noise),8.5,1.0,0.252,1.0171,1.1798
+halo_M10.5,SO (white noise),9.0,1.0,0.191,0.9313,1.1773
+halo_M10.5,SO (white noise),9.5,1.0,0.147,0.8447,1.0195
+halo_M10.5,SO (white noise),10.0,1.0,0.111,0.6539,0.8001
+halo_M10.5,SO (white noise),10.5,1.0,0.084,0.4715,0.7043
+halo_M10.5,SO (white noise),11.0,1.0,0.063,0.5118,0.7632
+halo_M10.5,SO (white noise),11.5,1.0,0.046,0.5014,0.6754
+halo_M10.5,SO (white noise),12.0,1.0,0.034,0.249,0.5406
+halo_M10.5,SO (white noise),12.5,1.0,0.025,0.4372,0.7371
+halo_M10.5,SO (white noise),13.0,1.0,0.017,0.3656,0.6851
+halo_M10.5,CMB-S4 (post-ILC),6.5,1.0,0.724,0.7044,0.9183
+halo_M10.5,CMB-S4 (post-ILC),7.0,1.0,0.581,0.8169,1.172
+halo_M10.5,CMB-S4 (post-ILC),7.5,1.0,0.445,0.8597,1.3134
+halo_M10.5,CMB-S4 (post-ILC),8.0,1.0,0.334,1.6065,1.8578
+halo_M10.5,CMB-S4 (post-ILC),8.5,1.0,0.252,1.6349,1.8676
+halo_M10.5,CMB-S4 (post-ILC),9.0,1.0,0.191,1.4835,1.8314
+halo_M10.5,CMB-S4 (post-ILC),9.5,1.0,0.147,1.2214,1.4947
+halo_M10.5,CMB-S4 (post-ILC),10.0,1.0,0.111,1.0356,1.2423
+halo_M10.5,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7744,1.1153
+halo_M10.5,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6767,1.0834
+halo_M10.5,CMB-S4 (post-ILC),11.5,1.0,0.046,0.6505,0.8441
+halo_M10.5,CMB-S4 (post-ILC),12.0,1.0,0.034,0.4104,0.8221
+halo_M10.5,CMB-S4 (post-ILC),12.5,1.0,0.025,0.6483,1.0778
+halo_M10.5,CMB-S4 (post-ILC),13.0,1.0,0.017,0.5656,0.978
+halo_M10.5,CMB-S4 (white noise),6.5,1.0,0.724,3.0964,4.0795
+halo_M10.5,CMB-S4 (white noise),7.0,1.0,0.581,4.0318,5.6828
+halo_M10.5,CMB-S4 (white noise),7.5,1.0,0.445,4.2852,6.1154
+halo_M10.5,CMB-S4 (white noise),8.0,1.0,0.334,6.7483,7.9569
+halo_M10.5,CMB-S4 (white noise),8.5,1.0,0.252,7.3057,8.4117
+halo_M10.5,CMB-S4 (white noise),9.0,1.0,0.191,6.4107,7.7878
+halo_M10.5,CMB-S4 (white noise),9.5,1.0,0.147,4.64,5.9323
+halo_M10.5,CMB-S4 (white noise),10.0,1.0,0.111,4.3121,5.2546
+halo_M10.5,CMB-S4 (white noise),10.5,1.0,0.084,3.5577,5.0583
+halo_M10.5,CMB-S4 (white noise),11.0,1.0,0.063,2.6985,4.3653
+halo_M10.5,CMB-S4 (white noise),11.5,1.0,0.046,2.0578,3.3012
+halo_M10.5,CMB-S4 (white noise),12.0,1.0,0.034,2.541,4.1636
+halo_M10.5,CMB-S4 (white noise),12.5,1.0,0.025,2.5488,4.2659
+halo_M10.5,CMB-S4 (white noise),13.0,1.0,0.017,2.1163,3.6269
+halo_M10.5,CMB-HD (post-ILC),6.5,1.0,0.724,2.9233,3.8839
+halo_M10.5,CMB-HD (post-ILC),7.0,1.0,0.581,3.9759,5.5213
+halo_M10.5,CMB-HD (post-ILC),7.5,1.0,0.445,4.289,6.041
+halo_M10.5,CMB-HD (post-ILC),8.0,1.0,0.334,6.9659,8.0437
+halo_M10.5,CMB-HD (post-ILC),8.5,1.0,0.252,7.4956,8.5918
+halo_M10.5,CMB-HD (post-ILC),9.0,1.0,0.191,6.9098,8.2013
+halo_M10.5,CMB-HD (post-ILC),9.5,1.0,0.147,5.2628,6.4634
+halo_M10.5,CMB-HD (post-ILC),10.0,1.0,0.111,4.2168,5.2236
+halo_M10.5,CMB-HD (post-ILC),10.5,1.0,0.084,3.6635,5.0719
+halo_M10.5,CMB-HD (post-ILC),11.0,1.0,0.063,2.6392,4.0201
+halo_M10.5,CMB-HD (post-ILC),11.5,1.0,0.046,2.0325,3.0971
+halo_M10.5,CMB-HD (post-ILC),12.0,1.0,0.034,2.6918,4.1276
+halo_M10.5,CMB-HD (post-ILC),12.5,1.0,0.025,2.5681,3.9846
+halo_M10.5,CMB-HD (post-ILC),13.0,1.0,0.017,2.2075,3.5258
+halo_M10.5,CMB-HD (white noise),6.5,1.0,0.724,6.7414,9.653
+halo_M10.5,CMB-HD (white noise),7.0,1.0,0.581,9.8506,13.3227
+halo_M10.5,CMB-HD (white noise),7.5,1.0,0.445,10.3311,14.5399
+halo_M10.5,CMB-HD (white noise),8.0,1.0,0.334,16.9143,19.2986
+halo_M10.5,CMB-HD (white noise),8.5,1.0,0.252,18.4088,21.0312
+halo_M10.5,CMB-HD (white noise),9.0,1.0,0.191,17.7712,20.6632
+halo_M10.5,CMB-HD (white noise),9.5,1.0,0.147,14.3777,17.4389
+halo_M10.5,CMB-HD (white noise),10.0,1.0,0.111,10.1993,12.8479
+halo_M10.5,CMB-HD (white noise),10.5,1.0,0.084,8.6354,12.1356
+halo_M10.5,CMB-HD (white noise),11.0,1.0,0.063,5.9974,9.1906
+halo_M10.5,CMB-HD (white noise),11.5,1.0,0.046,5.5609,8.3418
+halo_M10.5,CMB-HD (white noise),12.0,1.0,0.034,7.4955,10.6257
+halo_M10.5,CMB-HD (white noise),12.5,1.0,0.025,6.307,9.28
+halo_M10.5,CMB-HD (white noise),13.0,1.0,0.017,5.2046,8.443
+halo_M11.0,ACT DR6 (white noise),6.5,1.0,0.724,0.5445,0.7698
+halo_M11.0,ACT DR6 (white noise),7.0,1.0,0.581,0.7237,0.9437
+halo_M11.0,ACT DR6 (white noise),7.5,1.0,0.445,0.6911,0.949
+halo_M11.0,ACT DR6 (white noise),8.0,1.0,0.334,1.1635,1.3156
+halo_M11.0,ACT DR6 (white noise),8.5,1.0,0.252,1.0818,1.2797
+halo_M11.0,ACT DR6 (white noise),9.0,1.0,0.191,0.6395,0.9467
+halo_M11.0,ACT DR6 (white noise),9.5,1.0,0.147,0.5298,0.7649
+halo_M11.0,ACT DR6 (white noise),10.0,1.0,0.111,0.5824,0.7932
+halo_M11.0,ACT DR6 (white noise),10.5,1.0,0.084,0.5946,0.8014
+halo_M11.0,ACT DR6 (white noise),11.0,1.0,0.063,0.6131,0.7103
+halo_M11.0,ACT DR6 (white noise),11.5,1.0,0.046,0.433,0.7238
+halo_M11.0,ACT DR6 (white noise),12.0,1.0,0.034,0.5228,0.7507
+halo_M11.0,ACT DR6 (white noise),12.5,1.0,0.025,0.4665,0.6707
+halo_M11.0,ACT DR6 (white noise),13.0,1.0,0.017,0.443,0.699
+halo_M11.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.6248,4.7918
+halo_M11.0,SPT-3G Main (white noise),7.0,1.0,0.581,6.1238,7.8031
+halo_M11.0,SPT-3G Main (white noise),7.5,1.0,0.445,5.5816,7.2973
+halo_M11.0,SPT-3G Main (white noise),8.0,1.0,0.334,7.5972,8.6884
+halo_M11.0,SPT-3G Main (white noise),8.5,1.0,0.252,6.6173,8.1043
+halo_M11.0,SPT-3G Main (white noise),9.0,1.0,0.191,3.8025,5.8954
+halo_M11.0,SPT-3G Main (white noise),9.5,1.0,0.147,3.7749,5.5479
+halo_M11.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.4069,5.776
+halo_M11.0,SPT-3G Main (white noise),10.5,1.0,0.084,3.4624,5.1068
+halo_M11.0,SPT-3G Main (white noise),11.0,1.0,0.063,3.2166,4.3049
+halo_M11.0,SPT-3G Main (white noise),11.5,1.0,0.046,3.9177,5.4151
+halo_M11.0,SPT-3G Main (white noise),12.0,1.0,0.034,4.692,6.4996
+halo_M11.0,SPT-3G Main (white noise),12.5,1.0,0.025,2.8605,4.8842
+halo_M11.0,SPT-3G Main (white noise),13.0,1.0,0.017,3.2813,5.1312
+halo_M11.0,SO (post-ILC),6.5,1.0,0.724,0.3945,0.5607
+halo_M11.0,SO (post-ILC),7.0,1.0,0.581,0.5178,0.6745
+halo_M11.0,SO (post-ILC),7.5,1.0,0.445,0.4885,0.6797
+halo_M11.0,SO (post-ILC),8.0,1.0,0.334,0.8391,0.9488
+halo_M11.0,SO (post-ILC),8.5,1.0,0.252,0.7823,0.9228
+halo_M11.0,SO (post-ILC),9.0,1.0,0.191,0.453,0.6727
+halo_M11.0,SO (post-ILC),9.5,1.0,0.147,0.3999,0.555
+halo_M11.0,SO (post-ILC),10.0,1.0,0.111,0.422,0.566
+halo_M11.0,SO (post-ILC),10.5,1.0,0.084,0.4073,0.5589
+halo_M11.0,SO (post-ILC),11.0,1.0,0.063,0.429,0.5098
+halo_M11.0,SO (post-ILC),11.5,1.0,0.046,0.2933,0.5014
+halo_M11.0,SO (post-ILC),12.0,1.0,0.034,0.3574,0.5255
+halo_M11.0,SO (post-ILC),12.5,1.0,0.025,0.3379,0.4923
+halo_M11.0,SO (post-ILC),13.0,1.0,0.017,0.3112,0.4991
+halo_M11.0,SO (white noise),6.5,1.0,0.724,0.5154,0.7303
+halo_M11.0,SO (white noise),7.0,1.0,0.581,0.6745,0.8827
+halo_M11.0,SO (white noise),7.5,1.0,0.445,0.6454,0.8895
+halo_M11.0,SO (white noise),8.0,1.0,0.334,1.0926,1.2352
+halo_M11.0,SO (white noise),8.5,1.0,0.252,1.0188,1.2041
+halo_M11.0,SO (white noise),9.0,1.0,0.191,0.5985,0.8869
+halo_M11.0,SO (white noise),9.5,1.0,0.147,0.5014,0.7185
+halo_M11.0,SO (white noise),10.0,1.0,0.111,0.546,0.7428
+halo_M11.0,SO (white noise),10.5,1.0,0.084,0.5576,0.7519
+halo_M11.0,SO (white noise),11.0,1.0,0.063,0.5779,0.6721
+halo_M11.0,SO (white noise),11.5,1.0,0.046,0.3977,0.6761
+halo_M11.0,SO (white noise),12.0,1.0,0.034,0.4821,0.6988
+halo_M11.0,SO (white noise),12.5,1.0,0.025,0.4405,0.6327
+halo_M11.0,SO (white noise),13.0,1.0,0.017,0.4157,0.6574
+halo_M11.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.7066,0.9872
+halo_M11.0,CMB-S4 (post-ILC),7.0,1.0,0.581,1.0946,1.3979
+halo_M11.0,CMB-S4 (post-ILC),7.5,1.0,0.445,1.0269,1.3859
+halo_M11.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.6468,1.8658
+halo_M11.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.4905,1.7803
+halo_M11.0,CMB-S4 (post-ILC),9.0,1.0,0.191,0.8766,1.3196
+halo_M11.0,CMB-S4 (post-ILC),9.5,1.0,0.147,0.7958,1.1168
+halo_M11.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.8585,1.1419
+halo_M11.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.8038,1.0922
+halo_M11.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.7808,0.9167
+halo_M11.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.6843,1.0273
+halo_M11.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.8167,1.1409
+halo_M11.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.6091,0.9481
+halo_M11.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.6139,0.9805
+halo_M11.0,CMB-S4 (white noise),6.5,1.0,0.724,3.2876,4.2379
+halo_M11.0,CMB-S4 (white noise),7.0,1.0,0.581,5.3004,6.7752
+halo_M11.0,CMB-S4 (white noise),7.5,1.0,0.445,4.8367,6.3393
+halo_M11.0,CMB-S4 (white noise),8.0,1.0,0.334,6.636,7.5928
+halo_M11.0,CMB-S4 (white noise),8.5,1.0,0.252,5.8126,7.0897
+halo_M11.0,CMB-S4 (white noise),9.0,1.0,0.191,3.3325,5.2484
+halo_M11.0,CMB-S4 (white noise),9.5,1.0,0.147,3.3296,4.881
+halo_M11.0,CMB-S4 (white noise),10.0,1.0,0.111,3.8601,5.0583
+halo_M11.0,CMB-S4 (white noise),10.5,1.0,0.084,2.965,4.3614
+halo_M11.0,CMB-S4 (white noise),11.0,1.0,0.063,2.7994,3.6687
+halo_M11.0,CMB-S4 (white noise),11.5,1.0,0.046,3.3634,4.7174
+halo_M11.0,CMB-S4 (white noise),12.0,1.0,0.034,4.1059,5.6794
+halo_M11.0,CMB-S4 (white noise),12.5,1.0,0.025,2.4195,4.2826
+halo_M11.0,CMB-S4 (white noise),13.0,1.0,0.017,2.7869,4.3899
+halo_M11.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.7248,3.8967
+halo_M11.0,CMB-HD (post-ILC),7.0,1.0,0.581,5.0902,6.4589
+halo_M11.0,CMB-HD (post-ILC),7.5,1.0,0.445,4.7441,6.1728
+halo_M11.0,CMB-HD (post-ILC),8.0,1.0,0.334,6.7401,7.705
+halo_M11.0,CMB-HD (post-ILC),8.5,1.0,0.252,5.9185,7.1926
+halo_M11.0,CMB-HD (post-ILC),9.0,1.0,0.191,3.4213,5.1819
+halo_M11.0,CMB-HD (post-ILC),9.5,1.0,0.147,3.3737,4.7877
+halo_M11.0,CMB-HD (post-ILC),10.0,1.0,0.111,3.7124,4.8757
+halo_M11.0,CMB-HD (post-ILC),10.5,1.0,0.084,3.0487,4.4303
+halo_M11.0,CMB-HD (post-ILC),11.0,1.0,0.063,2.9084,3.7469
+halo_M11.0,CMB-HD (post-ILC),11.5,1.0,0.046,3.3377,4.5855
+halo_M11.0,CMB-HD (post-ILC),12.0,1.0,0.034,3.8792,5.4534
+halo_M11.0,CMB-HD (post-ILC),12.5,1.0,0.025,2.4066,4.0337
+halo_M11.0,CMB-HD (post-ILC),13.0,1.0,0.017,2.8243,4.4183
+halo_M11.0,CMB-HD (white noise),6.5,1.0,0.724,5.6661,9.2898
+halo_M11.0,CMB-HD (white noise),7.0,1.0,0.581,11.8435,14.9529
+halo_M11.0,CMB-HD (white noise),7.5,1.0,0.445,11.4258,14.5901
+halo_M11.0,CMB-HD (white noise),8.0,1.0,0.334,16.0101,18.4859
+halo_M11.0,CMB-HD (white noise),8.5,1.0,0.252,14.1749,17.7837
+halo_M11.0,CMB-HD (white noise),9.0,1.0,0.191,8.3011,12.0691
+halo_M11.0,CMB-HD (white noise),9.5,1.0,0.147,8.0617,10.878
+halo_M11.0,CMB-HD (white noise),10.0,1.0,0.111,8.2702,11.478
+halo_M11.0,CMB-HD (white noise),10.5,1.0,0.084,8.19,11.5596
+halo_M11.0,CMB-HD (white noise),11.0,1.0,0.063,7.6888,9.7311
+halo_M11.0,CMB-HD (white noise),11.5,1.0,0.046,8.2385,11.1342
+halo_M11.0,CMB-HD (white noise),12.0,1.0,0.034,9.3545,12.6185
+halo_M11.0,CMB-HD (white noise),12.5,1.0,0.025,6.0763,9.6665
+halo_M11.0,CMB-HD (white noise),13.0,1.0,0.017,7.0303,10.9248
+halo_M11.5,ACT DR6 (white noise),6.5,1.0,0.724,0.4277,0.6918
+halo_M11.5,ACT DR6 (white noise),7.0,1.0,0.581,0.4475,0.7142
+halo_M11.5,ACT DR6 (white noise),7.5,1.0,0.445,0.6841,0.9314
+halo_M11.5,ACT DR6 (white noise),8.0,1.0,0.334,0.6055,0.7732
+halo_M11.5,ACT DR6 (white noise),8.5,1.0,0.252,0.6809,0.8873
+halo_M11.5,ACT DR6 (white noise),9.0,1.0,0.191,0.6235,0.8104
+halo_M11.5,ACT DR6 (white noise),9.5,1.0,0.147,0.4825,0.6787
+halo_M11.5,ACT DR6 (white noise),10.0,1.0,0.111,0.3678,0.6224
+halo_M11.5,ACT DR6 (white noise),10.5,1.0,0.084,0.4441,0.6234
+halo_M11.5,ACT DR6 (white noise),11.0,1.0,0.063,0.0,0.5411
+halo_M11.5,ACT DR6 (white noise),11.5,1.0,0.046,0.0,0.5399
+halo_M11.5,ACT DR6 (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,ACT DR6 (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,ACT DR6 (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M11.5,SPT-3G Main (white noise),6.5,1.0,0.724,3.8177,5.2234
+halo_M11.5,SPT-3G Main (white noise),7.0,1.0,0.581,3.5316,5.1512
+halo_M11.5,SPT-3G Main (white noise),7.5,1.0,0.445,6.0931,7.3373
+halo_M11.5,SPT-3G Main (white noise),8.0,1.0,0.334,4.7153,5.9409
+halo_M11.5,SPT-3G Main (white noise),8.5,1.0,0.252,2.3187,4.6275
+halo_M11.5,SPT-3G Main (white noise),9.0,1.0,0.191,2.4448,3.7001
+halo_M11.5,SPT-3G Main (white noise),9.5,1.0,0.147,2.0996,3.8134
+halo_M11.5,SPT-3G Main (white noise),10.0,1.0,0.111,2.6195,4.1623
+halo_M11.5,SPT-3G Main (white noise),10.5,1.0,0.084,3.0534,4.9547
+halo_M11.5,SPT-3G Main (white noise),11.0,1.0,0.063,0.0,4.5984
+halo_M11.5,SPT-3G Main (white noise),11.5,1.0,0.046,0.0,4.5888
+halo_M11.5,SPT-3G Main (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,SPT-3G Main (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,SPT-3G Main (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M11.5,SO (post-ILC),6.5,1.0,0.724,0.3366,0.5239
+halo_M11.5,SO (post-ILC),7.0,1.0,0.581,0.3433,0.5295
+halo_M11.5,SO (post-ILC),7.5,1.0,0.445,0.4953,0.6698
+halo_M11.5,SO (post-ILC),8.0,1.0,0.334,0.4415,0.5628
+halo_M11.5,SO (post-ILC),8.5,1.0,0.252,0.4993,0.6481
+halo_M11.5,SO (post-ILC),9.0,1.0,0.191,0.4545,0.5907
+halo_M11.5,SO (post-ILC),9.5,1.0,0.147,0.3632,0.5075
+halo_M11.5,SO (post-ILC),10.0,1.0,0.111,0.2738,0.4534
+halo_M11.5,SO (post-ILC),10.5,1.0,0.084,0.2969,0.4272
+halo_M11.5,SO (post-ILC),11.0,1.0,0.063,0.0,0.388
+halo_M11.5,SO (post-ILC),11.5,1.0,0.046,0.0,0.3872
+halo_M11.5,SO (post-ILC),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,SO (post-ILC),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,SO (post-ILC),13.0,1.0,0.017,0.0,0.0
+halo_M11.5,SO (white noise),6.5,1.0,0.724,0.4135,0.6602
+halo_M11.5,SO (white noise),7.0,1.0,0.581,0.4242,0.674
+halo_M11.5,SO (white noise),7.5,1.0,0.445,0.6377,0.8734
+halo_M11.5,SO (white noise),8.0,1.0,0.334,0.5709,0.7286
+halo_M11.5,SO (white noise),8.5,1.0,0.252,0.6521,0.843
+halo_M11.5,SO (white noise),9.0,1.0,0.191,0.5903,0.7671
+halo_M11.5,SO (white noise),9.5,1.0,0.147,0.4599,0.6426
+halo_M11.5,SO (white noise),10.0,1.0,0.111,0.3536,0.5871
+halo_M11.5,SO (white noise),10.5,1.0,0.084,0.4116,0.5806
+halo_M11.5,SO (white noise),11.0,1.0,0.063,0.0,0.5037
+halo_M11.5,SO (white noise),11.5,1.0,0.046,0.0,0.5026
+halo_M11.5,SO (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,SO (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,SO (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M11.5,CMB-S4 (post-ILC),6.5,1.0,0.724,0.6397,0.9332
+halo_M11.5,CMB-S4 (post-ILC),7.0,1.0,0.581,0.6648,1.038
+halo_M11.5,CMB-S4 (post-ILC),7.5,1.0,0.445,1.0764,1.3741
+halo_M11.5,CMB-S4 (post-ILC),8.0,1.0,0.334,0.8506,1.0991
+halo_M11.5,CMB-S4 (post-ILC),8.5,1.0,0.252,0.7702,1.1179
+halo_M11.5,CMB-S4 (post-ILC),9.0,1.0,0.191,0.773,1.0263
+halo_M11.5,CMB-S4 (post-ILC),9.5,1.0,0.147,0.5868,0.9066
+halo_M11.5,CMB-S4 (post-ILC),10.0,1.0,0.111,0.504,0.8617
+halo_M11.5,CMB-S4 (post-ILC),10.5,1.0,0.084,0.6583,0.9182
+halo_M11.5,CMB-S4 (post-ILC),11.0,1.0,0.063,0.0,0.847
+halo_M11.5,CMB-S4 (post-ILC),11.5,1.0,0.046,0.0,0.8452
+halo_M11.5,CMB-S4 (post-ILC),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,CMB-S4 (post-ILC),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,CMB-S4 (post-ILC),13.0,1.0,0.017,0.0,0.0
+halo_M11.5,CMB-S4 (white noise),6.5,1.0,0.724,3.3128,4.5492
+halo_M11.5,CMB-S4 (white noise),7.0,1.0,0.581,3.1186,4.5491
+halo_M11.5,CMB-S4 (white noise),7.5,1.0,0.445,5.1794,6.3408
+halo_M11.5,CMB-S4 (white noise),8.0,1.0,0.334,3.8644,4.9422
+halo_M11.5,CMB-S4 (white noise),8.5,1.0,0.252,2.2358,4.1627
+halo_M11.5,CMB-S4 (white noise),9.0,1.0,0.191,2.301,3.3121
+halo_M11.5,CMB-S4 (white noise),9.5,1.0,0.147,1.9445,3.3873
+halo_M11.5,CMB-S4 (white noise),10.0,1.0,0.111,2.2944,3.6278
+halo_M11.5,CMB-S4 (white noise),10.5,1.0,0.084,2.8578,4.4224
+halo_M11.5,CMB-S4 (white noise),11.0,1.0,0.063,0.0,4.1092
+halo_M11.5,CMB-S4 (white noise),11.5,1.0,0.046,0.0,4.1006
+halo_M11.5,CMB-S4 (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,CMB-S4 (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,CMB-S4 (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M11.5,CMB-HD (post-ILC),6.5,1.0,0.724,3.1657,4.2991
+halo_M11.5,CMB-HD (post-ILC),7.0,1.0,0.581,2.9504,4.3693
+halo_M11.5,CMB-HD (post-ILC),7.5,1.0,0.445,5.2989,6.3139
+halo_M11.5,CMB-HD (post-ILC),8.0,1.0,0.334,4.3018,5.2969
+halo_M11.5,CMB-HD (post-ILC),8.5,1.0,0.252,1.9622,3.9465
+halo_M11.5,CMB-HD (post-ILC),9.0,1.0,0.191,2.0382,3.2043
+halo_M11.5,CMB-HD (post-ILC),9.5,1.0,0.147,1.5784,3.2163
+halo_M11.5,CMB-HD (post-ILC),10.0,1.0,0.111,2.0291,3.4516
+halo_M11.5,CMB-HD (post-ILC),10.5,1.0,0.084,2.3551,4.0101
+halo_M11.5,CMB-HD (post-ILC),11.0,1.0,0.063,0.0,3.8163
+halo_M11.5,CMB-HD (post-ILC),11.5,1.0,0.046,0.0,3.8082
+halo_M11.5,CMB-HD (post-ILC),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,CMB-HD (post-ILC),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,CMB-HD (post-ILC),13.0,1.0,0.017,0.0,0.0
+halo_M11.5,CMB-HD (white noise),6.5,1.0,0.724,7.8051,10.5637
+halo_M11.5,CMB-HD (white noise),7.0,1.0,0.581,6.7054,9.8875
+halo_M11.5,CMB-HD (white noise),7.5,1.0,0.445,12.9425,15.0731
+halo_M11.5,CMB-HD (white noise),8.0,1.0,0.334,12.3246,14.7946
+halo_M11.5,CMB-HD (white noise),8.5,1.0,0.252,5.6352,9.9935
+halo_M11.5,CMB-HD (white noise),9.0,1.0,0.191,4.1827,7.739
+halo_M11.5,CMB-HD (white noise),9.5,1.0,0.147,3.3423,7.1322
+halo_M11.5,CMB-HD (white noise),10.0,1.0,0.111,3.8476,7.5723
+halo_M11.5,CMB-HD (white noise),10.5,1.0,0.084,4.0567,8.753
+halo_M11.5,CMB-HD (white noise),11.0,1.0,0.063,0.0,8.2273
+halo_M11.5,CMB-HD (white noise),11.5,1.0,0.046,0.0,8.2094
+halo_M11.5,CMB-HD (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M11.5,CMB-HD (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M11.5,CMB-HD (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),6.5,1.0,0.724,0.4664,0.7411
+halo_M12.0,ACT DR6 (white noise),7.0,1.0,0.581,0.4074,0.6423
+halo_M12.0,ACT DR6 (white noise),7.5,1.0,0.445,0.4481,0.7017
+halo_M12.0,ACT DR6 (white noise),8.0,1.0,0.334,0.4559,0.6975
+halo_M12.0,ACT DR6 (white noise),8.5,1.0,0.252,0.2733,0.471
+halo_M12.0,ACT DR6 (white noise),9.0,1.0,0.191,0.0,0.4963
+halo_M12.0,ACT DR6 (white noise),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,ACT DR6 (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.7862,5.5375
+halo_M12.0,SPT-3G Main (white noise),7.0,1.0,0.581,3.7497,5.2591
+halo_M12.0,SPT-3G Main (white noise),7.5,1.0,0.445,3.6693,5.5626
+halo_M12.0,SPT-3G Main (white noise),8.0,1.0,0.334,3.8159,5.6111
+halo_M12.0,SPT-3G Main (white noise),8.5,1.0,0.252,1.9553,3.087
+halo_M12.0,SPT-3G Main (white noise),9.0,1.0,0.191,0.0,2.9629
+halo_M12.0,SPT-3G Main (white noise),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,SPT-3G Main (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,SO (post-ILC),6.5,1.0,0.724,0.3295,0.5346
+halo_M12.0,SO (post-ILC),7.0,1.0,0.581,0.2974,0.4562
+halo_M12.0,SO (post-ILC),7.5,1.0,0.445,0.3182,0.4963
+halo_M12.0,SO (post-ILC),8.0,1.0,0.334,0.3284,0.4959
+halo_M12.0,SO (post-ILC),8.5,1.0,0.252,0.1901,0.335
+halo_M12.0,SO (post-ILC),9.0,1.0,0.191,0.0,0.3644
+halo_M12.0,SO (post-ILC),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,SO (post-ILC),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,SO (post-ILC),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,SO (post-ILC),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,SO (post-ILC),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,SO (post-ILC),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,SO (post-ILC),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,SO (post-ILC),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,SO (white noise),6.5,1.0,0.724,0.4387,0.6959
+halo_M12.0,SO (white noise),7.0,1.0,0.581,0.3774,0.5987
+halo_M12.0,SO (white noise),7.5,1.0,0.445,0.421,0.6579
+halo_M12.0,SO (white noise),8.0,1.0,0.334,0.4254,0.6508
+halo_M12.0,SO (white noise),8.5,1.0,0.252,0.2556,0.4443
+halo_M12.0,SO (white noise),9.0,1.0,0.191,0.0,0.4728
+halo_M12.0,SO (white noise),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,SO (white noise),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,SO (white noise),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,SO (white noise),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,SO (white noise),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,SO (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,SO (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,SO (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.661,1.077
+halo_M12.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.6605,0.9616
+halo_M12.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.6083,0.9893
+halo_M12.0,CMB-S4 (post-ILC),8.0,1.0,0.334,0.6868,1.035
+halo_M12.0,CMB-S4 (post-ILC),8.5,1.0,0.252,0.3803,0.6253
+halo_M12.0,CMB-S4 (post-ILC),9.0,1.0,0.191,0.0,0.6371
+halo_M12.0,CMB-S4 (post-ILC),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),6.5,1.0,0.724,3.3073,4.872
+halo_M12.0,CMB-S4 (white noise),7.0,1.0,0.581,3.2247,4.5644
+halo_M12.0,CMB-S4 (white noise),7.5,1.0,0.445,3.1789,4.97
+halo_M12.0,CMB-S4 (white noise),8.0,1.0,0.334,3.3985,5.0163
+halo_M12.0,CMB-S4 (white noise),8.5,1.0,0.252,1.7151,2.675
+halo_M12.0,CMB-S4 (white noise),9.0,1.0,0.191,0.0,2.5423
+halo_M12.0,CMB-S4 (white noise),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,CMB-S4 (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.9468,4.4934
+halo_M12.0,CMB-HD (post-ILC),7.0,1.0,0.581,3.1084,4.3997
+halo_M12.0,CMB-HD (post-ILC),7.5,1.0,0.445,3.0053,4.3412
+halo_M12.0,CMB-HD (post-ILC),8.0,1.0,0.334,2.9741,4.4794
+halo_M12.0,CMB-HD (post-ILC),8.5,1.0,0.252,1.6917,2.7033
+halo_M12.0,CMB-HD (post-ILC),9.0,1.0,0.191,0.0,2.5905
+halo_M12.0,CMB-HD (post-ILC),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,CMB-HD (post-ILC),13.0,1.0,0.017,0.0,0.0
+halo_M12.0,CMB-HD (white noise),6.5,1.0,0.724,7.2799,10.5956
+halo_M12.0,CMB-HD (white noise),7.0,1.0,0.581,7.7255,11.1572
+halo_M12.0,CMB-HD (white noise),7.5,1.0,0.445,6.6117,9.0082
+halo_M12.0,CMB-HD (white noise),8.0,1.0,0.334,5.6293,8.9778
+halo_M12.0,CMB-HD (white noise),8.5,1.0,0.252,4.3718,6.8161
+halo_M12.0,CMB-HD (white noise),9.0,1.0,0.191,0.0,6.3295
+halo_M12.0,CMB-HD (white noise),9.5,1.0,0.147,0.0,0.0
+halo_M12.0,CMB-HD (white noise),10.0,1.0,0.111,0.0,0.0
+halo_M12.0,CMB-HD (white noise),10.5,1.0,0.084,0.0,0.0
+halo_M12.0,CMB-HD (white noise),11.0,1.0,0.063,0.0,0.0
+halo_M12.0,CMB-HD (white noise),11.5,1.0,0.046,0.0,0.0
+halo_M12.0,CMB-HD (white noise),12.0,1.0,0.034,0.0,0.0
+halo_M12.0,CMB-HD (white noise),12.5,1.0,0.025,0.0,0.0
+halo_M12.0,CMB-HD (white noise),13.0,1.0,0.017,0.0,0.0
+halo_M9.0,ACT DR6 (white noise),6.5,1.0,0.724,0.4774,0.6659
+halo_M9.0,ACT DR6 (white noise),7.0,1.0,0.581,0.4996,0.7797
+halo_M9.0,ACT DR6 (white noise),7.5,1.0,0.445,0.5196,0.836
+halo_M9.0,ACT DR6 (white noise),8.0,1.0,0.334,1.0449,1.2064
+halo_M9.0,ACT DR6 (white noise),8.5,1.0,0.252,1.0766,1.2479
+halo_M9.0,ACT DR6 (white noise),9.0,1.0,0.191,1.0262,1.2328
+halo_M9.0,ACT DR6 (white noise),9.5,1.0,0.147,0.9103,1.1636
+halo_M9.0,ACT DR6 (white noise),10.0,1.0,0.111,0.7021,0.9105
+halo_M9.0,ACT DR6 (white noise),10.5,1.0,0.084,0.5833,0.7931
+halo_M9.0,ACT DR6 (white noise),11.0,1.0,0.063,0.6031,0.8609
+halo_M9.0,ACT DR6 (white noise),11.5,1.0,0.046,0.4801,0.6635
+halo_M9.0,ACT DR6 (white noise),12.0,1.0,0.034,0.59,0.7807
+halo_M9.0,ACT DR6 (white noise),12.5,1.0,0.025,0.4319,0.6663
+halo_M9.0,ACT DR6 (white noise),13.0,1.0,0.017,0.4072,0.6966
+halo_M9.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.2035,4.3976
+halo_M9.0,SPT-3G Main (white noise),7.0,1.0,0.581,4.4808,6.4029
+halo_M9.0,SPT-3G Main (white noise),7.5,1.0,0.445,4.3911,6.5629
+halo_M9.0,SPT-3G Main (white noise),8.0,1.0,0.334,7.2544,8.6809
+halo_M9.0,SPT-3G Main (white noise),8.5,1.0,0.252,8.4862,9.7024
+halo_M9.0,SPT-3G Main (white noise),9.0,1.0,0.191,8.4864,9.8702
+halo_M9.0,SPT-3G Main (white noise),9.5,1.0,0.147,7.754,9.3794
+halo_M9.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.9289,6.3372
+halo_M9.0,SPT-3G Main (white noise),10.5,1.0,0.084,4.166,5.4346
+halo_M9.0,SPT-3G Main (white noise),11.0,1.0,0.063,2.7665,4.8804
+halo_M9.0,SPT-3G Main (white noise),11.5,1.0,0.046,3.9447,5.184
+halo_M9.0,SPT-3G Main (white noise),12.0,1.0,0.034,5.3205,6.6619
+halo_M9.0,SPT-3G Main (white noise),12.5,1.0,0.025,2.7169,4.4977
+halo_M9.0,SPT-3G Main (white noise),13.0,1.0,0.017,3.2998,4.8777
+halo_M9.0,SO (post-ILC),6.5,1.0,0.724,0.3428,0.483
+halo_M9.0,SO (post-ILC),7.0,1.0,0.581,0.3566,0.5527
+halo_M9.0,SO (post-ILC),7.5,1.0,0.445,0.3739,0.5968
+halo_M9.0,SO (post-ILC),8.0,1.0,0.334,0.7621,0.8752
+halo_M9.0,SO (post-ILC),8.5,1.0,0.252,0.7953,0.9119
+halo_M9.0,SO (post-ILC),9.0,1.0,0.191,0.7411,0.885
+halo_M9.0,SO (post-ILC),9.5,1.0,0.147,0.6786,0.8417
+halo_M9.0,SO (post-ILC),10.0,1.0,0.111,0.517,0.6617
+halo_M9.0,SO (post-ILC),10.5,1.0,0.084,0.4105,0.56
+halo_M9.0,SO (post-ILC),11.0,1.0,0.063,0.4277,0.6128
+halo_M9.0,SO (post-ILC),11.5,1.0,0.046,0.3509,0.475
+halo_M9.0,SO (post-ILC),12.0,1.0,0.034,0.4159,0.556
+halo_M9.0,SO (post-ILC),12.5,1.0,0.025,0.2997,0.4704
+halo_M9.0,SO (post-ILC),13.0,1.0,0.017,0.2817,0.4838
+halo_M9.0,SO (white noise),6.5,1.0,0.724,0.4495,0.6306
+halo_M9.0,SO (white noise),7.0,1.0,0.581,0.4702,0.7292
+halo_M9.0,SO (white noise),7.5,1.0,0.445,0.4892,0.7841
+halo_M9.0,SO (white noise),8.0,1.0,0.334,0.9825,1.1333
+halo_M9.0,SO (white noise),8.5,1.0,0.252,1.009,1.1696
+halo_M9.0,SO (white noise),9.0,1.0,0.191,0.9571,1.1504
+halo_M9.0,SO (white noise),9.5,1.0,0.147,0.8562,1.0888
+halo_M9.0,SO (white noise),10.0,1.0,0.111,0.6625,0.8589
+halo_M9.0,SO (white noise),10.5,1.0,0.084,0.5465,0.7411
+halo_M9.0,SO (white noise),11.0,1.0,0.063,0.5701,0.8098
+halo_M9.0,SO (white noise),11.5,1.0,0.046,0.4505,0.6236
+halo_M9.0,SO (white noise),12.0,1.0,0.034,0.5493,0.7298
+halo_M9.0,SO (white noise),12.5,1.0,0.025,0.4012,0.6222
+halo_M9.0,SO (white noise),13.0,1.0,0.017,0.3763,0.6492
+halo_M9.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.6701,0.879
+halo_M9.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.7562,1.1419
+halo_M9.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.7496,1.2158
+halo_M9.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.5083,1.7503
+halo_M9.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.6571,1.8893
+halo_M9.0,CMB-S4 (post-ILC),9.0,1.0,0.191,1.6335,1.9162
+halo_M9.0,CMB-S4 (post-ILC),9.5,1.0,0.147,1.4124,1.7799
+halo_M9.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.994,1.2796
+halo_M9.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.8561,1.1589
+halo_M9.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.7367,1.1461
+halo_M9.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.7284,0.9548
+halo_M9.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.9012,1.1805
+halo_M9.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.6264,0.9614
+halo_M9.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.6113,1.0076
+halo_M9.0,CMB-S4 (white noise),6.5,1.0,0.724,2.7987,3.8139
+halo_M9.0,CMB-S4 (white noise),7.0,1.0,0.581,3.9167,5.5718
+halo_M9.0,CMB-S4 (white noise),7.5,1.0,0.445,3.7601,5.6672
+halo_M9.0,CMB-S4 (white noise),8.0,1.0,0.334,6.2581,7.4697
+halo_M9.0,CMB-S4 (white noise),8.5,1.0,0.252,7.3371,8.3632
+halo_M9.0,CMB-S4 (white noise),9.0,1.0,0.191,7.2022,8.4299
+halo_M9.0,CMB-S4 (white noise),9.5,1.0,0.147,6.4454,7.956
+halo_M9.0,CMB-S4 (white noise),10.0,1.0,0.111,4.1394,5.3563
+halo_M9.0,CMB-S4 (white noise),10.5,1.0,0.084,3.4849,4.7056
+halo_M9.0,CMB-S4 (white noise),11.0,1.0,0.063,2.322,4.301
+halo_M9.0,CMB-S4 (white noise),11.5,1.0,0.046,3.5039,4.536
+halo_M9.0,CMB-S4 (white noise),12.0,1.0,0.034,4.6425,5.8
+halo_M9.0,CMB-S4 (white noise),12.5,1.0,0.025,2.4283,3.9958
+halo_M9.0,CMB-S4 (white noise),13.0,1.0,0.017,2.8758,4.2395
+halo_M9.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.8189,3.8239
+halo_M9.0,CMB-HD (post-ILC),7.0,1.0,0.581,3.7512,5.3662
+halo_M9.0,CMB-HD (post-ILC),7.5,1.0,0.445,3.8076,5.6458
+halo_M9.0,CMB-HD (post-ILC),8.0,1.0,0.334,6.5257,7.6971
+halo_M9.0,CMB-HD (post-ILC),8.5,1.0,0.252,7.6576,8.693
+halo_M9.0,CMB-HD (post-ILC),9.0,1.0,0.191,7.9822,9.1244
+halo_M9.0,CMB-HD (post-ILC),9.5,1.0,0.147,7.4184,8.6982
+halo_M9.0,CMB-HD (post-ILC),10.0,1.0,0.111,4.7357,5.9454
+halo_M9.0,CMB-HD (post-ILC),10.5,1.0,0.084,3.9878,4.9856
+halo_M9.0,CMB-HD (post-ILC),11.0,1.0,0.063,2.4858,4.2482
+halo_M9.0,CMB-HD (post-ILC),11.5,1.0,0.046,3.2736,4.3098
+halo_M9.0,CMB-HD (post-ILC),12.0,1.0,0.034,4.3501,5.498
+halo_M9.0,CMB-HD (post-ILC),12.5,1.0,0.025,2.2638,3.753
+halo_M9.0,CMB-HD (post-ILC),13.0,1.0,0.017,2.98,4.3195
+halo_M9.0,CMB-HD (white noise),6.5,1.0,0.724,6.8142,10.1474
+halo_M9.0,CMB-HD (white noise),7.0,1.0,0.581,9.0231,12.6807
+halo_M9.0,CMB-HD (white noise),7.5,1.0,0.445,9.7792,13.9129
+halo_M9.0,CMB-HD (white noise),8.0,1.0,0.334,16.6229,18.8787
+halo_M9.0,CMB-HD (white noise),8.5,1.0,0.252,18.7433,21.3315
+halo_M9.0,CMB-HD (white noise),9.0,1.0,0.191,20.7276,23.3203
+halo_M9.0,CMB-HD (white noise),9.5,1.0,0.147,20.0739,22.9078
+halo_M9.0,CMB-HD (white noise),10.0,1.0,0.111,13.6083,16.5802
+halo_M9.0,CMB-HD (white noise),10.5,1.0,0.084,10.2384,12.529
+halo_M9.0,CMB-HD (white noise),11.0,1.0,0.063,7.1124,10.5909
+halo_M9.0,CMB-HD (white noise),11.5,1.0,0.046,6.9684,9.694
+halo_M9.0,CMB-HD (white noise),12.0,1.0,0.034,9.1288,12.2366
+halo_M9.0,CMB-HD (white noise),12.5,1.0,0.025,5.3453,8.4521
+halo_M9.0,CMB-HD (white noise),13.0,1.0,0.017,8.0097,10.9768
+halo_M9.5,ACT DR6 (white noise),6.5,1.0,0.724,0.4898,0.6773
+halo_M9.5,ACT DR6 (white noise),7.0,1.0,0.581,0.5262,0.7992
+halo_M9.5,ACT DR6 (white noise),7.5,1.0,0.445,0.5585,0.867
+halo_M9.5,ACT DR6 (white noise),8.0,1.0,0.334,1.0822,1.2456
+halo_M9.5,ACT DR6 (white noise),8.5,1.0,0.252,1.1165,1.2844
+halo_M9.5,ACT DR6 (white noise),9.0,1.0,0.191,1.0594,1.2613
+halo_M9.5,ACT DR6 (white noise),9.5,1.0,0.147,0.9386,1.1895
+halo_M9.5,ACT DR6 (white noise),10.0,1.0,0.111,0.6858,0.9188
+halo_M9.5,ACT DR6 (white noise),10.5,1.0,0.084,0.562,0.7859
+halo_M9.5,ACT DR6 (white noise),11.0,1.0,0.063,0.5626,0.826
+halo_M9.5,ACT DR6 (white noise),11.5,1.0,0.046,0.4983,0.6907
+halo_M9.5,ACT DR6 (white noise),12.0,1.0,0.034,0.5888,0.7608
+halo_M9.5,ACT DR6 (white noise),12.5,1.0,0.025,0.373,0.5977
+halo_M9.5,ACT DR6 (white noise),13.0,1.0,0.017,0.4158,0.6914
+halo_M9.5,SPT-3G Main (white noise),6.5,1.0,0.724,3.2845,4.4614
+halo_M9.5,SPT-3G Main (white noise),7.0,1.0,0.581,4.6505,6.5519
+halo_M9.5,SPT-3G Main (white noise),7.5,1.0,0.445,4.7421,6.8627
+halo_M9.5,SPT-3G Main (white noise),8.0,1.0,0.334,7.5686,8.9958
+halo_M9.5,SPT-3G Main (white noise),8.5,1.0,0.252,8.6861,9.8968
+halo_M9.5,SPT-3G Main (white noise),9.0,1.0,0.191,8.6726,10.0689
+halo_M9.5,SPT-3G Main (white noise),9.5,1.0,0.147,7.7278,9.4061
+halo_M9.5,SPT-3G Main (white noise),10.0,1.0,0.111,4.8289,6.2245
+halo_M9.5,SPT-3G Main (white noise),10.5,1.0,0.084,4.3157,5.4743
+halo_M9.5,SPT-3G Main (white noise),11.0,1.0,0.063,2.2817,4.5541
+halo_M9.5,SPT-3G Main (white noise),11.5,1.0,0.046,3.9051,5.1209
+halo_M9.5,SPT-3G Main (white noise),12.0,1.0,0.034,4.8042,6.2563
+halo_M9.5,SPT-3G Main (white noise),12.5,1.0,0.025,2.3852,4.2459
+halo_M9.5,SPT-3G Main (white noise),13.0,1.0,0.017,3.7495,5.2769
+halo_M9.5,SO (post-ILC),6.5,1.0,0.724,0.357,0.4943
+halo_M9.5,SO (post-ILC),7.0,1.0,0.581,0.3769,0.5689
+halo_M9.5,SO (post-ILC),7.5,1.0,0.445,0.402,0.6215
+halo_M9.5,SO (post-ILC),8.0,1.0,0.334,0.7898,0.9052
+halo_M9.5,SO (post-ILC),8.5,1.0,0.252,0.824,0.9385
+halo_M9.5,SO (post-ILC),9.0,1.0,0.191,0.7631,0.9046
+halo_M9.5,SO (post-ILC),9.5,1.0,0.147,0.6925,0.8595
+halo_M9.5,SO (post-ILC),10.0,1.0,0.111,0.5023,0.6655
+halo_M9.5,SO (post-ILC),10.5,1.0,0.084,0.4018,0.5569
+halo_M9.5,SO (post-ILC),11.0,1.0,0.063,0.4017,0.5898
+halo_M9.5,SO (post-ILC),11.5,1.0,0.046,0.3653,0.4943
+halo_M9.5,SO (post-ILC),12.0,1.0,0.034,0.4168,0.5426
+halo_M9.5,SO (post-ILC),12.5,1.0,0.025,0.2615,0.4231
+halo_M9.5,SO (post-ILC),13.0,1.0,0.017,0.2859,0.4827
+halo_M9.5,SO (white noise),6.5,1.0,0.724,0.4648,0.6424
+halo_M9.5,SO (white noise),7.0,1.0,0.581,0.4948,0.748
+halo_M9.5,SO (white noise),7.5,1.0,0.445,0.5252,0.813
+halo_M9.5,SO (white noise),8.0,1.0,0.334,1.0169,1.1698
+halo_M9.5,SO (white noise),8.5,1.0,0.252,1.0464,1.2037
+halo_M9.5,SO (white noise),9.0,1.0,0.191,0.9872,1.1764
+halo_M9.5,SO (white noise),9.5,1.0,0.147,0.8814,1.1131
+halo_M9.5,SO (white noise),10.0,1.0,0.111,0.6462,0.8664
+halo_M9.5,SO (white noise),10.5,1.0,0.084,0.5264,0.7348
+halo_M9.5,SO (white noise),11.0,1.0,0.063,0.5338,0.7784
+halo_M9.5,SO (white noise),11.5,1.0,0.046,0.4714,0.6495
+halo_M9.5,SO (white noise),12.0,1.0,0.034,0.5498,0.7119
+halo_M9.5,SO (white noise),12.5,1.0,0.025,0.3489,0.5597
+halo_M9.5,SO (white noise),13.0,1.0,0.017,0.3849,0.646
+halo_M9.5,CMB-S4 (post-ILC),6.5,1.0,0.724,0.6804,0.8935
+halo_M9.5,CMB-S4 (post-ILC),7.0,1.0,0.581,0.7827,1.1761
+halo_M9.5,CMB-S4 (post-ILC),7.5,1.0,0.445,0.8174,1.2759
+halo_M9.5,CMB-S4 (post-ILC),8.0,1.0,0.334,1.5783,1.8207
+halo_M9.5,CMB-S4 (post-ILC),8.5,1.0,0.252,1.7191,1.9466
+halo_M9.5,CMB-S4 (post-ILC),9.0,1.0,0.191,1.6932,1.9674
+halo_M9.5,CMB-S4 (post-ILC),9.5,1.0,0.147,1.4563,1.8143
+halo_M9.5,CMB-S4 (post-ILC),10.0,1.0,0.111,0.9876,1.2878
+halo_M9.5,CMB-S4 (post-ILC),10.5,1.0,0.084,0.8408,1.1463
+halo_M9.5,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6691,1.0838
+halo_M9.5,CMB-S4 (post-ILC),11.5,1.0,0.046,0.7573,0.98
+halo_M9.5,CMB-S4 (post-ILC),12.0,1.0,0.034,0.8764,1.1398
+halo_M9.5,CMB-S4 (post-ILC),12.5,1.0,0.025,0.5307,0.8569
+halo_M9.5,CMB-S4 (post-ILC),13.0,1.0,0.017,0.6479,1.0004
+halo_M9.5,CMB-S4 (white noise),6.5,1.0,0.724,2.8925,3.8808
+halo_M9.5,CMB-S4 (white noise),7.0,1.0,0.581,4.0319,5.6877
+halo_M9.5,CMB-S4 (white noise),7.5,1.0,0.445,4.0346,5.9112
+halo_M9.5,CMB-S4 (white noise),8.0,1.0,0.334,6.5038,7.7357
+halo_M9.5,CMB-S4 (white noise),8.5,1.0,0.252,7.5026,8.5273
+halo_M9.5,CMB-S4 (white noise),9.0,1.0,0.191,7.3685,8.6058
+halo_M9.5,CMB-S4 (white noise),9.5,1.0,0.147,6.4334,7.9821
+halo_M9.5,CMB-S4 (white noise),10.0,1.0,0.111,4.0546,5.2776
+halo_M9.5,CMB-S4 (white noise),10.5,1.0,0.084,3.632,4.7474
+halo_M9.5,CMB-S4 (white noise),11.0,1.0,0.063,1.8898,4.0067
+halo_M9.5,CMB-S4 (white noise),11.5,1.0,0.046,3.4754,4.4442
+halo_M9.5,CMB-S4 (white noise),12.0,1.0,0.034,4.2127,5.4627
+halo_M9.5,CMB-S4 (white noise),12.5,1.0,0.025,2.0569,3.7449
+halo_M9.5,CMB-S4 (white noise),13.0,1.0,0.017,3.2866,4.5586
+halo_M9.5,CMB-HD (post-ILC),6.5,1.0,0.724,2.863,3.8584
+halo_M9.5,CMB-HD (post-ILC),7.0,1.0,0.581,3.9129,5.5056
+halo_M9.5,CMB-HD (post-ILC),7.5,1.0,0.445,4.1664,5.9581
+halo_M9.5,CMB-HD (post-ILC),8.0,1.0,0.334,6.8714,8.0135
+halo_M9.5,CMB-HD (post-ILC),8.5,1.0,0.252,7.8521,8.888
+halo_M9.5,CMB-HD (post-ILC),9.0,1.0,0.191,8.1922,9.3111
+halo_M9.5,CMB-HD (post-ILC),9.5,1.0,0.147,7.4603,8.7718
+halo_M9.5,CMB-HD (post-ILC),10.0,1.0,0.111,4.6858,5.8713
+halo_M9.5,CMB-HD (post-ILC),10.5,1.0,0.084,3.9872,4.9459
+halo_M9.5,CMB-HD (post-ILC),11.0,1.0,0.063,2.1665,3.952
+halo_M9.5,CMB-HD (post-ILC),11.5,1.0,0.046,3.3139,4.3201
+halo_M9.5,CMB-HD (post-ILC),12.0,1.0,0.034,3.9537,5.2019
+halo_M9.5,CMB-HD (post-ILC),12.5,1.0,0.025,2.1223,3.5546
+halo_M9.5,CMB-HD (post-ILC),13.0,1.0,0.017,3.1802,4.5523
+halo_M9.5,CMB-HD (white noise),6.5,1.0,0.724,6.6808,10.1223
+halo_M9.5,CMB-HD (white noise),7.0,1.0,0.581,9.4461,13.0232
+halo_M9.5,CMB-HD (white noise),7.5,1.0,0.445,10.5693,14.6116
+halo_M9.5,CMB-HD (white noise),8.0,1.0,0.334,17.4204,19.6259
+halo_M9.5,CMB-HD (white noise),8.5,1.0,0.252,19.1766,21.8099
+halo_M9.5,CMB-HD (white noise),9.0,1.0,0.191,21.0366,23.5546
+halo_M9.5,CMB-HD (white noise),9.5,1.0,0.147,20.1327,23.1058
+halo_M9.5,CMB-HD (white noise),10.0,1.0,0.111,13.4469,16.3556
+halo_M9.5,CMB-HD (white noise),10.5,1.0,0.084,10.0513,12.3707
+halo_M9.5,CMB-HD (white noise),11.0,1.0,0.063,6.3958,10.1713
+halo_M9.5,CMB-HD (white noise),11.5,1.0,0.046,7.3506,9.9606
+halo_M9.5,CMB-HD (white noise),12.0,1.0,0.034,8.3903,11.7069
+halo_M9.5,CMB-HD (white noise),12.5,1.0,0.025,5.2254,8.4948
+halo_M9.5,CMB-HD (white noise),13.0,1.0,0.017,7.6284,11.1989
+lae_L42.0,ACT DR6 (white noise),6.5,1.0,0.724,0.3664,0.6037
+lae_L42.0,ACT DR6 (white noise),7.0,1.0,0.581,0.7174,0.8757
+lae_L42.0,ACT DR6 (white noise),7.5,1.0,0.445,0.4918,0.784
+lae_L42.0,ACT DR6 (white noise),8.0,1.0,0.334,0.7502,0.9509
+lae_L42.0,ACT DR6 (white noise),8.5,1.0,0.252,0.799,1.0328
+lae_L42.0,ACT DR6 (white noise),9.0,1.0,0.191,0.6388,0.8823
+lae_L42.0,ACT DR6 (white noise),9.5,1.0,0.147,0.5194,0.7118
+lae_L42.0,ACT DR6 (white noise),10.0,1.0,0.111,0.6527,0.8106
+lae_L42.0,ACT DR6 (white noise),10.5,1.0,0.084,0.5846,0.7465
+lae_L42.0,ACT DR6 (white noise),11.0,1.0,0.063,0.4641,0.6692
+lae_L42.0,ACT DR6 (white noise),11.5,1.0,0.046,0.4659,0.7133
+lae_L42.0,ACT DR6 (white noise),12.0,1.0,0.034,0.5512,0.746
+lae_L42.0,ACT DR6 (white noise),12.5,1.0,0.025,0.5669,0.7583
+lae_L42.0,ACT DR6 (white noise),13.0,1.0,0.017,0.1795,0.465
+lae_L42.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.8441,4.9561
+lae_L42.0,SPT-3G Main (white noise),7.0,1.0,0.581,4.6117,6.4287
+lae_L42.0,SPT-3G Main (white noise),7.5,1.0,0.445,3.3518,5.3823
+lae_L42.0,SPT-3G Main (white noise),8.0,1.0,0.334,6.116,7.7156
+lae_L42.0,SPT-3G Main (white noise),8.5,1.0,0.252,6.7002,8.075
+lae_L42.0,SPT-3G Main (white noise),9.0,1.0,0.191,2.9433,4.8928
+lae_L42.0,SPT-3G Main (white noise),9.5,1.0,0.147,2.507,4.5165
+lae_L42.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.8777,6.1634
+lae_L42.0,SPT-3G Main (white noise),10.5,1.0,0.084,2.9049,4.0849
+lae_L42.0,SPT-3G Main (white noise),11.0,1.0,0.063,3.0202,4.7208
+lae_L42.0,SPT-3G Main (white noise),11.5,1.0,0.046,3.041,5.4185
+lae_L42.0,SPT-3G Main (white noise),12.0,1.0,0.034,2.9531,4.3193
+lae_L42.0,SPT-3G Main (white noise),12.5,1.0,0.025,3.6838,5.1939
+lae_L42.0,SPT-3G Main (white noise),13.0,1.0,0.017,2.9564,4.4564
+lae_L42.0,SO (post-ILC),6.5,1.0,0.724,0.2743,0.4346
+lae_L42.0,SO (post-ILC),7.0,1.0,0.581,0.5347,0.6501
+lae_L42.0,SO (post-ILC),7.5,1.0,0.445,0.3559,0.5715
+lae_L42.0,SO (post-ILC),8.0,1.0,0.334,0.5419,0.6877
+lae_L42.0,SO (post-ILC),8.5,1.0,0.252,0.5849,0.7532
+lae_L42.0,SO (post-ILC),9.0,1.0,0.191,0.4671,0.6404
+lae_L42.0,SO (post-ILC),9.5,1.0,0.147,0.3743,0.5116
+lae_L42.0,SO (post-ILC),10.0,1.0,0.111,0.4684,0.5769
+lae_L42.0,SO (post-ILC),10.5,1.0,0.084,0.4221,0.5383
+lae_L42.0,SO (post-ILC),11.0,1.0,0.063,0.3455,0.4873
+lae_L42.0,SO (post-ILC),11.5,1.0,0.046,0.3346,0.511
+lae_L42.0,SO (post-ILC),12.0,1.0,0.034,0.3827,0.535
+lae_L42.0,SO (post-ILC),12.5,1.0,0.025,0.4043,0.5485
+lae_L42.0,SO (post-ILC),13.0,1.0,0.017,0.1255,0.3242
+lae_L42.0,SO (white noise),6.5,1.0,0.724,0.3414,0.5688
+lae_L42.0,SO (white noise),7.0,1.0,0.581,0.6779,0.8267
+lae_L42.0,SO (white noise),7.5,1.0,0.445,0.4673,0.7426
+lae_L42.0,SO (white noise),8.0,1.0,0.334,0.703,0.8926
+lae_L42.0,SO (white noise),8.5,1.0,0.252,0.7526,0.9723
+lae_L42.0,SO (white noise),9.0,1.0,0.191,0.6086,0.8362
+lae_L42.0,SO (white noise),9.5,1.0,0.147,0.4931,0.6726
+lae_L42.0,SO (white noise),10.0,1.0,0.111,0.6146,0.7601
+lae_L42.0,SO (white noise),10.5,1.0,0.084,0.5541,0.706
+lae_L42.0,SO (white noise),11.0,1.0,0.063,0.4411,0.6297
+lae_L42.0,SO (white noise),11.5,1.0,0.046,0.4364,0.6649
+lae_L42.0,SO (white noise),12.0,1.0,0.034,0.5194,0.7059
+lae_L42.0,SO (white noise),12.5,1.0,0.025,0.534,0.716
+lae_L42.0,SO (white noise),13.0,1.0,0.017,0.1644,0.4333
+lae_L42.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.6341,0.8579
+lae_L42.0,CMB-S4 (post-ILC),7.0,1.0,0.581,1.0085,1.25
+lae_L42.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.6725,1.0621
+lae_L42.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.1228,1.4047
+lae_L42.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.2196,1.5111
+lae_L42.0,CMB-S4 (post-ILC),9.0,1.0,0.191,0.8033,1.1494
+lae_L42.0,CMB-S4 (post-ILC),9.5,1.0,0.147,0.6126,0.9386
+lae_L42.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.9039,1.1567
+lae_L42.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7258,0.965
+lae_L42.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6227,0.9373
+lae_L42.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.6563,1.0658
+lae_L42.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.6392,0.9316
+lae_L42.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.7127,1.0167
+lae_L42.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.3226,0.6934
+lae_L42.0,CMB-S4 (white noise),6.5,1.0,0.724,3.4015,4.3532
+lae_L42.0,CMB-S4 (white noise),7.0,1.0,0.581,4.1575,5.6215
+lae_L42.0,CMB-S4 (white noise),7.5,1.0,0.445,2.6943,4.5468
+lae_L42.0,CMB-S4 (white noise),8.0,1.0,0.334,5.2304,6.5872
+lae_L42.0,CMB-S4 (white noise),8.5,1.0,0.252,5.7133,6.9217
+lae_L42.0,CMB-S4 (white noise),9.0,1.0,0.191,2.3424,4.2254
+lae_L42.0,CMB-S4 (white noise),9.5,1.0,0.147,1.9907,3.9339
+lae_L42.0,CMB-S4 (white noise),10.0,1.0,0.111,4.2105,5.3897
+lae_L42.0,CMB-S4 (white noise),10.5,1.0,0.084,2.5282,3.5331
+lae_L42.0,CMB-S4 (white noise),11.0,1.0,0.063,2.6596,4.1604
+lae_L42.0,CMB-S4 (white noise),11.5,1.0,0.046,2.8253,4.8811
+lae_L42.0,CMB-S4 (white noise),12.0,1.0,0.034,2.4854,3.5853
+lae_L42.0,CMB-S4 (white noise),12.5,1.0,0.025,3.0299,4.3579
+lae_L42.0,CMB-S4 (white noise),13.0,1.0,0.017,2.6252,3.8591
+lae_L42.0,CMB-HD (post-ILC),6.5,1.0,0.724,3.2174,4.1558
+lae_L42.0,CMB-HD (post-ILC),7.0,1.0,0.581,3.7732,5.3711
+lae_L42.0,CMB-HD (post-ILC),7.5,1.0,0.445,3.0504,4.6473
+lae_L42.0,CMB-HD (post-ILC),8.0,1.0,0.334,5.3616,6.6755
+lae_L42.0,CMB-HD (post-ILC),8.5,1.0,0.252,5.7291,6.8966
+lae_L42.0,CMB-HD (post-ILC),9.0,1.0,0.191,2.6958,4.273
+lae_L42.0,CMB-HD (post-ILC),9.5,1.0,0.147,2.1559,3.8699
+lae_L42.0,CMB-HD (post-ILC),10.0,1.0,0.111,4.1819,5.2618
+lae_L42.0,CMB-HD (post-ILC),10.5,1.0,0.084,2.5945,3.6199
+lae_L42.0,CMB-HD (post-ILC),11.0,1.0,0.063,2.4997,3.9605
+lae_L42.0,CMB-HD (post-ILC),11.5,1.0,0.046,2.5248,4.5776
+lae_L42.0,CMB-HD (post-ILC),12.0,1.0,0.034,2.6552,3.8104
+lae_L42.0,CMB-HD (post-ILC),12.5,1.0,0.025,3.2208,4.506
+lae_L42.0,CMB-HD (post-ILC),13.0,1.0,0.017,2.2694,3.6588
+lae_L42.0,CMB-HD (white noise),6.5,1.0,0.724,7.8142,10.2053
+lae_L42.0,CMB-HD (white noise),7.0,1.0,0.581,9.3451,12.5079
+lae_L42.0,CMB-HD (white noise),7.5,1.0,0.445,9.409,12.2963
+lae_L42.0,CMB-HD (white noise),8.0,1.0,0.334,13.4098,16.4493
+lae_L42.0,CMB-HD (white noise),8.5,1.0,0.252,13.425,16.2821
+lae_L42.0,CMB-HD (white noise),9.0,1.0,0.191,6.9967,10.6347
+lae_L42.0,CMB-HD (white noise),9.5,1.0,0.147,5.732,9.1719
+lae_L42.0,CMB-HD (white noise),10.0,1.0,0.111,9.9847,12.5161
+lae_L42.0,CMB-HD (white noise),10.5,1.0,0.084,5.9558,8.7187
+lae_L42.0,CMB-HD (white noise),11.0,1.0,0.063,5.9649,9.2957
+lae_L42.0,CMB-HD (white noise),11.5,1.0,0.046,6.1568,10.8555
+lae_L42.0,CMB-HD (white noise),12.0,1.0,0.034,7.7806,11.0641
+lae_L42.0,CMB-HD (white noise),12.5,1.0,0.025,8.4195,11.6517
+lae_L42.0,CMB-HD (white noise),13.0,1.0,0.017,3.4641,8.7219
+lae_L42.5,ACT DR6 (white noise),6.5,1.0,0.724,0.4316,0.6611
+lae_L42.5,ACT DR6 (white noise),7.0,1.0,0.581,0.6881,0.9079
+lae_L42.5,ACT DR6 (white noise),7.5,1.0,0.445,0.4712,0.78
+lae_L42.5,ACT DR6 (white noise),8.0,1.0,0.334,0.7846,0.9948
+lae_L42.5,ACT DR6 (white noise),8.5,1.0,0.252,0.8028,1.0339
+lae_L42.5,ACT DR6 (white noise),9.0,1.0,0.191,0.6263,0.8689
+lae_L42.5,ACT DR6 (white noise),9.5,1.0,0.147,0.5225,0.72
+lae_L42.5,ACT DR6 (white noise),10.0,1.0,0.111,0.6519,0.81
+lae_L42.5,ACT DR6 (white noise),10.5,1.0,0.084,0.5846,0.7465
+lae_L42.5,ACT DR6 (white noise),11.0,1.0,0.063,0.4641,0.6692
+lae_L42.5,ACT DR6 (white noise),11.5,1.0,0.046,0.4659,0.7133
+lae_L42.5,ACT DR6 (white noise),12.0,1.0,0.034,0.5512,0.746
+lae_L42.5,ACT DR6 (white noise),12.5,1.0,0.025,0.5669,0.7583
+lae_L42.5,ACT DR6 (white noise),13.0,1.0,0.017,0.1795,0.465
+lae_L42.5,SPT-3G Main (white noise),6.5,1.0,0.724,3.2845,4.6263
+lae_L42.5,SPT-3G Main (white noise),7.0,1.0,0.581,5.2433,6.8017
+lae_L42.5,SPT-3G Main (white noise),7.5,1.0,0.445,3.812,5.8658
+lae_L42.5,SPT-3G Main (white noise),8.0,1.0,0.334,6.2689,7.8885
+lae_L42.5,SPT-3G Main (white noise),8.5,1.0,0.252,6.7628,8.1402
+lae_L42.5,SPT-3G Main (white noise),9.0,1.0,0.191,2.8447,4.8166
+lae_L42.5,SPT-3G Main (white noise),9.5,1.0,0.147,2.3817,4.4495
+lae_L42.5,SPT-3G Main (white noise),10.0,1.0,0.111,4.8646,6.1533
+lae_L42.5,SPT-3G Main (white noise),10.5,1.0,0.084,2.9049,4.0849
+lae_L42.5,SPT-3G Main (white noise),11.0,1.0,0.063,3.0202,4.7208
+lae_L42.5,SPT-3G Main (white noise),11.5,1.0,0.046,3.041,5.4185
+lae_L42.5,SPT-3G Main (white noise),12.0,1.0,0.034,2.9531,4.3193
+lae_L42.5,SPT-3G Main (white noise),12.5,1.0,0.025,3.6838,5.1939
+lae_L42.5,SPT-3G Main (white noise),13.0,1.0,0.017,2.9564,4.4564
+lae_L42.5,SO (post-ILC),6.5,1.0,0.724,0.3204,0.4772
+lae_L42.5,SO (post-ILC),7.0,1.0,0.581,0.5107,0.6715
+lae_L42.5,SO (post-ILC),7.5,1.0,0.445,0.3417,0.5709
+lae_L42.5,SO (post-ILC),8.0,1.0,0.334,0.5645,0.7179
+lae_L42.5,SO (post-ILC),8.5,1.0,0.252,0.5826,0.7532
+lae_L42.5,SO (post-ILC),9.0,1.0,0.191,0.4566,0.6294
+lae_L42.5,SO (post-ILC),9.5,1.0,0.147,0.3787,0.517
+lae_L42.5,SO (post-ILC),10.0,1.0,0.111,0.4678,0.5765
+lae_L42.5,SO (post-ILC),10.5,1.0,0.084,0.4221,0.5383
+lae_L42.5,SO (post-ILC),11.0,1.0,0.063,0.3455,0.4873
+lae_L42.5,SO (post-ILC),11.5,1.0,0.046,0.3346,0.511
+lae_L42.5,SO (post-ILC),12.0,1.0,0.034,0.3827,0.535
+lae_L42.5,SO (post-ILC),12.5,1.0,0.025,0.4043,0.5485
+lae_L42.5,SO (post-ILC),13.0,1.0,0.017,0.1255,0.3242
+lae_L42.5,SO (white noise),6.5,1.0,0.724,0.4076,0.6255
+lae_L42.5,SO (white noise),7.0,1.0,0.581,0.6509,0.8558
+lae_L42.5,SO (white noise),7.5,1.0,0.445,0.4488,0.738
+lae_L42.5,SO (white noise),8.0,1.0,0.334,0.7353,0.9334
+lae_L42.5,SO (white noise),8.5,1.0,0.252,0.7527,0.9728
+lae_L42.5,SO (white noise),9.0,1.0,0.191,0.5966,0.8233
+lae_L42.5,SO (white noise),9.5,1.0,0.147,0.4966,0.6805
+lae_L42.5,SO (white noise),10.0,1.0,0.111,0.6138,0.7595
+lae_L42.5,SO (white noise),10.5,1.0,0.084,0.5541,0.706
+lae_L42.5,SO (white noise),11.0,1.0,0.063,0.4411,0.6297
+lae_L42.5,SO (white noise),11.5,1.0,0.046,0.4364,0.6649
+lae_L42.5,SO (white noise),12.0,1.0,0.034,0.5194,0.7059
+lae_L42.5,SO (white noise),12.5,1.0,0.025,0.534,0.716
+lae_L42.5,SO (white noise),13.0,1.0,0.017,0.1644,0.4333
+lae_L42.5,CMB-S4 (post-ILC),6.5,1.0,0.724,0.5776,0.8692
+lae_L42.5,CMB-S4 (post-ILC),7.0,1.0,0.581,0.9768,1.3083
+lae_L42.5,CMB-S4 (post-ILC),7.5,1.0,0.445,0.6451,1.0871
+lae_L42.5,CMB-S4 (post-ILC),8.0,1.0,0.334,1.1604,1.464
+lae_L42.5,CMB-S4 (post-ILC),8.5,1.0,0.252,1.2306,1.5162
+lae_L42.5,CMB-S4 (post-ILC),9.0,1.0,0.191,0.7796,1.1279
+lae_L42.5,CMB-S4 (post-ILC),9.5,1.0,0.147,0.6051,0.9389
+lae_L42.5,CMB-S4 (post-ILC),10.0,1.0,0.111,0.9017,1.1554
+lae_L42.5,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7258,0.965
+lae_L42.5,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6227,0.9373
+lae_L42.5,CMB-S4 (post-ILC),11.5,1.0,0.046,0.6563,1.0658
+lae_L42.5,CMB-S4 (post-ILC),12.0,1.0,0.034,0.6392,0.9316
+lae_L42.5,CMB-S4 (post-ILC),12.5,1.0,0.025,0.7127,1.0167
+lae_L42.5,CMB-S4 (post-ILC),13.0,1.0,0.017,0.3226,0.6934
+lae_L42.5,CMB-S4 (white noise),6.5,1.0,0.724,2.8899,4.0202
+lae_L42.5,CMB-S4 (white noise),7.0,1.0,0.581,4.6047,5.9489
+lae_L42.5,CMB-S4 (white noise),7.5,1.0,0.445,2.9546,4.9529
+lae_L42.5,CMB-S4 (white noise),8.0,1.0,0.334,5.3777,6.7648
+lae_L42.5,CMB-S4 (white noise),8.5,1.0,0.252,5.7609,6.9709
+lae_L42.5,CMB-S4 (white noise),9.0,1.0,0.191,2.2386,4.1459
+lae_L42.5,CMB-S4 (white noise),9.5,1.0,0.147,1.8598,3.8812
+lae_L42.5,CMB-S4 (white noise),10.0,1.0,0.111,4.199,5.3811
+lae_L42.5,CMB-S4 (white noise),10.5,1.0,0.084,2.5282,3.5331
+lae_L42.5,CMB-S4 (white noise),11.0,1.0,0.063,2.6596,4.1604
+lae_L42.5,CMB-S4 (white noise),11.5,1.0,0.046,2.8253,4.8811
+lae_L42.5,CMB-S4 (white noise),12.0,1.0,0.034,2.4854,3.5853
+lae_L42.5,CMB-S4 (white noise),12.5,1.0,0.025,3.0299,4.3579
+lae_L42.5,CMB-S4 (white noise),13.0,1.0,0.017,2.6252,3.8591
+lae_L42.5,CMB-HD (post-ILC),6.5,1.0,0.724,2.7656,3.9459
+lae_L42.5,CMB-HD (post-ILC),7.0,1.0,0.581,4.3513,5.7182
+lae_L42.5,CMB-HD (post-ILC),7.5,1.0,0.445,3.3838,5.0429
+lae_L42.5,CMB-HD (post-ILC),8.0,1.0,0.334,5.5559,6.8591
+lae_L42.5,CMB-HD (post-ILC),8.5,1.0,0.252,5.8045,6.9689
+lae_L42.5,CMB-HD (post-ILC),9.0,1.0,0.191,2.6367,4.2267
+lae_L42.5,CMB-HD (post-ILC),9.5,1.0,0.147,2.0526,3.8156
+lae_L42.5,CMB-HD (post-ILC),10.0,1.0,0.111,4.1713,5.2535
+lae_L42.5,CMB-HD (post-ILC),10.5,1.0,0.084,2.5945,3.6199
+lae_L42.5,CMB-HD (post-ILC),11.0,1.0,0.063,2.4997,3.9605
+lae_L42.5,CMB-HD (post-ILC),11.5,1.0,0.046,2.5248,4.5776
+lae_L42.5,CMB-HD (post-ILC),12.0,1.0,0.034,2.6552,3.8104
+lae_L42.5,CMB-HD (post-ILC),12.5,1.0,0.025,3.2208,4.506
+lae_L42.5,CMB-HD (post-ILC),13.0,1.0,0.017,2.2694,3.6588
+lae_L42.5,CMB-HD (white noise),6.5,1.0,0.724,8.2064,10.5873
+lae_L42.5,CMB-HD (white noise),7.0,1.0,0.581,10.5435,13.421
+lae_L42.5,CMB-HD (white noise),7.5,1.0,0.445,10.2718,13.2875
+lae_L42.5,CMB-HD (white noise),8.0,1.0,0.334,14.0284,16.9636
+lae_L42.5,CMB-HD (white noise),8.5,1.0,0.252,13.7509,16.5147
+lae_L42.5,CMB-HD (white noise),9.0,1.0,0.191,7.0018,10.6466
+lae_L42.5,CMB-HD (white noise),9.5,1.0,0.147,5.5297,9.0627
+lae_L42.5,CMB-HD (white noise),10.0,1.0,0.111,9.9603,12.4985
+lae_L42.5,CMB-HD (white noise),10.5,1.0,0.084,5.9558,8.7187
+lae_L42.5,CMB-HD (white noise),11.0,1.0,0.063,5.9649,9.2957
+lae_L42.5,CMB-HD (white noise),11.5,1.0,0.046,6.1568,10.8555
+lae_L42.5,CMB-HD (white noise),12.0,1.0,0.034,7.7806,11.0641
+lae_L42.5,CMB-HD (white noise),12.5,1.0,0.025,8.4195,11.6517
+lae_L42.5,CMB-HD (white noise),13.0,1.0,0.017,3.4641,8.7219
+lae_L43.0,ACT DR6 (white noise),6.5,1.0,0.724,0.4409,0.7297
+lae_L43.0,ACT DR6 (white noise),7.0,1.0,0.581,0.6793,0.9325
+lae_L43.0,ACT DR6 (white noise),7.5,1.0,0.445,0.4648,0.7849
+lae_L43.0,ACT DR6 (white noise),8.0,1.0,0.334,0.788,0.9995
+lae_L43.0,ACT DR6 (white noise),8.5,1.0,0.252,0.7867,1.0276
+lae_L43.0,ACT DR6 (white noise),9.0,1.0,0.191,0.6263,0.8689
+lae_L43.0,ACT DR6 (white noise),9.5,1.0,0.147,0.5225,0.72
+lae_L43.0,ACT DR6 (white noise),10.0,1.0,0.111,0.6519,0.81
+lae_L43.0,ACT DR6 (white noise),10.5,1.0,0.084,0.5846,0.7465
+lae_L43.0,ACT DR6 (white noise),11.0,1.0,0.063,0.4641,0.6692
+lae_L43.0,ACT DR6 (white noise),11.5,1.0,0.046,0.4659,0.7133
+lae_L43.0,ACT DR6 (white noise),12.0,1.0,0.034,0.551,0.7444
+lae_L43.0,ACT DR6 (white noise),12.5,1.0,0.025,0.5665,0.7576
+lae_L43.0,ACT DR6 (white noise),13.0,1.0,0.017,0.1799,0.4645
+lae_L43.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.4262,5.3243
+lae_L43.0,SPT-3G Main (white noise),7.0,1.0,0.581,5.7216,7.2115
+lae_L43.0,SPT-3G Main (white noise),7.5,1.0,0.445,4.2193,6.1355
+lae_L43.0,SPT-3G Main (white noise),8.0,1.0,0.334,6.4011,8.0109
+lae_L43.0,SPT-3G Main (white noise),8.5,1.0,0.252,6.8205,8.2037
+lae_L43.0,SPT-3G Main (white noise),9.0,1.0,0.191,2.8447,4.8166
+lae_L43.0,SPT-3G Main (white noise),9.5,1.0,0.147,2.3817,4.4495
+lae_L43.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.8646,6.1533
+lae_L43.0,SPT-3G Main (white noise),10.5,1.0,0.084,2.9049,4.0849
+lae_L43.0,SPT-3G Main (white noise),11.0,1.0,0.063,3.0202,4.7208
+lae_L43.0,SPT-3G Main (white noise),11.5,1.0,0.046,3.041,5.4185
+lae_L43.0,SPT-3G Main (white noise),12.0,1.0,0.034,2.9436,4.3088
+lae_L43.0,SPT-3G Main (white noise),12.5,1.0,0.025,3.6748,5.1818
+lae_L43.0,SPT-3G Main (white noise),13.0,1.0,0.017,2.9502,4.4498
+lae_L43.0,SO (post-ILC),6.5,1.0,0.724,0.3068,0.5209
+lae_L43.0,SO (post-ILC),7.0,1.0,0.581,0.5047,0.6888
+lae_L43.0,SO (post-ILC),7.5,1.0,0.445,0.3377,0.5748
+lae_L43.0,SO (post-ILC),8.0,1.0,0.334,0.5668,0.722
+lae_L43.0,SO (post-ILC),8.5,1.0,0.252,0.5739,0.7492
+lae_L43.0,SO (post-ILC),9.0,1.0,0.191,0.4566,0.6294
+lae_L43.0,SO (post-ILC),9.5,1.0,0.147,0.3787,0.517
+lae_L43.0,SO (post-ILC),10.0,1.0,0.111,0.4678,0.5765
+lae_L43.0,SO (post-ILC),10.5,1.0,0.084,0.4221,0.5383
+lae_L43.0,SO (post-ILC),11.0,1.0,0.063,0.3455,0.4873
+lae_L43.0,SO (post-ILC),11.5,1.0,0.046,0.3346,0.511
+lae_L43.0,SO (post-ILC),12.0,1.0,0.034,0.3823,0.5338
+lae_L43.0,SO (post-ILC),12.5,1.0,0.025,0.4036,0.5478
+lae_L43.0,SO (post-ILC),13.0,1.0,0.017,0.1258,0.3239
+lae_L43.0,SO (white noise),6.5,1.0,0.724,0.4159,0.6881
+lae_L43.0,SO (white noise),7.0,1.0,0.581,0.6424,0.8781
+lae_L43.0,SO (white noise),7.5,1.0,0.445,0.4427,0.7421
+lae_L43.0,SO (white noise),8.0,1.0,0.334,0.7383,0.9376
+lae_L43.0,SO (white noise),8.5,1.0,0.252,0.737,0.9668
+lae_L43.0,SO (white noise),9.0,1.0,0.191,0.5966,0.8233
+lae_L43.0,SO (white noise),9.5,1.0,0.147,0.4966,0.6805
+lae_L43.0,SO (white noise),10.0,1.0,0.111,0.6138,0.7595
+lae_L43.0,SO (white noise),10.5,1.0,0.084,0.5541,0.706
+lae_L43.0,SO (white noise),11.0,1.0,0.063,0.4411,0.6297
+lae_L43.0,SO (white noise),11.5,1.0,0.046,0.4364,0.6649
+lae_L43.0,SO (white noise),12.0,1.0,0.034,0.5191,0.7044
+lae_L43.0,SO (white noise),12.5,1.0,0.025,0.5333,0.7152
+lae_L43.0,SO (white noise),13.0,1.0,0.017,0.1648,0.4329
+lae_L43.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.582,0.9898
+lae_L43.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.9984,1.3597
+lae_L43.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.656,1.111
+lae_L43.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.1779,1.4775
+lae_L43.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.2203,1.5138
+lae_L43.0,CMB-S4 (post-ILC),9.0,1.0,0.191,0.7796,1.1279
+lae_L43.0,CMB-S4 (post-ILC),9.5,1.0,0.147,0.6051,0.9389
+lae_L43.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.9017,1.1554
+lae_L43.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7258,0.965
+lae_L43.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6227,0.9373
+lae_L43.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.6563,1.0658
+lae_L43.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.6388,0.9299
+lae_L43.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.7133,1.0158
+lae_L43.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.3224,0.6925
+lae_L43.0,CMB-S4 (white noise),6.5,1.0,0.724,2.7906,4.5729
+lae_L43.0,CMB-S4 (white noise),7.0,1.0,0.581,4.9977,6.291
+lae_L43.0,CMB-S4 (white noise),7.5,1.0,0.445,3.328,5.1729
+lae_L43.0,CMB-S4 (white noise),8.0,1.0,0.334,5.4932,6.8708
+lae_L43.0,CMB-S4 (white noise),8.5,1.0,0.252,5.8159,7.0195
+lae_L43.0,CMB-S4 (white noise),9.0,1.0,0.191,2.2386,4.1459
+lae_L43.0,CMB-S4 (white noise),9.5,1.0,0.147,1.8598,3.8812
+lae_L43.0,CMB-S4 (white noise),10.0,1.0,0.111,4.199,5.3811
+lae_L43.0,CMB-S4 (white noise),10.5,1.0,0.084,2.5282,3.5331
+lae_L43.0,CMB-S4 (white noise),11.0,1.0,0.063,2.6596,4.1604
+lae_L43.0,CMB-S4 (white noise),11.5,1.0,0.046,2.8253,4.8811
+lae_L43.0,CMB-S4 (white noise),12.0,1.0,0.034,2.4785,3.5776
+lae_L43.0,CMB-S4 (white noise),12.5,1.0,0.025,3.0236,4.3493
+lae_L43.0,CMB-S4 (white noise),13.0,1.0,0.017,2.6174,3.8529
+lae_L43.0,CMB-HD (post-ILC),6.5,1.0,0.724,3.105,4.5762
+lae_L43.0,CMB-HD (post-ILC),7.0,1.0,0.581,4.7528,6.0807
+lae_L43.0,CMB-HD (post-ILC),7.5,1.0,0.445,3.6936,5.2691
+lae_L43.0,CMB-HD (post-ILC),8.0,1.0,0.334,5.6355,6.9508
+lae_L43.0,CMB-HD (post-ILC),8.5,1.0,0.252,5.8535,7.0157
+lae_L43.0,CMB-HD (post-ILC),9.0,1.0,0.191,2.6367,4.2267
+lae_L43.0,CMB-HD (post-ILC),9.5,1.0,0.147,2.0526,3.8156
+lae_L43.0,CMB-HD (post-ILC),10.0,1.0,0.111,4.1713,5.2535
+lae_L43.0,CMB-HD (post-ILC),10.5,1.0,0.084,2.5945,3.6199
+lae_L43.0,CMB-HD (post-ILC),11.0,1.0,0.063,2.4997,3.9605
+lae_L43.0,CMB-HD (post-ILC),11.5,1.0,0.046,2.5248,4.5776
+lae_L43.0,CMB-HD (post-ILC),12.0,1.0,0.034,2.6469,3.8016
+lae_L43.0,CMB-HD (post-ILC),12.5,1.0,0.025,3.2153,4.4968
+lae_L43.0,CMB-HD (post-ILC),13.0,1.0,0.017,2.2656,3.6551
+lae_L43.0,CMB-HD (white noise),6.5,1.0,0.724,9.2706,12.032
+lae_L43.0,CMB-HD (white noise),7.0,1.0,0.581,11.4659,14.287
+lae_L43.0,CMB-HD (white noise),7.5,1.0,0.445,10.8519,13.7978
+lae_L43.0,CMB-HD (white noise),8.0,1.0,0.334,14.1763,17.1185
+lae_L43.0,CMB-HD (white noise),8.5,1.0,0.252,13.8562,16.6185
+lae_L43.0,CMB-HD (white noise),9.0,1.0,0.191,7.0018,10.6466
+lae_L43.0,CMB-HD (white noise),9.5,1.0,0.147,5.5297,9.0627
+lae_L43.0,CMB-HD (white noise),10.0,1.0,0.111,9.9603,12.4985
+lae_L43.0,CMB-HD (white noise),10.5,1.0,0.084,5.9558,8.7187
+lae_L43.0,CMB-HD (white noise),11.0,1.0,0.063,5.9649,9.2957
+lae_L43.0,CMB-HD (white noise),11.5,1.0,0.046,6.1568,10.8555
+lae_L43.0,CMB-HD (white noise),12.0,1.0,0.034,7.7611,11.0454
+lae_L43.0,CMB-HD (white noise),12.5,1.0,0.025,8.4038,11.6306
+lae_L43.0,CMB-HD (white noise),13.0,1.0,0.017,3.468,8.7256
+lbg_MUV-17.0,ACT DR6 (white noise),6.5,1.0,0.724,0.4625,0.6477
+lbg_MUV-17.0,ACT DR6 (white noise),7.0,1.0,0.581,0.5295,0.7972
+lbg_MUV-17.0,ACT DR6 (white noise),7.5,1.0,0.445,0.6024,0.8882
+lbg_MUV-17.0,ACT DR6 (white noise),8.0,1.0,0.334,1.1212,1.2852
+lbg_MUV-17.0,ACT DR6 (white noise),8.5,1.0,0.252,1.1404,1.3129
+lbg_MUV-17.0,ACT DR6 (white noise),9.0,1.0,0.191,1.0827,1.2895
+lbg_MUV-17.0,ACT DR6 (white noise),9.5,1.0,0.147,0.9087,1.1663
+lbg_MUV-17.0,ACT DR6 (white noise),10.0,1.0,0.111,0.6342,0.892
+lbg_MUV-17.0,ACT DR6 (white noise),10.5,1.0,0.084,0.5227,0.7283
+lbg_MUV-17.0,ACT DR6 (white noise),11.0,1.0,0.063,0.5329,0.807
+lbg_MUV-17.0,ACT DR6 (white noise),11.5,1.0,0.046,0.5131,0.6874
+lbg_MUV-17.0,ACT DR6 (white noise),12.0,1.0,0.034,0.5695,0.7394
+lbg_MUV-17.0,ACT DR6 (white noise),12.5,1.0,0.025,0.4183,0.649
+lbg_MUV-17.0,ACT DR6 (white noise),13.0,1.0,0.017,0.4377,0.7107
+lbg_MUV-17.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.306,4.5755
+lbg_MUV-17.0,SPT-3G Main (white noise),7.0,1.0,0.581,4.6574,6.5269
+lbg_MUV-17.0,SPT-3G Main (white noise),7.5,1.0,0.445,4.7704,6.9451
+lbg_MUV-17.0,SPT-3G Main (white noise),8.0,1.0,0.334,7.8547,9.1683
+lbg_MUV-17.0,SPT-3G Main (white noise),8.5,1.0,0.252,8.5357,9.7839
+lbg_MUV-17.0,SPT-3G Main (white noise),9.0,1.0,0.191,8.4108,9.8911
+lbg_MUV-17.0,SPT-3G Main (white noise),9.5,1.0,0.147,7.6776,9.2999
+lbg_MUV-17.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.8058,6.1843
+lbg_MUV-17.0,SPT-3G Main (white noise),10.5,1.0,0.084,3.9702,5.1114
+lbg_MUV-17.0,SPT-3G Main (white noise),11.0,1.0,0.063,2.4879,4.608
+lbg_MUV-17.0,SPT-3G Main (white noise),11.5,1.0,0.046,4.144,5.2573
+lbg_MUV-17.0,SPT-3G Main (white noise),12.0,1.0,0.034,5.2462,6.5419
+lbg_MUV-17.0,SPT-3G Main (white noise),12.5,1.0,0.025,2.6917,4.6247
+lbg_MUV-17.0,SPT-3G Main (white noise),13.0,1.0,0.017,3.5826,5.2916
+lbg_MUV-17.0,SO (post-ILC),6.5,1.0,0.724,0.3322,0.4716
+lbg_MUV-17.0,SO (post-ILC),7.0,1.0,0.581,0.381,0.5691
+lbg_MUV-17.0,SO (post-ILC),7.5,1.0,0.445,0.4272,0.6344
+lbg_MUV-17.0,SO (post-ILC),8.0,1.0,0.334,0.8155,0.9314
+lbg_MUV-17.0,SO (post-ILC),8.5,1.0,0.252,0.838,0.9562
+lbg_MUV-17.0,SO (post-ILC),9.0,1.0,0.191,0.7757,0.9221
+lbg_MUV-17.0,SO (post-ILC),9.5,1.0,0.147,0.6678,0.8414
+lbg_MUV-17.0,SO (post-ILC),10.0,1.0,0.111,0.4665,0.6447
+lbg_MUV-17.0,SO (post-ILC),10.5,1.0,0.084,0.3699,0.5138
+lbg_MUV-17.0,SO (post-ILC),11.0,1.0,0.063,0.3767,0.5737
+lbg_MUV-17.0,SO (post-ILC),11.5,1.0,0.046,0.3689,0.4888
+lbg_MUV-17.0,SO (post-ILC),12.0,1.0,0.034,0.4077,0.5287
+lbg_MUV-17.0,SO (post-ILC),12.5,1.0,0.025,0.289,0.4594
+lbg_MUV-17.0,SO (post-ILC),13.0,1.0,0.017,0.3031,0.494
+lbg_MUV-17.0,SO (white noise),6.5,1.0,0.724,0.4364,0.6131
+lbg_MUV-17.0,SO (white noise),7.0,1.0,0.581,0.4956,0.7458
+lbg_MUV-17.0,SO (white noise),7.5,1.0,0.445,0.5661,0.8329
+lbg_MUV-17.0,SO (white noise),8.0,1.0,0.334,1.0527,1.2063
+lbg_MUV-17.0,SO (white noise),8.5,1.0,0.252,1.0684,1.2302
+lbg_MUV-17.0,SO (white noise),9.0,1.0,0.191,1.0091,1.2033
+lbg_MUV-17.0,SO (white noise),9.5,1.0,0.147,0.8524,1.0914
+lbg_MUV-17.0,SO (white noise),10.0,1.0,0.111,0.5973,0.8405
+lbg_MUV-17.0,SO (white noise),10.5,1.0,0.084,0.4883,0.6802
+lbg_MUV-17.0,SO (white noise),11.0,1.0,0.063,0.5055,0.7606
+lbg_MUV-17.0,SO (white noise),11.5,1.0,0.046,0.4843,0.6467
+lbg_MUV-17.0,SO (white noise),12.0,1.0,0.034,0.5331,0.6916
+lbg_MUV-17.0,SO (white noise),12.5,1.0,0.025,0.3892,0.6074
+lbg_MUV-17.0,SO (white noise),13.0,1.0,0.017,0.408,0.6626
+lbg_MUV-17.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.677,0.8819
+lbg_MUV-17.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.8062,1.1843
+lbg_MUV-17.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.8637,1.3002
+lbg_MUV-17.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.6372,1.8746
+lbg_MUV-17.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.73,1.963
+lbg_MUV-17.0,CMB-S4 (post-ILC),9.0,1.0,0.191,1.6873,1.9705
+lbg_MUV-17.0,CMB-S4 (post-ILC),9.5,1.0,0.147,1.4142,1.7741
+lbg_MUV-17.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.9294,1.2578
+lbg_MUV-17.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7795,1.0659
+lbg_MUV-17.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6179,1.0533
+lbg_MUV-17.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.7604,0.9687
+lbg_MUV-17.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.872,1.1303
+lbg_MUV-17.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.5923,0.9342
+lbg_MUV-17.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.6135,1.0367
+lbg_MUV-17.0,CMB-S4 (white noise),6.5,1.0,0.724,2.9283,3.9746
+lbg_MUV-17.0,CMB-S4 (white noise),7.0,1.0,0.581,4.0363,5.6688
+lbg_MUV-17.0,CMB-S4 (white noise),7.5,1.0,0.445,4.022,5.9894
+lbg_MUV-17.0,CMB-S4 (white noise),8.0,1.0,0.334,6.8206,7.9477
+lbg_MUV-17.0,CMB-S4 (white noise),8.5,1.0,0.252,7.4334,8.4847
+lbg_MUV-17.0,CMB-S4 (white noise),9.0,1.0,0.191,7.1968,8.4965
+lbg_MUV-17.0,CMB-S4 (white noise),9.5,1.0,0.147,6.4116,7.8895
+lbg_MUV-17.0,CMB-S4 (white noise),10.0,1.0,0.111,4.0288,5.244
+lbg_MUV-17.0,CMB-S4 (white noise),10.5,1.0,0.084,3.3627,4.4462
+lbg_MUV-17.0,CMB-S4 (white noise),11.0,1.0,0.063,2.0991,4.047
+lbg_MUV-17.0,CMB-S4 (white noise),11.5,1.0,0.046,3.6702,4.5449
+lbg_MUV-17.0,CMB-S4 (white noise),12.0,1.0,0.034,4.5898,5.6873
+lbg_MUV-17.0,CMB-S4 (white noise),12.5,1.0,0.025,2.3732,4.1014
+lbg_MUV-17.0,CMB-S4 (white noise),13.0,1.0,0.017,3.1186,4.5949
+lbg_MUV-17.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.9175,3.9465
+lbg_MUV-17.0,CMB-HD (post-ILC),7.0,1.0,0.581,3.8867,5.4533
+lbg_MUV-17.0,CMB-HD (post-ILC),7.5,1.0,0.445,4.1551,5.9718
+lbg_MUV-17.0,CMB-HD (post-ILC),8.0,1.0,0.334,7.0083,8.0932
+lbg_MUV-17.0,CMB-HD (post-ILC),8.5,1.0,0.252,7.6655,8.7466
+lbg_MUV-17.0,CMB-HD (post-ILC),9.0,1.0,0.191,7.86,9.0711
+lbg_MUV-17.0,CMB-HD (post-ILC),9.5,1.0,0.147,7.3526,8.6316
+lbg_MUV-17.0,CMB-HD (post-ILC),10.0,1.0,0.111,4.6605,5.8026
+lbg_MUV-17.0,CMB-HD (post-ILC),10.5,1.0,0.084,3.606,4.5458
+lbg_MUV-17.0,CMB-HD (post-ILC),11.0,1.0,0.063,2.1552,3.9365
+lbg_MUV-17.0,CMB-HD (post-ILC),11.5,1.0,0.046,3.4627,4.4171
+lbg_MUV-17.0,CMB-HD (post-ILC),12.0,1.0,0.034,4.2444,5.395
+lbg_MUV-17.0,CMB-HD (post-ILC),12.5,1.0,0.025,2.1715,3.855
+lbg_MUV-17.0,CMB-HD (post-ILC),13.0,1.0,0.017,3.0963,4.5681
+lbg_MUV-17.0,CMB-HD (white noise),6.5,1.0,0.724,6.6929,10.0956
+lbg_MUV-17.0,CMB-HD (white noise),7.0,1.0,0.581,9.1585,12.7549
+lbg_MUV-17.0,CMB-HD (white noise),7.5,1.0,0.445,10.3729,14.3468
+lbg_MUV-17.0,CMB-HD (white noise),8.0,1.0,0.334,17.2443,19.4168
+lbg_MUV-17.0,CMB-HD (white noise),8.5,1.0,0.252,18.5738,21.3929
+lbg_MUV-17.0,CMB-HD (white noise),9.0,1.0,0.191,20.317,23.0075
+lbg_MUV-17.0,CMB-HD (white noise),9.5,1.0,0.147,19.9496,22.9017
+lbg_MUV-17.0,CMB-HD (white noise),10.0,1.0,0.111,13.1803,16.0447
+lbg_MUV-17.0,CMB-HD (white noise),10.5,1.0,0.084,8.8728,11.1733
+lbg_MUV-17.0,CMB-HD (white noise),11.0,1.0,0.063,5.5731,9.6769
+lbg_MUV-17.0,CMB-HD (white noise),11.5,1.0,0.046,7.1613,10.1385
+lbg_MUV-17.0,CMB-HD (white noise),12.0,1.0,0.034,8.9436,12.0233
+lbg_MUV-17.0,CMB-HD (white noise),12.5,1.0,0.025,5.4237,8.9234
+lbg_MUV-17.0,CMB-HD (white noise),13.0,1.0,0.017,7.9738,11.2426
+lbg_MUV-18.0,ACT DR6 (white noise),6.5,1.0,0.724,0.5044,0.6728
+lbg_MUV-18.0,ACT DR6 (white noise),7.0,1.0,0.581,0.5569,0.7929
+lbg_MUV-18.0,ACT DR6 (white noise),7.5,1.0,0.445,0.591,0.885
+lbg_MUV-18.0,ACT DR6 (white noise),8.0,1.0,0.334,1.1116,1.2686
+lbg_MUV-18.0,ACT DR6 (white noise),8.5,1.0,0.252,1.0939,1.2739
+lbg_MUV-18.0,ACT DR6 (white noise),9.0,1.0,0.191,0.9278,1.177
+lbg_MUV-18.0,ACT DR6 (white noise),9.5,1.0,0.147,0.7589,0.9816
+lbg_MUV-18.0,ACT DR6 (white noise),10.0,1.0,0.111,0.6286,0.8763
+lbg_MUV-18.0,ACT DR6 (white noise),10.5,1.0,0.084,0.4807,0.7177
+lbg_MUV-18.0,ACT DR6 (white noise),11.0,1.0,0.063,0.5281,0.785
+lbg_MUV-18.0,ACT DR6 (white noise),11.5,1.0,0.046,0.4933,0.7067
+lbg_MUV-18.0,ACT DR6 (white noise),12.0,1.0,0.034,0.4841,0.6629
+lbg_MUV-18.0,ACT DR6 (white noise),12.5,1.0,0.025,0.3694,0.5523
+lbg_MUV-18.0,ACT DR6 (white noise),13.0,1.0,0.017,0.3217,0.6584
+lbg_MUV-18.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.2177,4.4668
+lbg_MUV-18.0,SPT-3G Main (white noise),7.0,1.0,0.581,4.645,6.3676
+lbg_MUV-18.0,SPT-3G Main (white noise),7.5,1.0,0.445,4.6679,6.9425
+lbg_MUV-18.0,SPT-3G Main (white noise),8.0,1.0,0.334,8.2363,9.4017
+lbg_MUV-18.0,SPT-3G Main (white noise),8.5,1.0,0.252,8.6713,9.9575
+lbg_MUV-18.0,SPT-3G Main (white noise),9.0,1.0,0.191,7.9091,9.4925
+lbg_MUV-18.0,SPT-3G Main (white noise),9.5,1.0,0.147,6.5415,8.1976
+lbg_MUV-18.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.5306,5.8465
+lbg_MUV-18.0,SPT-3G Main (white noise),10.5,1.0,0.084,3.7751,4.9574
+lbg_MUV-18.0,SPT-3G Main (white noise),11.0,1.0,0.063,2.6816,4.8158
+lbg_MUV-18.0,SPT-3G Main (white noise),11.5,1.0,0.046,3.8497,5.1856
+lbg_MUV-18.0,SPT-3G Main (white noise),12.0,1.0,0.034,3.9629,5.3725
+lbg_MUV-18.0,SPT-3G Main (white noise),12.5,1.0,0.025,2.31,4.0203
+lbg_MUV-18.0,SPT-3G Main (white noise),13.0,1.0,0.017,2.9009,4.8839
+lbg_MUV-18.0,SO (post-ILC),6.5,1.0,0.724,0.3668,0.492
+lbg_MUV-18.0,SO (post-ILC),7.0,1.0,0.581,0.399,0.5706
+lbg_MUV-18.0,SO (post-ILC),7.5,1.0,0.445,0.4172,0.63
+lbg_MUV-18.0,SO (post-ILC),8.0,1.0,0.334,0.8062,0.9154
+lbg_MUV-18.0,SO (post-ILC),8.5,1.0,0.252,0.8026,0.9276
+lbg_MUV-18.0,SO (post-ILC),9.0,1.0,0.191,0.6636,0.8406
+lbg_MUV-18.0,SO (post-ILC),9.5,1.0,0.147,0.5612,0.7088
+lbg_MUV-18.0,SO (post-ILC),10.0,1.0,0.111,0.4574,0.6322
+lbg_MUV-18.0,SO (post-ILC),10.5,1.0,0.084,0.3497,0.513
+lbg_MUV-18.0,SO (post-ILC),11.0,1.0,0.063,0.3743,0.5617
+lbg_MUV-18.0,SO (post-ILC),11.5,1.0,0.046,0.3336,0.4898
+lbg_MUV-18.0,SO (post-ILC),12.0,1.0,0.034,0.3285,0.4659
+lbg_MUV-18.0,SO (post-ILC),12.5,1.0,0.025,0.2653,0.3928
+lbg_MUV-18.0,SO (post-ILC),13.0,1.0,0.017,0.222,0.4643
+lbg_MUV-18.0,SO (white noise),6.5,1.0,0.724,0.4795,0.6388
+lbg_MUV-18.0,SO (white noise),7.0,1.0,0.581,0.5206,0.7433
+lbg_MUV-18.0,SO (white noise),7.5,1.0,0.445,0.5531,0.8284
+lbg_MUV-18.0,SO (white noise),8.0,1.0,0.334,1.0436,1.1893
+lbg_MUV-18.0,SO (white noise),8.5,1.0,0.252,1.0252,1.1938
+lbg_MUV-18.0,SO (white noise),9.0,1.0,0.191,0.8645,1.0984
+lbg_MUV-18.0,SO (white noise),9.5,1.0,0.147,0.7123,0.9179
+lbg_MUV-18.0,SO (white noise),10.0,1.0,0.111,0.5893,0.8244
+lbg_MUV-18.0,SO (white noise),10.5,1.0,0.084,0.4497,0.6717
+lbg_MUV-18.0,SO (white noise),11.0,1.0,0.063,0.5002,0.7396
+lbg_MUV-18.0,SO (white noise),11.5,1.0,0.046,0.4549,0.6587
+lbg_MUV-18.0,SO (white noise),12.0,1.0,0.034,0.4479,0.6193
+lbg_MUV-18.0,SO (white noise),12.5,1.0,0.025,0.3458,0.5182
+lbg_MUV-18.0,SO (white noise),13.0,1.0,0.017,0.299,0.6181
+lbg_MUV-18.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.6835,0.8904
+lbg_MUV-18.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.844,1.1674
+lbg_MUV-18.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.8483,1.3034
+lbg_MUV-18.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.6379,1.867
+lbg_MUV-18.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.6737,1.9146
+lbg_MUV-18.0,CMB-S4 (post-ILC),9.0,1.0,0.191,1.4661,1.8055
+lbg_MUV-18.0,CMB-S4 (post-ILC),9.5,1.0,0.147,1.1716,1.5131
+lbg_MUV-18.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.9414,1.2428
+lbg_MUV-18.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7422,1.0508
+lbg_MUV-18.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6287,1.0492
+lbg_MUV-18.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.7535,1.0089
+lbg_MUV-18.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.7418,0.9729
+lbg_MUV-18.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.5187,0.7851
+lbg_MUV-18.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.4788,0.9181
+lbg_MUV-18.0,CMB-S4 (white noise),6.5,1.0,0.724,2.8229,3.8968
+lbg_MUV-18.0,CMB-S4 (white noise),7.0,1.0,0.581,3.9732,5.5211
+lbg_MUV-18.0,CMB-S4 (white noise),7.5,1.0,0.445,3.9631,6.014
+lbg_MUV-18.0,CMB-S4 (white noise),8.0,1.0,0.334,7.141,8.1418
+lbg_MUV-18.0,CMB-S4 (white noise),8.5,1.0,0.252,7.4998,8.5825
+lbg_MUV-18.0,CMB-S4 (white noise),9.0,1.0,0.191,6.6923,8.1141
+lbg_MUV-18.0,CMB-S4 (white noise),9.5,1.0,0.147,5.3936,6.9239
+lbg_MUV-18.0,CMB-S4 (white noise),10.0,1.0,0.111,3.8351,5.0041
+lbg_MUV-18.0,CMB-S4 (white noise),10.5,1.0,0.084,3.2719,4.3253
+lbg_MUV-18.0,CMB-S4 (white noise),11.0,1.0,0.063,2.3152,4.2435
+lbg_MUV-18.0,CMB-S4 (white noise),11.5,1.0,0.046,3.4621,4.618
+lbg_MUV-18.0,CMB-S4 (white noise),12.0,1.0,0.034,3.4344,4.6631
+lbg_MUV-18.0,CMB-S4 (white noise),12.5,1.0,0.025,1.9836,3.5353
+lbg_MUV-18.0,CMB-S4 (white noise),13.0,1.0,0.017,2.2914,4.1067
+lbg_MUV-18.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.8422,3.822
+lbg_MUV-18.0,CMB-HD (post-ILC),7.0,1.0,0.581,3.8631,5.3005
+lbg_MUV-18.0,CMB-HD (post-ILC),7.5,1.0,0.445,3.9351,5.9119
+lbg_MUV-18.0,CMB-HD (post-ILC),8.0,1.0,0.334,7.2091,8.1984
+lbg_MUV-18.0,CMB-HD (post-ILC),8.5,1.0,0.252,7.6778,8.7848
+lbg_MUV-18.0,CMB-HD (post-ILC),9.0,1.0,0.191,7.3295,8.6407
+lbg_MUV-18.0,CMB-HD (post-ILC),9.5,1.0,0.147,6.3642,7.6764
+lbg_MUV-18.0,CMB-HD (post-ILC),10.0,1.0,0.111,4.4108,5.4665
+lbg_MUV-18.0,CMB-HD (post-ILC),10.5,1.0,0.084,3.2766,4.3581
+lbg_MUV-18.0,CMB-HD (post-ILC),11.0,1.0,0.063,2.2846,4.0735
+lbg_MUV-18.0,CMB-HD (post-ILC),11.5,1.0,0.046,3.1862,4.324
+lbg_MUV-18.0,CMB-HD (post-ILC),12.0,1.0,0.034,3.3126,4.5331
+lbg_MUV-18.0,CMB-HD (post-ILC),12.5,1.0,0.025,1.7096,3.272
+lbg_MUV-18.0,CMB-HD (post-ILC),13.0,1.0,0.017,2.6581,4.2459
+lbg_MUV-18.0,CMB-HD (white noise),6.5,1.0,0.724,6.8354,9.8703
+lbg_MUV-18.0,CMB-HD (white noise),7.0,1.0,0.581,9.0767,12.4702
+lbg_MUV-18.0,CMB-HD (white noise),7.5,1.0,0.445,9.3456,13.9812
+lbg_MUV-18.0,CMB-HD (white noise),8.0,1.0,0.334,17.3972,19.3793
+lbg_MUV-18.0,CMB-HD (white noise),8.5,1.0,0.252,18.858,21.6064
+lbg_MUV-18.0,CMB-HD (white noise),9.0,1.0,0.191,19.368,22.1913
+lbg_MUV-18.0,CMB-HD (white noise),9.5,1.0,0.147,17.915,20.8912
+lbg_MUV-18.0,CMB-HD (white noise),10.0,1.0,0.111,12.0751,14.6595
+lbg_MUV-18.0,CMB-HD (white noise),10.5,1.0,0.084,7.5926,10.4416
+lbg_MUV-18.0,CMB-HD (white noise),11.0,1.0,0.063,6.065,9.9354
+lbg_MUV-18.0,CMB-HD (white noise),11.5,1.0,0.046,6.9037,9.7977
+lbg_MUV-18.0,CMB-HD (white noise),12.0,1.0,0.034,7.1069,10.6237
+lbg_MUV-18.0,CMB-HD (white noise),12.5,1.0,0.025,4.2411,7.6312
+lbg_MUV-18.0,CMB-HD (white noise),13.0,1.0,0.017,8.1641,11.3392
+lbg_MUV-19.0,ACT DR6 (white noise),6.5,1.0,0.724,0.4512,0.6396
+lbg_MUV-19.0,ACT DR6 (white noise),7.0,1.0,0.581,0.5457,0.7719
+lbg_MUV-19.0,ACT DR6 (white noise),7.5,1.0,0.445,0.63,0.8971
+lbg_MUV-19.0,ACT DR6 (white noise),8.0,1.0,0.334,1.1168,1.2947
+lbg_MUV-19.0,ACT DR6 (white noise),8.5,1.0,0.252,1.0955,1.274
+lbg_MUV-19.0,ACT DR6 (white noise),9.0,1.0,0.191,0.7613,1.0328
+lbg_MUV-19.0,ACT DR6 (white noise),9.5,1.0,0.147,0.6752,0.9114
+lbg_MUV-19.0,ACT DR6 (white noise),10.0,1.0,0.111,0.7034,0.8935
+lbg_MUV-19.0,ACT DR6 (white noise),10.5,1.0,0.084,0.4872,0.6866
+lbg_MUV-19.0,ACT DR6 (white noise),11.0,1.0,0.063,0.3559,0.6712
+lbg_MUV-19.0,ACT DR6 (white noise),11.5,1.0,0.046,0.5904,0.7703
+lbg_MUV-19.0,ACT DR6 (white noise),12.0,1.0,0.034,0.5482,0.7075
+lbg_MUV-19.0,ACT DR6 (white noise),12.5,1.0,0.025,0.3694,0.6035
+lbg_MUV-19.0,ACT DR6 (white noise),13.0,1.0,0.017,0.4945,0.7282
+lbg_MUV-19.0,SPT-3G Main (white noise),6.5,1.0,0.724,3.1106,4.4245
+lbg_MUV-19.0,SPT-3G Main (white noise),7.0,1.0,0.581,4.6623,6.5974
+lbg_MUV-19.0,SPT-3G Main (white noise),7.5,1.0,0.445,5.4611,7.2888
+lbg_MUV-19.0,SPT-3G Main (white noise),8.0,1.0,0.334,8.1394,9.4186
+lbg_MUV-19.0,SPT-3G Main (white noise),8.5,1.0,0.252,8.3032,9.7664
+lbg_MUV-19.0,SPT-3G Main (white noise),9.0,1.0,0.191,6.7065,8.257
+lbg_MUV-19.0,SPT-3G Main (white noise),9.5,1.0,0.147,5.1989,6.9815
+lbg_MUV-19.0,SPT-3G Main (white noise),10.0,1.0,0.111,4.9125,6.272
+lbg_MUV-19.0,SPT-3G Main (white noise),10.5,1.0,0.084,3.7588,5.1757
+lbg_MUV-19.0,SPT-3G Main (white noise),11.0,1.0,0.063,2.2633,4.2642
+lbg_MUV-19.0,SPT-3G Main (white noise),11.5,1.0,0.046,3.9195,5.2823
+lbg_MUV-19.0,SPT-3G Main (white noise),12.0,1.0,0.034,3.9078,5.359
+lbg_MUV-19.0,SPT-3G Main (white noise),12.5,1.0,0.025,3.2946,4.4159
+lbg_MUV-19.0,SPT-3G Main (white noise),13.0,1.0,0.017,3.4916,5.3992
+lbg_MUV-19.0,SO (post-ILC),6.5,1.0,0.724,0.3387,0.4732
+lbg_MUV-19.0,SO (post-ILC),7.0,1.0,0.581,0.3921,0.557
+lbg_MUV-19.0,SO (post-ILC),7.5,1.0,0.445,0.4523,0.6436
+lbg_MUV-19.0,SO (post-ILC),8.0,1.0,0.334,0.8093,0.9351
+lbg_MUV-19.0,SO (post-ILC),8.5,1.0,0.252,0.8024,0.9268
+lbg_MUV-19.0,SO (post-ILC),9.0,1.0,0.191,0.5546,0.7426
+lbg_MUV-19.0,SO (post-ILC),9.5,1.0,0.147,0.4975,0.6627
+lbg_MUV-19.0,SO (post-ILC),10.0,1.0,0.111,0.5041,0.64
+lbg_MUV-19.0,SO (post-ILC),10.5,1.0,0.084,0.3463,0.4997
+lbg_MUV-19.0,SO (post-ILC),11.0,1.0,0.063,0.2684,0.4847
+lbg_MUV-19.0,SO (post-ILC),11.5,1.0,0.046,0.4102,0.539
+lbg_MUV-19.0,SO (post-ILC),12.0,1.0,0.034,0.3939,0.5118
+lbg_MUV-19.0,SO (post-ILC),12.5,1.0,0.025,0.2562,0.4342
+lbg_MUV-19.0,SO (post-ILC),13.0,1.0,0.017,0.3636,0.5243
+lbg_MUV-19.0,SO (white noise),6.5,1.0,0.724,0.4328,0.6096
+lbg_MUV-19.0,SO (white noise),7.0,1.0,0.581,0.5113,0.7236
+lbg_MUV-19.0,SO (white noise),7.5,1.0,0.445,0.5911,0.8416
+lbg_MUV-19.0,SO (white noise),8.0,1.0,0.334,1.0469,1.2142
+lbg_MUV-19.0,SO (white noise),8.5,1.0,0.252,1.0267,1.1945
+lbg_MUV-19.0,SO (white noise),9.0,1.0,0.191,0.7111,0.9654
+lbg_MUV-19.0,SO (white noise),9.5,1.0,0.147,0.6364,0.8579
+lbg_MUV-19.0,SO (white noise),10.0,1.0,0.111,0.656,0.8368
+lbg_MUV-19.0,SO (white noise),10.5,1.0,0.084,0.4558,0.6469
+lbg_MUV-19.0,SO (white noise),11.0,1.0,0.063,0.3444,0.6325
+lbg_MUV-19.0,SO (white noise),11.5,1.0,0.046,0.548,0.7164
+lbg_MUV-19.0,SO (white noise),12.0,1.0,0.034,0.51,0.6632
+lbg_MUV-19.0,SO (white noise),12.5,1.0,0.025,0.3398,0.5652
+lbg_MUV-19.0,SO (white noise),13.0,1.0,0.017,0.4615,0.6821
+lbg_MUV-19.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.5903,0.8275
+lbg_MUV-19.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.7958,1.1472
+lbg_MUV-19.0,CMB-S4 (post-ILC),7.5,1.0,0.445,0.9124,1.3195
+lbg_MUV-19.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.6407,1.8867
+lbg_MUV-19.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.6488,1.8936
+lbg_MUV-19.0,CMB-S4 (post-ILC),9.0,1.0,0.191,1.2127,1.5707
+lbg_MUV-19.0,CMB-S4 (post-ILC),9.5,1.0,0.147,0.9969,1.33
+lbg_MUV-19.0,CMB-S4 (post-ILC),10.0,1.0,0.111,1.0685,1.3047
+lbg_MUV-19.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7282,1.0025
+lbg_MUV-19.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.4079,0.9167
+lbg_MUV-19.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.8488,1.1116
+lbg_MUV-19.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.8414,1.0294
+lbg_MUV-19.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.6171,0.878
+lbg_MUV-19.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.7436,1.0522
+lbg_MUV-19.0,CMB-S4 (white noise),6.5,1.0,0.724,2.7026,3.8358
+lbg_MUV-19.0,CMB-S4 (white noise),7.0,1.0,0.581,3.9192,5.6812
+lbg_MUV-19.0,CMB-S4 (white noise),7.5,1.0,0.445,4.5834,6.2601
+lbg_MUV-19.0,CMB-S4 (white noise),8.0,1.0,0.334,7.0282,8.1587
+lbg_MUV-19.0,CMB-S4 (white noise),8.5,1.0,0.252,7.187,8.4169
+lbg_MUV-19.0,CMB-S4 (white noise),9.0,1.0,0.191,5.6367,7.0472
+lbg_MUV-19.0,CMB-S4 (white noise),9.5,1.0,0.147,4.2487,5.8638
+lbg_MUV-19.0,CMB-S4 (white noise),10.0,1.0,0.111,4.3354,5.5027
+lbg_MUV-19.0,CMB-S4 (white noise),10.5,1.0,0.084,3.2515,4.4393
+lbg_MUV-19.0,CMB-S4 (white noise),11.0,1.0,0.063,1.9294,3.7876
+lbg_MUV-19.0,CMB-S4 (white noise),11.5,1.0,0.046,3.7786,4.9106
+lbg_MUV-19.0,CMB-S4 (white noise),12.0,1.0,0.034,3.5909,4.7865
+lbg_MUV-19.0,CMB-S4 (white noise),12.5,1.0,0.025,2.9862,3.9564
+lbg_MUV-19.0,CMB-S4 (white noise),13.0,1.0,0.017,2.9943,4.6138
+lbg_MUV-19.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.6267,3.6612
+lbg_MUV-19.0,CMB-HD (post-ILC),7.0,1.0,0.581,3.8899,5.5381
+lbg_MUV-19.0,CMB-HD (post-ILC),7.5,1.0,0.445,4.6266,6.2091
+lbg_MUV-19.0,CMB-HD (post-ILC),8.0,1.0,0.334,7.1674,8.2235
+lbg_MUV-19.0,CMB-HD (post-ILC),8.5,1.0,0.252,7.3779,8.5874
+lbg_MUV-19.0,CMB-HD (post-ILC),9.0,1.0,0.191,6.2123,7.5222
+lbg_MUV-19.0,CMB-HD (post-ILC),9.5,1.0,0.147,5.0718,6.5419
+lbg_MUV-19.0,CMB-HD (post-ILC),10.0,1.0,0.111,4.3937,5.555
+lbg_MUV-19.0,CMB-HD (post-ILC),10.5,1.0,0.084,3.2594,4.5354
+lbg_MUV-19.0,CMB-HD (post-ILC),11.0,1.0,0.063,1.9056,3.5917
+lbg_MUV-19.0,CMB-HD (post-ILC),11.5,1.0,0.046,3.0226,4.181
+lbg_MUV-19.0,CMB-HD (post-ILC),12.0,1.0,0.034,3.1593,4.3472
+lbg_MUV-19.0,CMB-HD (post-ILC),12.5,1.0,0.025,2.6902,3.6082
+lbg_MUV-19.0,CMB-HD (post-ILC),13.0,1.0,0.017,3.2287,4.7859
+lbg_MUV-19.0,CMB-HD (white noise),6.5,1.0,0.724,6.5161,9.3862
+lbg_MUV-19.0,CMB-HD (white noise),7.0,1.0,0.581,9.6815,13.3707
+lbg_MUV-19.0,CMB-HD (white noise),7.5,1.0,0.445,11.383,14.9532
+lbg_MUV-19.0,CMB-HD (white noise),8.0,1.0,0.334,17.328,19.6387
+lbg_MUV-19.0,CMB-HD (white noise),8.5,1.0,0.252,18.1066,20.9753
+lbg_MUV-19.0,CMB-HD (white noise),9.0,1.0,0.191,16.5783,19.4395
+lbg_MUV-19.0,CMB-HD (white noise),9.5,1.0,0.147,14.5582,18.1629
+lbg_MUV-19.0,CMB-HD (white noise),10.0,1.0,0.111,10.8223,13.9834
+lbg_MUV-19.0,CMB-HD (white noise),10.5,1.0,0.084,7.9717,11.6262
+lbg_MUV-19.0,CMB-HD (white noise),11.0,1.0,0.063,4.7585,8.6946
+lbg_MUV-19.0,CMB-HD (white noise),11.5,1.0,0.046,4.5628,8.0146
+lbg_MUV-19.0,CMB-HD (white noise),12.0,1.0,0.034,5.9854,9.3664
+lbg_MUV-19.0,CMB-HD (white noise),12.5,1.0,0.025,5.3294,8.2362
+lbg_MUV-19.0,CMB-HD (white noise),13.0,1.0,0.017,9.0053,12.479
+lbg_MUV-20.0,ACT DR6 (white noise),6.5,1.0,0.724,0.4769,0.669
+lbg_MUV-20.0,ACT DR6 (white noise),7.0,1.0,0.581,0.5929,0.8309
+lbg_MUV-20.0,ACT DR6 (white noise),7.5,1.0,0.445,0.6896,0.9351
+lbg_MUV-20.0,ACT DR6 (white noise),8.0,1.0,0.334,1.0996,1.2753
+lbg_MUV-20.0,ACT DR6 (white noise),8.5,1.0,0.252,1.0088,1.2029
+lbg_MUV-20.0,ACT DR6 (white noise),9.0,1.0,0.191,0.7269,1.0911
+lbg_MUV-20.0,ACT DR6 (white noise),9.5,1.0,0.147,0.5441,0.8032
+lbg_MUV-20.0,ACT DR6 (white noise),10.0,1.0,0.111,0.4829,0.6689
+lbg_MUV-20.0,ACT DR6 (white noise),10.5,1.0,0.084,0.501,0.7433
+lbg_MUV-20.0,ACT DR6 (white noise),11.0,1.0,0.063,0.469,0.7101
+lbg_MUV-20.0,ACT DR6 (white noise),11.5,1.0,0.046,0.5044,0.7046
+lbg_MUV-20.0,ACT DR6 (white noise),12.0,1.0,0.034,0.3018,0.5453
+lbg_MUV-20.0,ACT DR6 (white noise),12.5,1.0,0.025,0.4434,0.701
+lbg_MUV-20.0,ACT DR6 (white noise),13.0,1.0,0.017,0.615,0.7853
+lbg_MUV-20.0,SPT-3G Main (white noise),6.5,1.0,0.724,2.9164,4.1478
+lbg_MUV-20.0,SPT-3G Main (white noise),7.0,1.0,0.581,5.5471,7.2157
+lbg_MUV-20.0,SPT-3G Main (white noise),7.5,1.0,0.445,6.2619,7.7641
+lbg_MUV-20.0,SPT-3G Main (white noise),8.0,1.0,0.334,7.7075,8.939
+lbg_MUV-20.0,SPT-3G Main (white noise),8.5,1.0,0.252,7.7653,9.1334
+lbg_MUV-20.0,SPT-3G Main (white noise),9.0,1.0,0.191,5.9068,7.9082
+lbg_MUV-20.0,SPT-3G Main (white noise),9.5,1.0,0.147,4.3039,5.4993
+lbg_MUV-20.0,SPT-3G Main (white noise),10.0,1.0,0.111,3.8522,5.2878
+lbg_MUV-20.0,SPT-3G Main (white noise),10.5,1.0,0.084,4.8208,6.6117
+lbg_MUV-20.0,SPT-3G Main (white noise),11.0,1.0,0.063,2.0715,4.078
+lbg_MUV-20.0,SPT-3G Main (white noise),11.5,1.0,0.046,2.4248,3.5884
+lbg_MUV-20.0,SPT-3G Main (white noise),12.0,1.0,0.034,3.4036,4.7979
+lbg_MUV-20.0,SPT-3G Main (white noise),12.5,1.0,0.025,3.0606,4.4474
+lbg_MUV-20.0,SPT-3G Main (white noise),13.0,1.0,0.017,3.2934,4.8228
+lbg_MUV-20.0,SO (post-ILC),6.5,1.0,0.724,0.3594,0.4965
+lbg_MUV-20.0,SO (post-ILC),7.0,1.0,0.581,0.4366,0.6042
+lbg_MUV-20.0,SO (post-ILC),7.5,1.0,0.445,0.5075,0.6791
+lbg_MUV-20.0,SO (post-ILC),8.0,1.0,0.334,0.7928,0.9176
+lbg_MUV-20.0,SO (post-ILC),8.5,1.0,0.252,0.7385,0.8753
+lbg_MUV-20.0,SO (post-ILC),9.0,1.0,0.191,0.5232,0.7755
+lbg_MUV-20.0,SO (post-ILC),9.5,1.0,0.147,0.4204,0.5938
+lbg_MUV-20.0,SO (post-ILC),10.0,1.0,0.111,0.3534,0.4857
+lbg_MUV-20.0,SO (post-ILC),10.5,1.0,0.084,0.3486,0.5262
+lbg_MUV-20.0,SO (post-ILC),11.0,1.0,0.063,0.3326,0.5001
+lbg_MUV-20.0,SO (post-ILC),11.5,1.0,0.046,0.3635,0.5069
+lbg_MUV-20.0,SO (post-ILC),12.0,1.0,0.034,0.2235,0.4047
+lbg_MUV-20.0,SO (post-ILC),12.5,1.0,0.025,0.3201,0.5005
+lbg_MUV-20.0,SO (post-ILC),13.0,1.0,0.017,0.4271,0.5567
+lbg_MUV-20.0,SO (white noise),6.5,1.0,0.724,0.4581,0.6393
+lbg_MUV-20.0,SO (white noise),7.0,1.0,0.581,0.5558,0.7793
+lbg_MUV-20.0,SO (white noise),7.5,1.0,0.445,0.649,0.8783
+lbg_MUV-20.0,SO (white noise),8.0,1.0,0.334,1.0316,1.1966
+lbg_MUV-20.0,SO (white noise),8.5,1.0,0.252,0.9466,1.129
+lbg_MUV-20.0,SO (white noise),9.0,1.0,0.191,0.6768,1.02
+lbg_MUV-20.0,SO (white noise),9.5,1.0,0.147,0.5168,0.7596
+lbg_MUV-20.0,SO (white noise),10.0,1.0,0.111,0.4521,0.6275
+lbg_MUV-20.0,SO (white noise),10.5,1.0,0.084,0.4664,0.6947
+lbg_MUV-20.0,SO (white noise),11.0,1.0,0.063,0.4448,0.6671
+lbg_MUV-20.0,SO (white noise),11.5,1.0,0.046,0.4775,0.67
+lbg_MUV-20.0,SO (white noise),12.0,1.0,0.034,0.2767,0.5119
+lbg_MUV-20.0,SO (white noise),12.5,1.0,0.025,0.4106,0.6555
+lbg_MUV-20.0,SO (white noise),13.0,1.0,0.017,0.5764,0.7375
+lbg_MUV-20.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.5745,0.8339
+lbg_MUV-20.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.9358,1.2487
+lbg_MUV-20.0,CMB-S4 (post-ILC),7.5,1.0,0.445,1.0424,1.3819
+lbg_MUV-20.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.5834,1.834
+lbg_MUV-20.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.503,1.7643
+lbg_MUV-20.0,CMB-S4 (post-ILC),9.0,1.0,0.191,1.1128,1.5949
+lbg_MUV-20.0,CMB-S4 (post-ILC),9.5,1.0,0.147,0.8119,1.1259
+lbg_MUV-20.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.7231,0.9812
+lbg_MUV-20.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7408,1.1103
+lbg_MUV-20.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.5579,0.9436
+lbg_MUV-20.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.6131,0.8426
+lbg_MUV-20.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.5371,0.8423
+lbg_MUV-20.0,CMB-S4 (post-ILC),12.5,1.0,0.025,0.6838,0.9981
+lbg_MUV-20.0,CMB-S4 (post-ILC),13.0,1.0,0.017,0.8146,1.078
+lbg_MUV-20.0,CMB-S4 (white noise),6.5,1.0,0.724,2.6197,3.643
+lbg_MUV-20.0,CMB-S4 (white noise),7.0,1.0,0.581,4.7879,6.2339
+lbg_MUV-20.0,CMB-S4 (white noise),7.5,1.0,0.445,5.3335,6.6495
+lbg_MUV-20.0,CMB-S4 (white noise),8.0,1.0,0.334,6.6556,7.7528
+lbg_MUV-20.0,CMB-S4 (white noise),8.5,1.0,0.252,6.7327,7.9081
+lbg_MUV-20.0,CMB-S4 (white noise),9.0,1.0,0.191,5.0003,6.8386
+lbg_MUV-20.0,CMB-S4 (white noise),9.5,1.0,0.147,3.5977,4.6442
+lbg_MUV-20.0,CMB-S4 (white noise),10.0,1.0,0.111,3.2352,4.5099
+lbg_MUV-20.0,CMB-S4 (white noise),10.5,1.0,0.084,3.9051,5.5976
+lbg_MUV-20.0,CMB-S4 (white noise),11.0,1.0,0.063,1.9012,3.7173
+lbg_MUV-20.0,CMB-S4 (white noise),11.5,1.0,0.046,2.1754,3.177
+lbg_MUV-20.0,CMB-S4 (white noise),12.0,1.0,0.034,2.871,4.1118
+lbg_MUV-20.0,CMB-S4 (white noise),12.5,1.0,0.025,2.8363,3.9981
+lbg_MUV-20.0,CMB-S4 (white noise),13.0,1.0,0.017,2.955,4.1783
+lbg_MUV-20.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.2966,3.4238
+lbg_MUV-20.0,CMB-HD (post-ILC),7.0,1.0,0.581,4.612,6.043
+lbg_MUV-20.0,CMB-HD (post-ILC),7.5,1.0,0.445,5.3195,6.627
+lbg_MUV-20.0,CMB-HD (post-ILC),8.0,1.0,0.334,6.8603,7.8782
+lbg_MUV-20.0,CMB-HD (post-ILC),8.5,1.0,0.252,6.821,7.9498
+lbg_MUV-20.0,CMB-HD (post-ILC),9.0,1.0,0.191,5.4421,7.0906
+lbg_MUV-20.0,CMB-HD (post-ILC),9.5,1.0,0.147,4.1337,5.1331
+lbg_MUV-20.0,CMB-HD (post-ILC),10.0,1.0,0.111,3.4642,4.643
+lbg_MUV-20.0,CMB-HD (post-ILC),10.5,1.0,0.084,4.0584,5.5522
+lbg_MUV-20.0,CMB-HD (post-ILC),11.0,1.0,0.063,1.8428,3.3631
+lbg_MUV-20.0,CMB-HD (post-ILC),11.5,1.0,0.046,2.0421,2.9938
+lbg_MUV-20.0,CMB-HD (post-ILC),12.0,1.0,0.034,2.872,4.0975
+lbg_MUV-20.0,CMB-HD (post-ILC),12.5,1.0,0.025,2.6295,3.7969
+lbg_MUV-20.0,CMB-HD (post-ILC),13.0,1.0,0.017,3.0075,4.3624
+lbg_MUV-20.0,CMB-HD (white noise),6.5,1.0,0.724,4.8843,8.9003
+lbg_MUV-20.0,CMB-HD (white noise),7.0,1.0,0.581,10.9272,14.4049
+lbg_MUV-20.0,CMB-HD (white noise),7.5,1.0,0.445,12.9889,16.234
+lbg_MUV-20.0,CMB-HD (white noise),8.0,1.0,0.334,16.866,19.0893
+lbg_MUV-20.0,CMB-HD (white noise),8.5,1.0,0.252,16.6664,19.3247
+lbg_MUV-20.0,CMB-HD (white noise),9.0,1.0,0.191,14.0632,17.7101
+lbg_MUV-20.0,CMB-HD (white noise),9.5,1.0,0.147,11.879,14.1768
+lbg_MUV-20.0,CMB-HD (white noise),10.0,1.0,0.111,9.8871,12.297
+lbg_MUV-20.0,CMB-HD (white noise),10.5,1.0,0.084,10.6686,13.8555
+lbg_MUV-20.0,CMB-HD (white noise),11.0,1.0,0.063,4.4767,7.7621
+lbg_MUV-20.0,CMB-HD (white noise),11.5,1.0,0.046,6.5984,8.7476
+lbg_MUV-20.0,CMB-HD (white noise),12.0,1.0,0.034,7.3972,10.3973
+lbg_MUV-20.0,CMB-HD (white noise),12.5,1.0,0.025,5.9654,9.0085
+lbg_MUV-20.0,CMB-HD (white noise),13.0,1.0,0.017,8.0309,11.423
+lbg_MUV-21.0,ACT DR6 (white noise),6.5,1.0,0.724,0.3813,0.5975
+lbg_MUV-21.0,ACT DR6 (white noise),7.0,1.0,0.581,0.5724,0.8083
+lbg_MUV-21.0,ACT DR6 (white noise),7.5,1.0,0.445,0.7766,0.9295
+lbg_MUV-21.0,ACT DR6 (white noise),8.0,1.0,0.334,0.9634,1.0986
+lbg_MUV-21.0,ACT DR6 (white noise),8.5,1.0,0.252,0.8248,1.0965
+lbg_MUV-21.0,ACT DR6 (white noise),9.0,1.0,0.191,0.6091,0.8832
+lbg_MUV-21.0,ACT DR6 (white noise),9.5,1.0,0.147,0.4207,0.6417
+lbg_MUV-21.0,ACT DR6 (white noise),10.0,1.0,0.111,0.3927,0.7157
+lbg_MUV-21.0,ACT DR6 (white noise),10.5,1.0,0.084,0.5008,0.7613
+lbg_MUV-21.0,ACT DR6 (white noise),11.0,1.0,0.063,0.2439,0.5338
+lbg_MUV-21.0,ACT DR6 (white noise),11.5,1.0,0.046,0.3818,0.6951
+lbg_MUV-21.0,ACT DR6 (white noise),12.0,1.0,0.034,0.6794,0.9274
+lbg_MUV-21.0,ACT DR6 (white noise),12.5,1.0,0.025,0.9417,1.086
+lbg_MUV-21.0,ACT DR6 (white noise),13.0,1.0,0.017,0.7731,0.9243
+lbg_MUV-21.0,SPT-3G Main (white noise),6.5,1.0,0.724,2.5161,4.0754
+lbg_MUV-21.0,SPT-3G Main (white noise),7.0,1.0,0.581,4.7056,6.2994
+lbg_MUV-21.0,SPT-3G Main (white noise),7.5,1.0,0.445,6.3549,7.5388
+lbg_MUV-21.0,SPT-3G Main (white noise),8.0,1.0,0.334,7.3488,8.288
+lbg_MUV-21.0,SPT-3G Main (white noise),8.5,1.0,0.252,6.3483,7.9571
+lbg_MUV-21.0,SPT-3G Main (white noise),9.0,1.0,0.191,3.9575,5.6435
+lbg_MUV-21.0,SPT-3G Main (white noise),9.5,1.0,0.147,2.7258,4.6527
+lbg_MUV-21.0,SPT-3G Main (white noise),10.0,1.0,0.111,3.877,5.576
+lbg_MUV-21.0,SPT-3G Main (white noise),10.5,1.0,0.084,4.403,5.6685
+lbg_MUV-21.0,SPT-3G Main (white noise),11.0,1.0,0.063,2.17,3.4911
+lbg_MUV-21.0,SPT-3G Main (white noise),11.5,1.0,0.046,2.1113,3.9647
+lbg_MUV-21.0,SPT-3G Main (white noise),12.0,1.0,0.034,4.1347,5.6981
+lbg_MUV-21.0,SPT-3G Main (white noise),12.5,1.0,0.025,5.2187,6.4517
+lbg_MUV-21.0,SPT-3G Main (white noise),13.0,1.0,0.017,3.8039,5.301
+lbg_MUV-21.0,SO (post-ILC),6.5,1.0,0.724,0.2734,0.4395
+lbg_MUV-21.0,SO (post-ILC),7.0,1.0,0.581,0.4405,0.5987
+lbg_MUV-21.0,SO (post-ILC),7.5,1.0,0.445,0.552,0.6671
+lbg_MUV-21.0,SO (post-ILC),8.0,1.0,0.334,0.7043,0.7998
+lbg_MUV-21.0,SO (post-ILC),8.5,1.0,0.252,0.606,0.7955
+lbg_MUV-21.0,SO (post-ILC),9.0,1.0,0.191,0.4372,0.6342
+lbg_MUV-21.0,SO (post-ILC),9.5,1.0,0.147,0.3328,0.4747
+lbg_MUV-21.0,SO (post-ILC),10.0,1.0,0.111,0.2998,0.5184
+lbg_MUV-21.0,SO (post-ILC),10.5,1.0,0.084,0.3352,0.5241
+lbg_MUV-21.0,SO (post-ILC),11.0,1.0,0.063,0.1759,0.3728
+lbg_MUV-21.0,SO (post-ILC),11.5,1.0,0.046,0.2684,0.4859
+lbg_MUV-21.0,SO (post-ILC),12.0,1.0,0.034,0.4836,0.665
+lbg_MUV-21.0,SO (post-ILC),12.5,1.0,0.025,0.6609,0.7702
+lbg_MUV-21.0,SO (post-ILC),13.0,1.0,0.017,0.5453,0.6575
+lbg_MUV-21.0,SO (white noise),6.5,1.0,0.724,0.3601,0.5678
+lbg_MUV-21.0,SO (white noise),7.0,1.0,0.581,0.5453,0.7619
+lbg_MUV-21.0,SO (white noise),7.5,1.0,0.445,0.7282,0.8701
+lbg_MUV-21.0,SO (white noise),8.0,1.0,0.334,0.9039,1.0316
+lbg_MUV-21.0,SO (white noise),8.5,1.0,0.252,0.7779,1.0321
+lbg_MUV-21.0,SO (white noise),9.0,1.0,0.191,0.5715,0.8326
+lbg_MUV-21.0,SO (white noise),9.5,1.0,0.147,0.4016,0.6092
+lbg_MUV-21.0,SO (white noise),10.0,1.0,0.111,0.3714,0.6694
+lbg_MUV-21.0,SO (white noise),10.5,1.0,0.084,0.4587,0.7071
+lbg_MUV-21.0,SO (white noise),11.0,1.0,0.063,0.236,0.5029
+lbg_MUV-21.0,SO (white noise),11.5,1.0,0.046,0.3548,0.6532
+lbg_MUV-21.0,SO (white noise),12.0,1.0,0.034,0.641,0.8742
+lbg_MUV-21.0,SO (white noise),12.5,1.0,0.025,0.8802,1.0173
+lbg_MUV-21.0,SO (white noise),13.0,1.0,0.017,0.7283,0.87
+lbg_MUV-21.0,CMB-S4 (post-ILC),6.5,1.0,0.724,0.5064,0.7792
+lbg_MUV-21.0,CMB-S4 (post-ILC),7.0,1.0,0.581,0.8102,1.1769
+lbg_MUV-21.0,CMB-S4 (post-ILC),7.5,1.0,0.445,1.1432,1.3844
+lbg_MUV-21.0,CMB-S4 (post-ILC),8.0,1.0,0.334,1.4257,1.6036
+lbg_MUV-21.0,CMB-S4 (post-ILC),8.5,1.0,0.252,1.1816,1.5626
+lbg_MUV-21.0,CMB-S4 (post-ILC),9.0,1.0,0.191,0.8516,1.2081
+lbg_MUV-21.0,CMB-S4 (post-ILC),9.5,1.0,0.147,0.5927,0.9032
+lbg_MUV-21.0,CMB-S4 (post-ILC),10.0,1.0,0.111,0.5959,1.0714
+lbg_MUV-21.0,CMB-S4 (post-ILC),10.5,1.0,0.084,0.7874,1.1008
+lbg_MUV-21.0,CMB-S4 (post-ILC),11.0,1.0,0.063,0.3072,0.6732
+lbg_MUV-21.0,CMB-S4 (post-ILC),11.5,1.0,0.046,0.5559,0.9231
+lbg_MUV-21.0,CMB-S4 (post-ILC),12.0,1.0,0.034,0.9174,1.259
+lbg_MUV-21.0,CMB-S4 (post-ILC),12.5,1.0,0.025,1.2971,1.5074
+lbg_MUV-21.0,CMB-S4 (post-ILC),13.0,1.0,0.017,1.0055,1.2383
+lbg_MUV-21.0,CMB-S4 (white noise),6.5,1.0,0.724,2.2418,3.5618
+lbg_MUV-21.0,CMB-S4 (white noise),7.0,1.0,0.581,4.0558,5.4645
+lbg_MUV-21.0,CMB-S4 (white noise),7.5,1.0,0.445,5.4632,6.5349
+lbg_MUV-21.0,CMB-S4 (white noise),8.0,1.0,0.334,6.3128,7.1211
+lbg_MUV-21.0,CMB-S4 (white noise),8.5,1.0,0.252,5.4784,6.8508
+lbg_MUV-21.0,CMB-S4 (white noise),9.0,1.0,0.191,3.4823,4.9726
+lbg_MUV-21.0,CMB-S4 (white noise),9.5,1.0,0.147,2.2936,4.0443
+lbg_MUV-21.0,CMB-S4 (white noise),10.0,1.0,0.111,3.3551,4.9043
+lbg_MUV-21.0,CMB-S4 (white noise),10.5,1.0,0.084,3.9008,4.932
+lbg_MUV-21.0,CMB-S4 (white noise),11.0,1.0,0.063,1.8513,2.9965
+lbg_MUV-21.0,CMB-S4 (white noise),11.5,1.0,0.046,1.9199,3.5563
+lbg_MUV-21.0,CMB-S4 (white noise),12.0,1.0,0.034,3.5241,4.9327
+lbg_MUV-21.0,CMB-S4 (white noise),12.5,1.0,0.025,4.7102,5.7645
+lbg_MUV-21.0,CMB-S4 (white noise),13.0,1.0,0.017,3.4355,4.7086
+lbg_MUV-21.0,CMB-HD (post-ILC),6.5,1.0,0.724,2.3326,3.5316
+lbg_MUV-21.0,CMB-HD (post-ILC),7.0,1.0,0.581,4.0551,5.3897
+lbg_MUV-21.0,CMB-HD (post-ILC),7.5,1.0,0.445,5.5621,6.5502
+lbg_MUV-21.0,CMB-HD (post-ILC),8.0,1.0,0.334,6.46,7.2809
+lbg_MUV-21.0,CMB-HD (post-ILC),8.5,1.0,0.252,5.4094,6.9277
+lbg_MUV-21.0,CMB-HD (post-ILC),9.0,1.0,0.191,3.2989,4.8163
+lbg_MUV-21.0,CMB-HD (post-ILC),9.5,1.0,0.147,2.5278,4.0369
+lbg_MUV-21.0,CMB-HD (post-ILC),10.0,1.0,0.111,3.1672,4.6841
+lbg_MUV-21.0,CMB-HD (post-ILC),10.5,1.0,0.084,3.6456,4.8074
+lbg_MUV-21.0,CMB-HD (post-ILC),11.0,1.0,0.063,1.7688,3.0343
+lbg_MUV-21.0,CMB-HD (post-ILC),11.5,1.0,0.046,1.7883,3.3485
+lbg_MUV-21.0,CMB-HD (post-ILC),12.0,1.0,0.034,3.579,4.8268
+lbg_MUV-21.0,CMB-HD (post-ILC),12.5,1.0,0.025,4.3192,5.3819
+lbg_MUV-21.0,CMB-HD (post-ILC),13.0,1.0,0.017,3.3254,4.607
+lbg_MUV-21.0,CMB-HD (white noise),6.5,1.0,0.724,7.1007,9.6161
+lbg_MUV-21.0,CMB-HD (white noise),7.0,1.0,0.581,10.6148,13.6356
+lbg_MUV-21.0,CMB-HD (white noise),7.5,1.0,0.445,13.8666,15.9531
+lbg_MUV-21.0,CMB-HD (white noise),8.0,1.0,0.334,15.8316,18.1526
+lbg_MUV-21.0,CMB-HD (white noise),8.5,1.0,0.252,13.3071,17.0802
+lbg_MUV-21.0,CMB-HD (white noise),9.0,1.0,0.191,7.1574,10.9813
+lbg_MUV-21.0,CMB-HD (white noise),9.5,1.0,0.147,6.4155,9.3936
+lbg_MUV-21.0,CMB-HD (white noise),10.0,1.0,0.111,7.2391,10.6102
+lbg_MUV-21.0,CMB-HD (white noise),10.5,1.0,0.084,8.6828,11.6071
+lbg_MUV-21.0,CMB-HD (white noise),11.0,1.0,0.063,5.2716,8.4748
+lbg_MUV-21.0,CMB-HD (white noise),11.5,1.0,0.046,4.1775,8.2859
+lbg_MUV-21.0,CMB-HD (white noise),12.0,1.0,0.034,8.9442,11.4241
+lbg_MUV-21.0,CMB-HD (white noise),12.5,1.0,0.025,8.092,10.9703
+lbg_MUV-21.0,CMB-HD (white noise),13.0,1.0,0.017,6.9785,10.4786
+matter_waters,ACT DR6 (white noise),6.5,1.0,0.724,0.4617,0.6409
+matter_waters,ACT DR6 (white noise),7.0,1.0,0.581,0.4764,0.746
+matter_waters,ACT DR6 (white noise),7.5,1.0,0.445,0.4843,0.8015
+matter_waters,ACT DR6 (white noise),8.0,1.0,0.334,0.8989,1.0494
+matter_waters,ACT DR6 (white noise),8.5,1.0,0.252,0.8858,1.0739
+matter_waters,ACT DR6 (white noise),9.0,1.0,0.191,0.8119,1.0644
+matter_waters,ACT DR6 (white noise),9.5,1.0,0.147,0.8384,1.0606
+matter_waters,ACT DR6 (white noise),10.0,1.0,0.111,0.7382,0.9178
+matter_waters,ACT DR6 (white noise),10.5,1.0,0.084,0.6108,0.82
+matter_waters,ACT DR6 (white noise),11.0,1.0,0.063,0.5544,0.8283
+matter_waters,ACT DR6 (white noise),11.5,1.0,0.046,0.5097,0.691
+matter_waters,ACT DR6 (white noise),12.0,1.0,0.034,0.5661,0.773
+matter_waters,ACT DR6 (white noise),12.5,1.0,0.025,0.4606,0.7107
+matter_waters,ACT DR6 (white noise),13.0,1.0,0.017,0.4478,0.7664
+matter_waters,SPT-3G Main (white noise),6.5,1.0,0.724,3.2876,4.3191
+matter_waters,SPT-3G Main (white noise),7.0,1.0,0.581,4.1732,6.1251
+matter_waters,SPT-3G Main (white noise),7.5,1.0,0.445,4.0733,6.2323
+matter_waters,SPT-3G Main (white noise),8.0,1.0,0.334,6.3374,7.6294
+matter_waters,SPT-3G Main (white noise),8.5,1.0,0.252,7.331,8.5964
+matter_waters,SPT-3G Main (white noise),9.0,1.0,0.191,7.0405,8.5462
+matter_waters,SPT-3G Main (white noise),9.5,1.0,0.147,6.9331,8.5355
+matter_waters,SPT-3G Main (white noise),10.0,1.0,0.111,4.555,5.9446
+matter_waters,SPT-3G Main (white noise),10.5,1.0,0.084,4.5185,5.9254
+matter_waters,SPT-3G Main (white noise),11.0,1.0,0.063,2.4909,4.7594
+matter_waters,SPT-3G Main (white noise),11.5,1.0,0.046,3.9243,5.2669
+matter_waters,SPT-3G Main (white noise),12.0,1.0,0.034,4.9995,6.4123
+matter_waters,SPT-3G Main (white noise),12.5,1.0,0.025,3.6636,5.1658
+matter_waters,SPT-3G Main (white noise),13.0,1.0,0.017,3.1141,5.0985
+matter_waters,SO (post-ILC),6.5,1.0,0.724,0.3271,0.4609
+matter_waters,SO (post-ILC),7.0,1.0,0.581,0.3375,0.5246
+matter_waters,SO (post-ILC),7.5,1.0,0.445,0.3412,0.5682
+matter_waters,SO (post-ILC),8.0,1.0,0.334,0.6515,0.7585
+matter_waters,SO (post-ILC),8.5,1.0,0.252,0.652,0.7837
+matter_waters,SO (post-ILC),9.0,1.0,0.191,0.5914,0.7634
+matter_waters,SO (post-ILC),9.5,1.0,0.147,0.6246,0.7658
+matter_waters,SO (post-ILC),10.0,1.0,0.111,0.5409,0.6682
+matter_waters,SO (post-ILC),10.5,1.0,0.084,0.4336,0.574
+matter_waters,SO (post-ILC),11.0,1.0,0.063,0.3928,0.5923
+matter_waters,SO (post-ILC),11.5,1.0,0.046,0.373,0.5009
+matter_waters,SO (post-ILC),12.0,1.0,0.034,0.3957,0.55
+matter_waters,SO (post-ILC),12.5,1.0,0.025,0.3185,0.4984
+matter_waters,SO (post-ILC),13.0,1.0,0.017,0.3236,0.5387
+matter_waters,SO (white noise),6.5,1.0,0.724,0.4354,0.6063
+matter_waters,SO (white noise),7.0,1.0,0.581,0.4506,0.6976
+matter_waters,SO (white noise),7.5,1.0,0.445,0.4542,0.7515
+matter_waters,SO (white noise),8.0,1.0,0.334,0.8455,0.9864
+matter_waters,SO (white noise),8.5,1.0,0.252,0.8307,1.0076
+matter_waters,SO (white noise),9.0,1.0,0.191,0.7581,0.9942
+matter_waters,SO (white noise),9.5,1.0,0.147,0.7889,0.992
+matter_waters,SO (white noise),10.0,1.0,0.111,0.6975,0.8671
+matter_waters,SO (white noise),10.5,1.0,0.084,0.573,0.7639
+matter_waters,SO (white noise),11.0,1.0,0.063,0.5252,0.7797
+matter_waters,SO (white noise),11.5,1.0,0.046,0.4823,0.6519
+matter_waters,SO (white noise),12.0,1.0,0.034,0.5271,0.7222
+matter_waters,SO (white noise),12.5,1.0,0.025,0.4286,0.6622
+matter_waters,SO (white noise),13.0,1.0,0.017,0.4205,0.7151
+matter_waters,CMB-S4 (post-ILC),6.5,1.0,0.724,0.6372,0.8387
+matter_waters,CMB-S4 (post-ILC),7.0,1.0,0.581,0.6945,1.0766
+matter_waters,CMB-S4 (post-ILC),7.5,1.0,0.445,0.6935,1.1488
+matter_waters,CMB-S4 (post-ILC),8.0,1.0,0.334,1.2755,1.5007
+matter_waters,CMB-S4 (post-ILC),8.5,1.0,0.252,1.3528,1.6096
+matter_waters,CMB-S4 (post-ILC),9.0,1.0,0.191,1.3003,1.6293
+matter_waters,CMB-S4 (post-ILC),9.5,1.0,0.147,1.2734,1.6078
+matter_waters,CMB-S4 (post-ILC),10.0,1.0,0.111,1.0096,1.2543
+matter_waters,CMB-S4 (post-ILC),10.5,1.0,0.084,0.8701,1.2135
+matter_waters,CMB-S4 (post-ILC),11.0,1.0,0.063,0.6614,1.1052
+matter_waters,CMB-S4 (post-ILC),11.5,1.0,0.046,0.7384,0.9819
+matter_waters,CMB-S4 (post-ILC),12.0,1.0,0.034,0.866,1.1696
+matter_waters,CMB-S4 (post-ILC),12.5,1.0,0.025,0.7204,1.0531
+matter_waters,CMB-S4 (post-ILC),13.0,1.0,0.017,0.6769,1.1085
+matter_waters,CMB-S4 (white noise),6.5,1.0,0.724,2.8282,3.6964
+matter_waters,CMB-S4 (white noise),7.0,1.0,0.581,3.6078,5.315
+matter_waters,CMB-S4 (white noise),7.5,1.0,0.445,3.5108,5.4093
+matter_waters,CMB-S4 (white noise),8.0,1.0,0.334,5.4591,6.5551
+matter_waters,CMB-S4 (white noise),8.5,1.0,0.252,6.3448,7.403
+matter_waters,CMB-S4 (white noise),9.0,1.0,0.191,6.0158,7.336
+matter_waters,CMB-S4 (white noise),9.5,1.0,0.147,5.8214,7.2742
+matter_waters,CMB-S4 (white noise),10.0,1.0,0.111,3.8936,5.0583
+matter_waters,CMB-S4 (white noise),10.5,1.0,0.084,3.7891,5.1597
+matter_waters,CMB-S4 (white noise),11.0,1.0,0.063,2.085,4.1718
+matter_waters,CMB-S4 (white noise),11.5,1.0,0.046,3.4438,4.5786
+matter_waters,CMB-S4 (white noise),12.0,1.0,0.034,4.3525,5.5962
+matter_waters,CMB-S4 (white noise),12.5,1.0,0.025,3.2189,4.5825
+matter_waters,CMB-S4 (white noise),13.0,1.0,0.017,2.7763,4.4874
+matter_waters,CMB-HD (post-ILC),6.5,1.0,0.724,2.8395,3.7594
+matter_waters,CMB-HD (post-ILC),7.0,1.0,0.581,3.4194,5.083
+matter_waters,CMB-HD (post-ILC),7.5,1.0,0.445,3.4224,5.2725
+matter_waters,CMB-HD (post-ILC),8.0,1.0,0.334,5.6124,6.689
+matter_waters,CMB-HD (post-ILC),8.5,1.0,0.252,6.5081,7.6011
+matter_waters,CMB-HD (post-ILC),9.0,1.0,0.191,6.5707,7.8333
+matter_waters,CMB-HD (post-ILC),9.5,1.0,0.147,6.4967,7.7824
+matter_waters,CMB-HD (post-ILC),10.0,1.0,0.111,4.1988,5.4161
+matter_waters,CMB-HD (post-ILC),10.5,1.0,0.084,4.1728,5.3042
+matter_waters,CMB-HD (post-ILC),11.0,1.0,0.063,2.2642,4.1975
+matter_waters,CMB-HD (post-ILC),11.5,1.0,0.046,3.2237,4.3796
+matter_waters,CMB-HD (post-ILC),12.0,1.0,0.034,4.1408,5.3147
+matter_waters,CMB-HD (post-ILC),12.5,1.0,0.025,3.0698,4.319
+matter_waters,CMB-HD (post-ILC),13.0,1.0,0.017,2.6262,4.4023
+matter_waters,CMB-HD (white noise),6.5,1.0,0.724,6.8294,10.2281
+matter_waters,CMB-HD (white noise),7.0,1.0,0.581,8.1019,11.9088
+matter_waters,CMB-HD (white noise),7.5,1.0,0.445,8.9152,13.1082
+matter_waters,CMB-HD (white noise),8.0,1.0,0.334,14.5035,16.7001
+matter_waters,CMB-HD (white noise),8.5,1.0,0.252,16.2057,18.8385
+matter_waters,CMB-HD (white noise),9.0,1.0,0.191,17.4226,20.3112
+matter_waters,CMB-HD (white noise),9.5,1.0,0.147,17.3312,20.2189
+matter_waters,CMB-HD (white noise),10.0,1.0,0.111,11.3636,14.6167
+matter_waters,CMB-HD (white noise),10.5,1.0,0.084,10.2585,12.9026
+matter_waters,CMB-HD (white noise),11.0,1.0,0.063,6.4593,10.6692
+matter_waters,CMB-HD (white noise),11.5,1.0,0.046,6.9028,9.7118
+matter_waters,CMB-HD (white noise),12.0,1.0,0.034,8.7341,11.8208
+matter_waters,CMB-HD (white noise),12.5,1.0,0.025,6.2358,9.3262
+matter_waters,CMB-HD (white noise),13.0,1.0,0.017,6.1687,10.3406
