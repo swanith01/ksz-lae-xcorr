@@ -181,7 +181,7 @@ def main(argv=None):
          Line2D([], [], marker="o", ls="", color="0.3", mfc="0.3", ms=8, label="filled: post-ILC noise (ACT / SPT-3G: white noise only)"),
          Line2D([], [], marker="o", ls="", color="0.3", mfc="white", ms=8, label="open: white (instrument) noise"),
          Line2D([], [0], marker="o", ls="-", color="0.3", mfc="white", ms=4, lw=1,
-                label="small marker: Roman deep = z = 7.3 LF (observed decline); Roman wider = HLWAS deep-tier depth"),
+                label="small marker: Roman deep: z = 7.3 LF (observed decline); Roman wider: HLWAS deep-tier depth"),
          Line2D([], [], color="0.6", ls=":", label="1$\\sigma$"), Line2D([], [], color="0.6", ls="--", label="3$\\sigma$")]
     a1.legend(handles=h, fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.11), ncol=2)
 
