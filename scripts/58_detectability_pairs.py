@@ -181,16 +181,19 @@ def main(argv=None):
     a1.legend(handles=h, fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.11), ncol=2)
 
     # cumulative S/N vs l_max: one panel per CMB experiment (ACT | SO LAT | CMB-HD)
-    for ax, cmb, ttl in zip(cax, ("ACT DR6", "SO", "CMB-HD"), ("ACT DR6 (white noise only)", "Simons Obs. LAT (post-ILC)", "CMB-HD (post-ILC)")):
+    for ax, cmb, ttl in zip(cax, (("ACT DR6", "SPT-3G Main"), ("SO",), ("CMB-HD",)),
+                            ("ACT DR6 / SPT-3G (white noise only)", "Simons Obs. LAT (post-ILC)", "CMB-HD (post-ILC)")):
         for key, label, exp, sname, shells, col in PAIRS:
-            if exp != cmb:
+            if exp not in cmb:
                 continue
-            nkey = "white" if exp == "ACT DR6" else "ilc"
+            nkey = "white" if exp in ("ACT DR6", "SPT-3G Main") else "ilc"
             for (sig, _), ls in zip(SIGNALS, ("-", "--")):
                 sn, cum = res[(key, sname, nkey, sig)]
                 lae = label.splitlines()[0].split(" x ")[1]
                 ax.plot(lgrid, cum, ls, color=col, lw=2.2 if ls == "-" else 1.4,
-                        label=f"{key}: x {lae}, " + ("La Plante's galaxy model" if ls == "-" else "simulated LAEs") + f": {sn:.2g}")
+                        alpha=0.6 if key in HYPOTHETICAL else 1,
+                        label=f"{key}: {label.splitlines()[0]}" + (" (no overlap; as if)" if key in HYPOTHETICAL else "") + ", "
+                              + ("La Plante's galaxy model" if ls == "-" else "simulated LAEs") + f": {sn:.2g}")
         ax.axhline(1, color="0.6", lw=0.8, ls=":", label="1$\\sigma$"); ax.axhline(3, color="0.6", lw=0.8, ls="--", label="3$\\sigma$")
         ax.set_xscale("log"); ax.set_yscale("log"); ax.set_ylim(1e-3, 5); ax.set_xlim(150, 10000)
         ax.set_xlabel(r"$\ell_{\max}$"); ax.set_title(f"{ttl}: cumulative S/N vs l_max", fontsize=9.5)
