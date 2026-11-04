@@ -42,8 +42,9 @@ from ksz_lae_xcorr.utils.figio import save_fig
 
 SQ_DEG = 41252.96
 SHORT = {"HSC SILVERRUSH (NB816+NB921)": "HSC SILVERRUSH\n(current)", "Subaru PFS (SSP, repo value)": "Subaru PFS\n(L_min assumed)",
-         "Roman grism deep, no evolution from z=7": "Roman grism deep\n(no LF evolution)",
-         "Roman grism deep, LF as observed at z=7.3-8.4": "Roman grism deep\n(LF as observed)"}
+         "LAGER (DECam NB964)": "LAGER z~6.9\n(current)",
+         "Roman grism deep z=7.5-10, no evolution from z=7": "Roman deep z~7.5-10\n(no LF evolution)",
+         "Roman grism deep z=7.5-10, LF as observed at z=7.3": "Roman deep z~7.5-10\n(LF as observed)"}
 
 
 def experiment_variants():
@@ -155,7 +156,7 @@ def main(argv=None):
                 txt = "no\noverlap" if v == 0 else (f"{v:.2g}" if np.isfinite(v) else "-")
                 ax.text(j, i, txt, ha="center", va="center", fontsize=7.5,
                         color="0.35" if v == 0 else ("k" if np.isfinite(v) and v > 0.3 * norm.vmax else "w"))
-        ax.set_xticks(range(len(labs)), [l.replace(" (", "\n(") for l in labs], fontsize=7, rotation=0)
+        ax.set_xticks(range(len(labs)), [l.replace(" (", "\n(").replace("SPT-3G Main", "SPT-3G") for l in labs], fontsize=6.5, rotation=0)
         ax.set_yticks(range(len(surveys)), [SHORT.get(s.name, s.name) for s in surveys], fontsize=8)
         ax.set_title(titles[k], fontsize=9)
         ax.set_facecolor("0.93")
