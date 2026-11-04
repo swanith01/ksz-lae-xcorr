@@ -44,7 +44,9 @@ SQ_DEG = 41252.96
 SHORT = {"HSC SILVERRUSH (NB816+NB921)": "HSC SILVERRUSH\n(current)", "Subaru PFS (SSP, repo value)": "Subaru PFS\n(L_min assumed)",
          "LAGER (DECam NB964)": "LAGER z~6.9\n(current)",
          "Roman grism deep z=7.5-10, no evolution from z=7": "Roman deep z~7.5-10\n(no LF evolution)",
-         "Roman grism deep z=7.5-10, LF as observed at z=7.3": "Roman deep z~7.5-10\n(LF as observed)"}
+         "Roman grism deep z=7.5-10, LF as observed at z=7.3": "Roman deep z~7.5-10\n(LF as observed)",
+         "Roman grism 16 deg2 at deep-field depth (Maitra+25 area)": "Roman 16 deg2, deep depth\n(Maitra+25 area; upper)",
+         "Roman HLWAS deep tier (19.2 deg2, grism 6e-17)": "Roman HLWAS deep tier\n(19 deg2, 6e-17 cgs)"}
 
 
 def experiment_variants():

@@ -25,6 +25,7 @@
 \item The signal comes from our simulation (21cmFAST v4, ten 300\,Mpc boxes): either La~Plante's galaxy model (matter $\times$ Waters+16 bias) or the simulated LAEs, rescaled to each survey's bias (Sec.~\ref{sec:signal}).
 \item \textbf{Validation} (Sec.~\ref{sec:validation}). On La~Plante's exact setup our noise matches theirs bin by bin and our galaxy clustering matches their Fig.~8. Our total S/N is 0.7--0.85 of their Table~2 with shot noise. The gap comes from the modes our box does not contain ($\ell \lesssim 240$) and from a signal about two times lower at $\ell\gtrsim1000$ (not yet explained).
 \item \textbf{Detectability} (Sec.~\ref{sec:pairs}). None of the requested CMB$\times$LAE pairs reaches 1$\sigma$ with the validated signal model. Existing data (ACT DR6 $\times$ SILVERRUSH) give $\sim$0.01. A better CMB alone (SO LAT) does not help, because the LAE fields are only 10--20\,deg$^2$. CMB-HD $\times$ a 1\,deg$^2$ Roman deep field reaches 0.04--0.2 (0.2--1.2 with the simulated-LAE signal, whose excess is not yet confirmed). A 3$\sigma$ detection with CMB-HD needs Roman-deep-quality LAEs over $\sim$200--7000\,deg$^2$.
+\item \textbf{Wider Roman field.} Maitra et al.\ (2025) list $\sim$16\,deg$^2$ for the Roman grism. At the depth of the 1\,deg$^2$ deep field this gives 0.4 (1.0 with white noise) for CMB-HD with the validated signal model; this is an upper estimate, since no Roman survey of that size reaches that depth. The real wide-ish tier (HLWAS deep tier, 19.2\,deg$^2$) has a shallower grism and gives $\sim$0.04.
 \end{itemize}
 
 \section{Estimator}\label{sec:estimator}
@@ -98,9 +99,15 @@ Where a survey's catalogue count is published, the shot noise uses that count in
 \subsection{LAE surveys}
 \begin{table}[H]\centering\small
 \resizebox{\textwidth}{!}{\input{tables/lae_surveys.tex}}
-\caption{LAE survey shells. $L_{\min}$: SILVERRUSH from Weinberger, Kulkarni \& Haehnelt (2020) Table~1; LAGER from the faintest LAEs of Wold et al.\ (2022); Roman from the line-flux limits of Wold et al.\ (2023), who recover $L>10^{43}$\,erg\,s$^{-1}$ at 50\% completeness at $z=7.5$--10.5; PFS is an assumption. LFs: Umeda et al.\ (2025) Table~3 Schechter fits; LAGER four-field fit of Wold et al.\ (2022) with $\alpha=-2.5$. Observed counts: SILVERRUSH homogeneous samples of Ouchi et al.\ (2018), 959 LAEs in 13.8\,deg$^2$ ($z=5.7$) and 873 in 21.2\,deg$^2$ ($z=6.6$); LAGER 174 candidates in 10.19\,deg$^2$ (Wold et al.\ 2022). Areas: SILVERRUSH 14/21\,deg$^2$ (Konno et al.\ 2018); LAGER 3.24+2.91+1.90+2.14\,deg$^2$ (WIDE12, GAMA15A, COSMOS, CDFS; Wold et al.\ 2022); Roman deep field 1\,deg$^2$ (Wold et al.\ 2023). Roman: two LF choices bracket the density, no evolution from $z=7$ (optimistic) and the $z=7.3$ LF (the observed decline). $b_{\rm ST}$: abundance-matched bias at the shell redshift.}
+\caption{LAE survey shells. $L_{\min}$: SILVERRUSH from Weinberger, Kulkarni \& Haehnelt (2020) Table~1; LAGER from the faintest LAEs of Wold et al.\ (2022); Roman from the line-flux limits of Wold et al.\ (2023), who recover $L>10^{43}$\,erg\,s$^{-1}$ at 50\% completeness at $z=7.5$--10.5; PFS is an assumption. LFs: Umeda et al.\ (2025) Table~3 Schechter fits; LAGER four-field fit of Wold et al.\ (2022) with $\alpha=-2.5$. Observed counts: SILVERRUSH homogeneous samples of Ouchi et al.\ (2018), 959 LAEs in 13.8\,deg$^2$ ($z=5.7$) and 873 in 21.2\,deg$^2$ ($z=6.6$); LAGER 174 candidates in 10.19\,deg$^2$ (Wold et al.\ 2022). Areas: SILVERRUSH 14/21\,deg$^2$ (Konno et al.\ 2018); LAGER 3.24+2.91+1.90+2.14\,deg$^2$ (WIDE12, GAMA15A, COSMOS, CDFS; Wold et al.\ 2022); Roman deep field 1\,deg$^2$ (Wold et al.\ 2023). Roman 16\,deg$^2$: the area of Maitra et al.\ (2025) Table~1 at the deep-field depth (upper estimate). Roman HLWAS deep tier: 19.2\,deg$^2$ (ROTAC report, 2025), grism limit $\sim6\times10^{-17}$\,erg\,s$^{-1}$\,cm$^{-2}$ (our derivation from the report: 2.5$\times$ deeper than the medium tier's $1.5\times10^{-16}$), $L_{\min}=4\pi d_L^2F$ at the shell centres. Roman: two LF choices bracket the density, no evolution from $z=7$ (optimistic) and the $z=7.3$ LF (the observed decline). $b_{\rm ST}$: abundance-matched bias at the shell redshift.}
 \label{tab:lae}
 \end{table}
+
+\paragraph{Comparison with Maitra et al.\ (2025).} Their Table~1 lists the LAE surveys used in their kSZ$\times$LAE forecast. Where our numbers differ: SILVERRUSH $\sim$25\,deg$^2$ (all narrow bands together) against our 21\,deg$^2$ for the $z=6.6$ band alone; LAGER $\sim$3\,deg$^2$ (one field) against our 10.19\,deg$^2$ (the four-field sample of Wold et al.\ 2022); PFS 15\,deg$^2$, as ours; Roman grism $\sim$16\,deg$^2$ against our 1\,deg$^2$ deep field. For Roman we keep the 1\,deg$^2$ deep field (Girish's ``deep Roman survey'') and add two wider variants:
+\begin{itemize}
+\item \textbf{Roman 16\,deg$^2$ (upper):} Maitra's area at the deep-field depth ($L>10^{43}$\,erg\,s$^{-1}$, $z=7$ LF). Upper estimate.
+\item \textbf{Roman HLWAS deep tier:} the closest real Roman survey in area. Yung et al.\ (2023) have no $\sim$16\,deg$^2$ tier (their HLS is 1700\,deg$^2$, with a 2.5\,deg$^2$ moderate-depth and a 0.5\,deg$^2$ ultra-deep field); the HLWAS deep tier of the Roman Core Community Surveys (ROTAC report) is 19.2\,deg$^2$, but its grism reaches only $L_{\min}\approx5$--$8\times10^{43}$\,erg\,s$^{-1}$ at $z=8$--9.75, so it holds $<1$ LAE per deg$^2$ per shell.
+\end{itemize}
 
 \paragraph{Footprint overlap.} The SILVERRUSH (HSC-SSP Deep/UltraDeep), PFS and LAGER fields all lie at Dec $>-30^\circ$. They are inside the ACT DR6 and SO footprints, except the HSC ELAIS-N1 field (Dec $+54^\circ$), which is not removed here. They are all outside SPT-3G Main (Dec $\approx-42^\circ$ to $-70^\circ$), so SPT-3G $\times$ SILVERRUSH has zero overlap; we show it as a hypothetical. The position of the Roman deep field is not fixed; we assume it lies inside the CMB footprint.
 
@@ -166,7 +173,7 @@ We use exactly their setup: the Roman HLS area of 2200\,deg$^2$ ($f_{\rm sky}=0.
 \end{itemize}
 
 \section{Detectability for the requested CMB$\times$LAE pairs}\label{sec:pairs}
-The pairs are: (1) existing data, ACT DR6 $\times$ HSC SILVERRUSH ($z\approx6.6$); (2) a better CMB with the same LAEs, SO LAT $\times$ SILVERRUSH and SO LAT $\times$ LAGER ($z\approx6.9$); (3) better LAEs, SO LAT $\times$ a deep Roman grism field ($z\approx7.5$--10); (4) both better, CMB-HD $\times$ Roman deep. We also show SPT-3G $\times$ SILVERRUSH as a hypothetical (no real overlap). Scripts 58 and 59.
+The pairs are: (1) existing data, ACT DR6 $\times$ HSC SILVERRUSH ($z\approx6.6$); (2) a better CMB with the same LAEs, SO LAT $\times$ SILVERRUSH and SO LAT $\times$ LAGER ($z\approx6.9$); (3) better LAEs, SO LAT $\times$ a deep Roman grism field ($z\approx7.5$--10); (4) both better, CMB-HD $\times$ Roman deep. Pairs 3w and 4w repeat 3 and 4 with the wider Roman variants (Maitra et al.\ 2025 area; Sec.~\ref{sec:inputs}). We also show SPT-3G $\times$ SILVERRUSH as a hypothetical (no real overlap). Scripts 58 and 59.
 
 \begin{table}[H]\centering\small
 \resizebox{\textwidth}{!}{\input{tables/pairs.tex}}
@@ -176,11 +183,11 @@ The pairs are: (1) existing data, ACT DR6 $\times$ HSC SILVERRUSH ($z\approx6.6$
 
 \begin{figure}[H]\centering
 \includegraphics[width=\textwidth]{detectability_pairs/detectability_pairs.pdf}
-\caption{Left: total S/N per pair. Circles: La~Plante's galaxy model (validated); diamonds: simulated LAEs. Filled: post-ILC noise (ACT, SPT-3G: white noise only); open: white noise. For Roman, the small marker uses the $z=7.3$ LF. Right: cumulative S/N vs $\ell_{\max}$, one panel per CMB experiment.}
+\caption{Left: total S/N per pair. Circles: La~Plante's galaxy model (validated); diamonds: simulated LAEs. Filled: post-ILC noise (ACT, SPT-3G: white noise only); open: white noise. Small markers: Roman deep with the $z=7.3$ LF; Roman wider at the HLWAS deep-tier depth (the large markers are the 16\,deg$^2$ upper estimate). Right: cumulative S/N vs $\ell_{\max}$, one panel per CMB experiment.}
 \label{fig:pairs}
 \end{figure}
 
-\paragraph{Per-pair curves.} Figures~\ref{fig:pair1}--\ref{fig:pair4} show one pair each. Left: the S/N if the survey (same area, density, depth and shell width) sat at each $\Delta z=1$ window; stars mark its real shells. Right: cumulative S/N for the real shells. Solid: simulated LAEs; dashed: La~Plante's galaxy model; thick: post-ILC; thin: white noise. Grey band: the LAE bias is held constant beyond the measured redshift.
+\paragraph{Per-pair curves.} Figures~\ref{fig:pair1}--\ref{fig:pair4w} show one pair each. Left: the S/N if the survey (same area, density, depth and shell width) sat at each $\Delta z=1$ window; stars mark its real shells. Right: cumulative S/N for the real shells. Solid: simulated LAEs; dashed: La~Plante's galaxy model; thick: post-ILC; thin: white noise. Grey band: the LAE bias is held constant beyond the measured redshift.
 
 \begin{figure}[H]\centering
 \includegraphics[width=0.92\textwidth]{detectability_pairs/pair_1.pdf}
@@ -218,6 +225,18 @@ The pairs are: (1) existing data, ACT DR6 $\times$ HSC SILVERRUSH ($z\approx6.6$
 \label{fig:pair4}
 \end{figure}
 
+\begin{figure}[H]\centering
+\includegraphics[width=0.92\textwidth]{detectability_pairs/pair_3w.pdf}
+\caption{Pair 3w: SO LAT $\times$ Roman 16\,deg$^2$ at deep-field depth (Maitra et al.\ 2025 area; upper estimate). The legend also gives the HLWAS deep-tier value.}
+\label{fig:pair3w}
+\end{figure}
+
+\begin{figure}[H]\centering
+\includegraphics[width=0.92\textwidth]{detectability_pairs/pair_4w.pdf}
+\caption{Pair 4w: CMB-HD $\times$ Roman 16\,deg$^2$ at deep-field depth (Maitra et al.\ 2025 area; upper estimate). The legend also gives the HLWAS deep-tier value.}
+\label{fig:pair4w}
+\end{figure}
+
 
 
 \paragraph{Reading.}
@@ -227,6 +246,7 @@ The pairs are: (1) existing data, ACT DR6 $\times$ HSC SILVERRUSH ($z\approx6.6$
 \item \textbf{SPT-3G}'s much deeper map would give $\sim$8$\times$ ACT on the same field, if an LAE field existed inside its footprint.
 \item \textbf{Redshift.} The $z\approx6.6$--6.9 surveys sit where the signal has mostly faded; the signal peaks at $z\approx8$--9, where Roman observes.
 \item \textbf{Area.} Only CMB-HD $\times$ Roman approaches 1$\sigma$. The limit is the LAE survey area.
+\item \textbf{Wider Roman.} Going from 1 to 16\,deg$^2$ at the same depth raises the S/N by $\sim$4--5 (CMB-HD: 0.08 to 0.4 post-ILC, 0.2 to 1.0 white, validated signal model). This needs a 16\,deg$^2$ grism survey as deep as the 1\,deg$^2$ field, which is not planned. At the real HLWAS deep-tier depth the gain in area is lost to the shallower grism (0.04).
 \end{itemize}
 
 \section{All surveys $\times$ all CMB experiments}
@@ -248,7 +268,7 @@ For completeness (CMB-S4 kept for comparison only), script 55:
 \item \textbf{ACT and SPT-3G}: instrument noise only (no foreground residuals), so optimistic.
 \item \textbf{Signal amplitude.} Up to $\sim$2$\times$ below \LP\ at $\ell\gtrsim1000$; a bigger box is needed (the planned large-box LAE runs with Jahaan).
 \item \textbf{Simulated-LAE excess.} Not yet confirmed. Next: a mismatched-seed null test and a halo sample matched in number density.
-\item \textbf{Survey bias.} Abundance matching without scatter, so an upper value. PFS $L_{\min}$ is assumed. The Roman density is bracketed by two LF choices.
+\item \textbf{Survey bias.} Abundance matching without scatter, so an upper value. PFS $L_{\min}$ is assumed. The Roman density is bracketed by two LF choices. The HLWAS deep-tier grism limit is our derivation from the ROTAC report.
 \item \textbf{Footprints.} ELAIS-N1 is not removed from SILVERRUSH; the Roman deep-field position is assumed inside the CMB footprint.
 \end{itemize}
 
@@ -264,10 +284,12 @@ Repository \texttt{ksz-lae-xcorr}. Script 53 (on the cluster) writes the binned 
 \item Ferraro et al.\ 2016 (projected-field kSZ estimator; via \LP)
 \item Konno et al.\ 2018, SILVERRUSH IV, arXiv:1705.01222
 \item La~Plante, Sipple \& Lidz 2022, ApJ 928, 162, arXiv:2111.13717 (\LP)
+\item Maitra et al.\ 2025, arXiv:2505.17188 (Table~1: LAE survey areas)
 \item Mesinger, Furlanetto \& Cen 2011, 21cmFAST, arXiv:1003.3878
 \item Naess et al.\ 2025, ACT DR6 maps, arXiv:2503.14451
 \item Ouchi et al.\ 2018, SILVERRUSH I, arXiv:1704.07455
 \item Park et al.\ 2018 (late-time kSZ; via \LP\ Eq.~9), arXiv:1710.02792
+\item Roman Observations Time Allocation Committee (ROTAC) 2025, final report on the Core Community Surveys, arXiv:2505.10574
 \item Sheth \& Tormen 1999, arXiv:astro-ph/9901122
 \item Sheth, Mo \& Tormen 2001, MNRAS 323, 1, arXiv:astro-ph/9907024
 \item Simons Observatory collaboration 2019, science goals, arXiv:1808.07445
@@ -277,5 +299,6 @@ Repository \texttt{ksz-lae-xcorr}. Script 53 (on the cluster) writes the binned 
 \item Weinberger, Kulkarni \& Haehnelt 2020, arXiv:1911.11783
 \item Wold et al.\ 2022, LAGER Ly$\alpha$ LF at $z\sim7$, arXiv:2105.12191
 \item Wold et al.\ 2023, Roman grism deep field, arXiv:2305.01562
+\item Yung et al.\ 2023, Roman ultra-deep field forecasts, arXiv:2210.04902
 \end{itemize}
 \end{document}

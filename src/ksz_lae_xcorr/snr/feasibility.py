@@ -124,6 +124,19 @@ SURVEYS = {s.name: s for s in [
         Shell(9.0, 1.0, 1.0e43, ("Umeda25", 7.3), 1.0),
         Shell(9.75, 0.5, 1.0e43, ("Umeda25", 7.3), 1.0),
     ], note="Same survey with the z=7.3 LF fit (the observed decline of the LAE density into reionisation) at every z."),
+    Survey("Roman grism 16 deg2 at deep-field depth (Maitra+25 area)", 16.0, status="planned", shells=[
+        Shell(8.0, 1.0, 1.0e43, ("Umeda25", 7.0), 16.0),
+        Shell(9.0, 1.0, 1.0e43, ("Umeda25", 7.0), 16.0),
+        Shell(9.75, 0.5, 1.0e43, ("Umeda25", 7.0), 16.0),
+    ], note="Area ~16 deg2 for the Roman grism from Maitra+25 (arXiv 2505.17188) Table 1, at the depth of the Wold+23 1 deg2 deep "
+            "field (L > 1e43 erg/s) and the z=7.0 LF: an UPPER estimate, since no ~16 deg2 Roman grism survey reaches that depth."),
+    Survey("Roman HLWAS deep tier (19.2 deg2, grism 6e-17)", 19.2, status="planned", shells=[
+        Shell(8.0, 1.0, 4.86e43, ("Umeda25", 7.0), 19.2),
+        Shell(9.0, 1.0, 6.37e43, ("Umeda25", 7.0), 19.2),
+        Shell(9.75, 0.5, 7.64e43, ("Umeda25", 7.0), 19.2),
+    ], note="Roman core community survey: High Latitude Wide Area Survey deep tier, 19.2 deg2 imaging + slitless spectroscopy "
+            "(ROTAC report, arXiv 2505.10574). Its grism line-flux limit is quoted as 2.5x deeper than the medium tier's 1.5e-16 "
+            "erg/s/cm2 (5 sigma), i.e. ~6e-17 (our derivation); L_min = 4 pi d_L^2 F at the shell centres. z=7.0 LF (no evolution)."),
 ]}
 
 

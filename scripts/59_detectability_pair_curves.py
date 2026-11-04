@@ -50,6 +50,8 @@ PAIRS = [
     ("2b", "SO LAT x LAGER z~6.9 (better CMB)", "SO", p58.LAGER, None, "#0072B2", False),
     ("3", "SO LAT x Roman deep z~7.5-10 (better LAEs)", "SO", p58.ROMAN, None, "#E69F00", False),
     ("4", "CMB-HD x Roman deep z~7.5-10 (both better)", "CMB-HD", p58.ROMAN, None, "#009E73", False),
+    ("3w", "SO LAT x Roman 16 deg2 at deep-field depth (Maitra+25 area; upper estimate)", "SO", p58.ROMAN_W, None, "#B8860B", False),
+    ("4w", "CMB-HD x Roman 16 deg2 at deep-field depth (Maitra+25 area; upper estimate)", "CMB-HD", p58.ROMAN_W, None, "#006D4C", False),
 ]
 
 
@@ -114,16 +116,17 @@ def main(argv=None):
                 for p in parts:
                     a1.plot(p["z"], np.sqrt(p["terms"].sum()), "*", ms=14 if lw > 2 else 10, color=col, mec="k", mew=0.6, zorder=5)
                 extra = ""
-                if sname == p58.ROMAN:
-                    lo = p58.survey_terms(fe.SURVEYS[p58.ROMAN_LO], None, exp, lab, sp[sig], btab, hb, chi, args.ell_max)
-                    extra = f" (z=7.3 LF: {np.sqrt(sum(p['terms'].sum() for p in lo)):.2g})"
+                if sname in p58.LOW:
+                    lo = p58.survey_terms(fe.SURVEYS[p58.LOW[sname]], None, exp, lab, sp[sig], btab, hb, chi, args.ell_max)
+                    tag = "z=7.3 LF" if sname == p58.ROMAN else "HLWAS deep-tier depth"
+                    extra = f" ({tag}: {np.sqrt(sum(p['terms'].sum() for p in lo)):.2g})"
                 if parts:
                     cum = ss.cumulative_snr([p["terms"] for p in parts], [p["edges"] for p in parts], lgrid, 100.0)
                     a2.plot(lgrid, cum, ls, color=col, lw=lw, label=f"{slab}, {nlab}: {tot:.2g}{extra}")
                 rows.append({"pair": key, "cmb": lab, "lae_survey": sname, "hypothetical_overlap": hypo, "signal": slab,
                              "SN_real_shells": round(tot, 4), "SN_z0_curve": " ".join(f"{z:g}:{v:.3g}" for z, v in zip(z0s, y))})
         for a in (a1, a2):
-            a.set_yscale("log"); a.set_ylim(1e-4, 5)
+            a.set_yscale("log"); a.set_ylim(1e-4, 10)
             a.axhline(1, color="0.6", lw=0.8, ls=":"); a.axhline(3, color="0.6", lw=0.8, ls="--")
         if np.isfinite(zb).all():
             a1.axvspan(zb.max() + 0.25, max(z0s) + 0.3, color="0.93", zorder=0)

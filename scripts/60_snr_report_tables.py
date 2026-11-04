@@ -30,11 +30,15 @@ SRC_EXP = {
 SRC_LF = {"Umeda25": "Umeda+25 Tab.\\,3", "Wold22": "Wold+22 (4-field, $\\alpha=-2.5$)"}
 SRC_LMIN = {"HSC SILVERRUSH (NB816+NB921)": "Weinberger+20 Tab.\\,1", "Subaru PFS (SSP, repo value)": "assumed",
             "LAGER (DECam NB964)": "Wold+22", "Roman grism deep z=7.5-10, no evolution from z=7": "Wold+23",
-            "Roman grism deep z=7.5-10, LF as observed at z=7.3": "Wold+23"}
+            "Roman grism deep z=7.5-10, LF as observed at z=7.3": "Wold+23",
+            "Roman grism 16 deg2 at deep-field depth (Maitra+25 area)": "Wold+23 depth",
+            "Roman HLWAS deep tier (19.2 deg2, grism 6e-17)": "ROTAC 2025, derived"}
 SRC_NOBS = {"HSC SILVERRUSH (NB816+NB921)": "Ouchi+18", "LAGER (DECam NB964)": "Wold+22"}
 SHORT = {"HSC SILVERRUSH (NB816+NB921)": "HSC SILVERRUSH", "Subaru PFS (SSP, repo value)": "Subaru PFS",
          "LAGER (DECam NB964)": "LAGER", "Roman grism deep z=7.5-10, no evolution from z=7": "Roman deep (no LF evol.)",
-         "Roman grism deep z=7.5-10, LF as observed at z=7.3": "Roman deep (LF as obs.)"}
+         "Roman grism deep z=7.5-10, LF as observed at z=7.3": "Roman deep (LF as obs.)",
+         "Roman grism 16 deg2 at deep-field depth (Maitra+25 area)": "Roman 16 deg$^2$ (upper)",
+         "Roman HLWAS deep tier (19.2 deg2, grism 6e-17)": "Roman HLWAS deep tier"}
 
 
 def tex(s):
@@ -85,10 +89,10 @@ def main(argv=None):
             lo, hi = chi(sh.z - sh.dz / 2), chi(sh.z + sh.dz / 2)
             nlf = n3 * chi(sh.z) ** 2 * (hi - lo) * (np.pi / 180) ** 2
             b, M = hb.bias_for_density(n3, sh.z)
-            used = f"{sh.n_obs_deg2:.0f} ({SRC_NOBS.get(sn, 'obs.')})" if sh.n_obs_deg2 else f"{nlf:.0f} (LF)"
+            used = f"{sh.n_obs_deg2:.0f} ({SRC_NOBS.get(sn, 'obs.')})" if sh.n_obs_deg2 else f"{nlf:.0f} (LF)" if nlf >= 10 else f"{nlf:.2g} (LF)"
             L.append(rf"{SHORT.get(sn, tex(sn))} & {sh.z:g} & {sh.dz:g} & {sh.area_deg2 or sv.area_deg2:g} & "
                      rf"{sci(sh.L_min)} ({SRC_LMIN.get(sn, '')}) & {SRC_LF.get(sh.lf[0], sh.lf[0])} $z={sh.lf[1]:g}$ & {sci(n3)} & "
-                     rf"{nlf:.0f} & {used} & {b:.1f} \\")
+                     rf"{(f'{nlf:.0f}' if nlf >= 10 else f'{nlf:.2g}')} & {used} & {b:.1f} \\")
     L += [r"\bottomrule", r"\end{tabular}"]
     write(os.path.join(args.out, "lae_surveys.tex"), L)
 

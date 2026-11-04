@@ -39,3 +39,19 @@ LAGER (DECam NB964),CMB-HD (white noise),1.0,6.9,0.0552,0.0552,0.0898,0.2173,z=6
 "Roman grism deep z=7.5-10, LF as observed at z=7.3",CMB-S4 (white noise),1.0,8 9 9.75,0.0525,0.0525,0.0353,0.1957,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
 "Roman grism deep z=7.5-10, LF as observed at z=7.3",CMB-HD (post-ILC),1.0,8 9 9.75,0.0555,0.0555,0.0361,0.2179,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
 "Roman grism deep z=7.5-10, LF as observed at z=7.3",CMB-HD (white noise),1.0,8 9 9.75,0.1502,0.1502,0.0933,0.5817,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),ACT DR6 (white noise),1.0,8 9 9.75,0.166,0.166,0.0534,0.403,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),SPT-3G Main (white noise),1.0,8 9 9.75,1.265,1.265,0.4518,2.2217,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),SO (post-ILC),1.0,8 9 9.75,0.1186,0.1186,0.0383,0.2931,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),SO (white noise),1.0,8 9 9.75,0.156,0.156,0.0498,0.3822,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-S4 (post-ILC),1.0,8 9 9.75,0.2354,0.2354,0.0818,0.5205,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-S4 (white noise),1.0,8 9 9.75,1.0739,1.0739,0.3899,1.8385,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-HD (post-ILC),1.0,8 9 9.75,1.1342,1.1342,0.3997,1.9994,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-HD (white noise),1.0,8 9 9.75,2.9554,2.9554,1.0162,4.9328,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",ACT DR6 (white noise),1.0,8 9 9.75,0.0176,0.0176,0.0059,0.0663,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",SPT-3G Main (white noise),1.0,8 9 9.75,0.1356,0.1356,0.0484,0.4983,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",SO (post-ILC),1.0,8 9 9.75,0.0126,0.0126,0.0042,0.0478,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",SO (white noise),1.0,8 9 9.75,0.0166,0.0166,0.0056,0.0624,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-S4 (post-ILC),1.0,8 9 9.75,0.025,0.025,0.0088,0.0954,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-S4 (white noise),1.0,8 9 9.75,0.1149,0.1149,0.0415,0.4253,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-HD (post-ILC),1.0,8 9 9.75,0.1214,0.1214,0.0426,0.4431,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-HD (white noise),1.0,8 9 9.75,0.3286,0.3286,0.1099,1.1311,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF

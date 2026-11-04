@@ -49,6 +49,9 @@ HSC = "HSC SILVERRUSH (NB816+NB921)"
 LAGER = "LAGER (DECam NB964)"
 ROMAN = "Roman grism deep z=7.5-10, no evolution from z=7"
 ROMAN_LO = "Roman grism deep z=7.5-10, LF as observed at z=7.3"
+ROMAN_W = "Roman grism 16 deg2 at deep-field depth (Maitra+25 area)"
+ROMAN_W_LO = "Roman HLWAS deep tier (19.2 deg2, grism 6e-17)"
+LOW = {ROMAN: ROMAN_LO, ROMAN_W: ROMAN_W_LO}     # survey -> its pessimistic variant (drawn as the small marker)
 # (key, label, CMB experiment, LAE survey, shells to use (None = all), colour)
 PAIRS = [
     ("1", "ACT DR6 x HSC SILVERRUSH z~6.6\n(existing data)", "ACT DR6", HSC, (6.6,), "#CC79A7"),
@@ -57,6 +60,8 @@ PAIRS = [
     ("2b", "SO LAT x LAGER z~6.9\n(better CMB)", "SO", LAGER, None, "#0072B2"),
     ("3", "SO LAT x Roman deep z~7.5-10\n(better LAEs)", "SO", ROMAN, None, "#E69F00"),
     ("4", "CMB-HD x Roman deep z~7.5-10\n(both better)", "CMB-HD", ROMAN, None, "#009E73"),
+    ("3w", "SO LAT x Roman wider, 16-19 deg2\n(better LAEs, Maitra+25 area)", "SO", ROMAN_W, None, "#B8860B"),
+    ("4w", "CMB-HD x Roman wider, 16-19 deg2\n(both better, Maitra+25 area)", "CMB-HD", ROMAN_W, None, "#006D4C"),
 ]
 HYPOTHETICAL = {"1s"}     # SPT-3G Main x SILVERRUSH: the fields do not overlap (Dec -42..-70 vs > -10); shown as if they did
 SIGNALS = (("matter_waters", "La Plante's galaxy model (validated)"), ("lae_L42.5", "simulated LAEs (excess not yet confirmed)"))
@@ -124,7 +129,7 @@ def main(argv=None):
 
     rows, res = [], {}
     for key, label, exp, sname, shells, col in PAIRS:
-        for svn in ((sname, ROMAN_LO) if sname == ROMAN else (sname,)):
+        for svn in ((sname, LOW[sname]) if sname in LOW else (sname,)):
             sv = fe.SURVEYS[svn]
             if key in HYPOTHETICAL:          # the real overlap is zero; compute as if the fields overlapped
                 sv = dataclasses.replace(sv, name=sv.name + " [as if overlapping]")
@@ -137,7 +142,7 @@ def main(argv=None):
                     res[(key, svn, nkey, sig)] = (sn, cum)
                     rows.append({"pair": key, "cmb": lab, "lae_survey": svn + (" [as if overlapping: real S/N = 0]" if key in HYPOTHETICAL else ""), "signal": sig_label,
                                  "shells_z": " ".join(f"{p['z']:g}" for p in parts), "area_deg2": area,
-                                 "LAEs_per_deg2": " ".join(f"{p['n2d_deg2']:.0f}" for p in parts),
+                                 "LAEs_per_deg2": " ".join(f"{p['n2d_deg2']:.0f}" if p['n2d_deg2'] >= 10 else f"{p['n2d_deg2']:.2g}" for p in parts),
                                  "b_survey": " ".join(f"{p['b_survey']:.1f}" for p in parts),
                                  "SN": round(sn, 4),
                                  "area_for_3sigma_deg2": area3(area, sn)})
@@ -146,7 +151,7 @@ def main(argv=None):
 
     print(f"{'pair':>4} {'CMB':>22} {'LAE survey':>40} | La Plante model | sim LAEs | 3sigma area (La Plante model)")
     for key, label, exp, sname, shells, col in PAIRS:
-        for svn in ((sname, ROMAN_LO) if sname == ROMAN else (sname,)):
+        for svn in ((sname, LOW[sname]) if sname in LOW else (sname,)):
             for nkey, lab in noise_labels(exp):
                 a = [r for r in rows if r["pair"] == key and r["lae_survey"].startswith(svn) and r["cmb"] == lab]
                 print(f"{key:>4} {lab:>22} {svn[:40]:>40} | {a[0]['SN']:<15} | {a[1]['SN']:<8} | {a[0]['area_for_3sigma_deg2']} deg2")
@@ -161,12 +166,12 @@ def main(argv=None):
                 v = res[(key, sname, nkey, sig)][0]
                 a1.plot(v, y + dy, mk, ms=9, color=col, mfc=col if nkey == "ilc" or exp in ("ACT DR6", "SPT-3G Main") else "white", mew=1.6,
                         zorder=3, alpha=0.55 if key in HYPOTHETICAL else 1)
-                if sname == ROMAN:
-                    vlo = res[(key, ROMAN_LO, nkey, sig)][0]
+                if sname in LOW:
+                    vlo = res[(key, LOW[sname], nkey, sig)][0]
                     a1.plot([vlo, v], [y + dy, y + dy], color=col, lw=1, alpha=0.6, zorder=2)
                     a1.plot(vlo, y + dy, mk, ms=5, color=col, mfc="white", mew=1, alpha=0.8, zorder=3)
     a1.axvline(1, color="0.6", lw=0.8, ls=":"); a1.axvline(3, color="0.6", lw=0.8, ls="--")
-    a1.set_xscale("log"); a1.set_xlim(1e-3, 5)
+    a1.set_xscale("log"); a1.set_xlim(1e-3, 10)
     a1.set_yticks(ypos, [f"{k}  {l}" for k, l, *_ in PAIRS], fontsize=8.5)
     a1.set_xlabel("total S/N (all l, all shells of the survey)")
     a1.set_title("S/N per CMB x LAE pair", fontsize=10)
@@ -176,7 +181,7 @@ def main(argv=None):
          Line2D([], [], marker="o", ls="", color="0.3", mfc="0.3", ms=8, label="filled: post-ILC noise (ACT / SPT-3G: white noise only)"),
          Line2D([], [], marker="o", ls="", color="0.3", mfc="white", ms=8, label="open: white (instrument) noise"),
          Line2D([], [0], marker="o", ls="-", color="0.3", mfc="white", ms=4, lw=1,
-                label="Roman: small marker = LAE density from the z = 7.3 LF (observed decline)"),
+                label="small marker: Roman deep = z = 7.3 LF (observed decline); Roman wider = HLWAS deep-tier depth"),
          Line2D([], [], color="0.6", ls=":", label="1$\\sigma$"), Line2D([], [], color="0.6", ls="--", label="3$\\sigma$")]
     a1.legend(handles=h, fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.11), ncol=2)
 
@@ -195,7 +200,7 @@ def main(argv=None):
                         label=f"{key}: {label.splitlines()[0]}" + (" (no overlap; as if)" if key in HYPOTHETICAL else "") + ", "
                               + ("La Plante's galaxy model" if ls == "-" else "simulated LAEs") + f": {sn:.2g}")
         ax.axhline(1, color="0.6", lw=0.8, ls=":", label="1$\\sigma$"); ax.axhline(3, color="0.6", lw=0.8, ls="--", label="3$\\sigma$")
-        ax.set_xscale("log"); ax.set_yscale("log"); ax.set_ylim(1e-3, 5); ax.set_xlim(150, 10000)
+        ax.set_xscale("log"); ax.set_yscale("log"); ax.set_ylim(1e-3, 10); ax.set_xlim(150, 10000)
         ax.set_xlabel(r"$\ell_{\max}$"); ax.set_title(f"{ttl}: cumulative S/N vs l_max", fontsize=9.5)
         ax.legend(fontsize=7.5, frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.11), ncol=1)
     cax[0].set_ylabel("cumulative S/N")
