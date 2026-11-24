@@ -1,0 +1,109 @@
+======================================================================
+  kSZ2 x LAE  coeval simulation
+  Seed        : 1
+  Node        : compute-1-3
+  Started     : Tue Jun 30 11:15:31 IST 2026
+  PBS job ID  : 1627547.swarm
+  OMP threads : 32
+======================================================================
+
+======================================================================
+kSZ2 x LAE  —  py21cmfast v4.1.0  —  seed 1
+======================================================================
+  Project root : /user1/swanith/kSZ2_LAE_project_22Jun2026
+  Seed dir     : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1
+  Cache dir    : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/cache
+
+  z range      : 5.0 -> 20.0  (step factor 1.02)
+  Nodes        : 65  [5.0000, 20.3090]
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  BOX_LEN      : 300.0 cMpc
+  HII_DIM      : 300  (1.000 cMpc/cell)
+  DIM          : 600  (0.500 cMpc/cell)
+  N_THREADS    : 32
+  KEEP_3D_VEL  : True
+  INHOMO_RECO  : True
+  USE_TS_FLUCT : True
+  SAMPLE_METHOD: MASS-LIMITED
+
+======================================================================
+  Computing initial conditions ...
+  ✓ Initial conditions done  (0.6 min)
+
+======================================================================
+  Running 65 coeval nodes  (seed 1)
+======================================================================
+
+  z=20.3090  halos= 1,000,000  node_time=12.5s  elapsed=0.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z20.308959
+  ✗ Halo catalog failed at z=19.8911: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 19.48150659329226 != 20.308959459661267
+  z=19.8911  halos=         0  node_time=1.5s  elapsed=2.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z19.891137
+  ✗ Halo catalog failed at z=19.4815: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 19.079908424796333 != 20.308959459661267
+  z=19.4815  halos=         0  node_time=2.2s  elapsed=3.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z19.481507
+  ✗ Halo catalog failed at z=19.0799: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 18.686184730192483 != 20.308959459661267
+  z=19.0799  halos=         0  node_time=1.7s  elapsed=5.2min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z19.079908
+  ✗ Halo catalog failed at z=18.6862: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 18.300181108031847 != 20.308959459661267
+  z=18.6862  halos=         0  node_time=1.4s  elapsed=6.8min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z18.686185
+  ✗ Halo catalog failed at z=18.3002: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 17.921746184344947 != 20.308959459661267
+  z=18.3002  halos=         0  node_time=1.6s  elapsed=8.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z18.300181
+  ✗ Halo catalog failed at z=17.9217: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 17.55073155327936 != 20.308959459661267
+  z=17.9217  halos=         0  node_time=2.0s  elapsed=10.1min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z17.921746
+  ✗ Halo catalog failed at z=17.5507: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 17.186991718901332 != 20.308959459661267
+  z=17.5507  halos=         0  node_time=1.6s  elapsed=11.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z17.550732
+  ✗ Halo catalog failed at z=17.1870: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 16.83038403813856 != 20.308959459661267
+  z=17.1870  halos=         0  node_time=1.9s  elapsed=13.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z17.186992
+  ✗ Halo catalog failed at z=16.8304: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 16.480768664841726 != 20.308959459661267
+  z=16.8304  halos=         0  node_time=1.9s  elapsed=15.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z16.830384
+  ✗ Halo catalog failed at z=16.4808: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 16.13800849494287 != 20.308959459661267
+  z=16.4808  halos=         0  node_time=1.8s  elapsed=17.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z16.480769
+  ✗ Halo catalog failed at z=16.1380: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 15.801969112689086 != 20.308959459661267
+  z=16.1380  halos=         0  node_time=1.9s  elapsed=19.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z16.138008
+  ✗ Halo catalog failed at z=15.8020: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 15.472518737930475 != 20.308959459661267
+  z=15.8020  halos=         0  node_time=1.5s  elapsed=21.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z15.801969
+  ✗ Halo catalog failed at z=15.4725: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 15.149528174441642 != 20.308959459661267
+  z=15.4725  halos=         0  node_time=1.6s  elapsed=23.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z15.472519
+  ✗ Halo catalog failed at z=15.1495: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 14.83287075925651 != 20.308959459661267
+  z=15.1495  halos=         0  node_time=1.4s  elapsed=25.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z15.149528
+  ✗ Halo catalog failed at z=14.8329: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 14.522422312996579 != 20.308959459661267
+  z=14.8329  halos=         0  node_time=1.9s  elapsed=27.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z14.832871
+  ✗ Halo catalog failed at z=14.5224: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 14.218061091173116 != 20.308959459661267
+  z=14.5224  halos=         0  node_time=1.4s  elapsed=29.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z14.522422
+  ✗ Halo catalog failed at z=14.2181: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 13.91966773644423 != 20.308959459661267
+  z=14.2181  halos=         0  node_time=1.4s  elapsed=31.8min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z14.218061
+  ✗ Halo catalog failed at z=13.9197: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 13.62712523180807 != 20.308959459661267
+  z=13.9197  halos=         0  node_time=1.7s  elapsed=33.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z13.919668
+  ✗ Halo catalog failed at z=13.6271: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 13.340318854713793 != 20.308959459661267
+  z=13.6271  halos=         0  node_time=1.6s  elapsed=36.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z13.627125
+  ✗ Halo catalog failed at z=13.3403: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 13.059136132072346 != 20.308959459661267
+  z=13.3403  halos=         0  node_time=1.6s  elapsed=38.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z13.340319
+  ✗ Halo catalog failed at z=13.0591: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 12.783466796149359 != 20.308959459661267
+  z=13.0591  halos=         0  node_time=1.8s  elapsed=40.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z13.059136
+  ✗ Halo catalog failed at z=12.7835: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 12.5132027413229 != 20.308959459661267
+  z=12.7835  halos=         0  node_time=1.5s  elapsed=42.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z12.783467
+  ✗ Halo catalog failed at z=12.5132: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 12.248237981689117 != 20.308959459661267
+  z=12.5132  halos=         0  node_time=1.5s  elapsed=44.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z12.513203
+  ✗ Halo catalog failed at z=12.2482: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 11.988468609499135 != 20.308959459661267
+  z=12.2482  halos=         0  node_time=1.5s  elapsed=46.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z12.248238
+  ✗ Halo catalog failed at z=11.9885: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 11.733792754410917 != 20.308959459661267
+  z=11.9885  halos=         0  node_time=2.1s  elapsed=48.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z11.988469
+  ✗ Halo catalog failed at z=11.7338: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 11.484110543540115 != 20.308959459661267
+  z=11.7338  halos=         0  node_time=1.4s  elapsed=50.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z11.733793
+  ✗ Halo catalog failed at z=11.4841: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 11.23932406229423 != 20.308959459661267
+  z=11.4841  halos=         0  node_time=1.6s  elapsed=53.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z11.484111
+  ✗ Halo catalog failed at z=11.2393: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 10.999337315974735 != 20.308959459661267
+  z=11.2393  halos=         0  node_time=1.4s  elapsed=54.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z11.239324
+  ✗ Halo catalog failed at z=10.9993: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 10.764056192132093 != 20.308959459661267
+  z=10.9993  halos=         0  node_time=1.3s  elapsed=57.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z10.999337
+  ✗ Halo catalog failed at z=10.7641: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 10.533388423658915 != 20.308959459661267
+  z=10.7641  halos=         0  node_time=1.4s  elapsed=58.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z10.764056
+  ✗ Halo catalog failed at z=10.5334: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 10.30724355260678 != 20.308959459661267
+  z=10.5334  halos=         0  node_time=1.4s  elapsed=61.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z10.533388
+  ✗ Halo catalog failed at z=10.3072: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 10.085532894712529 != 20.308959459661267
+  z=10.3072  halos=         0  node_time=1.4s  elapsed=63.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z10.307244
+  ✗ Halo catalog failed at z=10.0855: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 9.868169504620125 != 20.308959459661267
+  z=10.0855  halos=         0  node_time=1.4s  elapsed=65.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z10.085533
+  ✗ Halo catalog failed at z=9.8682: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 9.655068141784437 != 20.308959459661267
+  z= 9.8682  halos=         0  node_time=1.4s  elapsed=67.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z9.868170
+  ✗ Halo catalog failed at z=9.6551: Incompatible redshifts with inputs and HaloCatalog in determine_halo_catalog (descendant z): 9.446145237043565 != 20.308959459661267
+  z= 9.6551  halos=         0  node_time=1.4s  elapsed=70.1min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/coeval_z9.655068

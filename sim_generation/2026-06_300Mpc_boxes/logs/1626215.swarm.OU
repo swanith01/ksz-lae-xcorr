@@ -1,0 +1,90 @@
+======================================================================
+  py21cmfast v4.1.0 bounds-check test
+  Node     : compute-1-7
+  Started  : Mon Jun 29 15:18:02 IST 2026
+======================================================================
+py21cmfast version: 4.1.0
+Cache dir: /user1/swanith/kSZ2_LAE_project_22Jun2026/test_cache
+Testing BOX_LEN=100, HII_DIM=100, DIM=200 ...
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  Step 1: Computing initial conditions ...
+  ✓ Initial conditions done
+
+  Step 2: Running all nodes z=20 down to z=5 ...
+    ✓ z=20.3267 OK
+    ✓ z=19.9085 OK
+    ✓ z=19.4986 OK
+    ✓ z=19.0966 OK
+    ✓ z=18.7026 OK
+    ✓ z=18.3162 OK
+    ✓ z=17.9375 OK
+    ✓ z=17.5662 OK
+    ✓ z=17.2021 OK
+    ✓ z=16.8452 OK
+    ✓ z=16.4953 OK
+    ✓ z=16.1523 OK
+    ✓ z=15.8160 OK
+    ✓ z=15.4862 OK
+    ✓ z=15.1630 OK
+    ✓ z=14.8461 OK
+    ✓ z=14.5353 OK
+    ✓ z=14.2307 OK
+    ✓ z=13.9321 OK
+    ✓ z=13.6393 OK
+    ✓ z=13.3523 OK
+    ✓ z=13.0708 OK
+    ✓ z=12.7949 OK
+    ✓ z=12.5245 OK
+    ✓ z=12.2593 OK
+    ✓ z=11.9993 OK
+    ✓ z=11.7444 OK
+    ✓ z=11.4945 OK
+    ✓ z=11.2495 OK
+    ✓ z=11.0093 OK
+    ✓ z=10.7739 OK
+    ✓ z=10.5430 OK
+    ✓ z=10.3167 OK
+    ✓ z=10.0948 OK
+    ✓ z=9.8772 OK
+    ✓ z=9.6639 OK
+    ✓ z=9.4548 OK
+    ✓ z=9.2498 OK
+    ✓ z=9.0489 OK
+    ✓ z=8.8518 OK
+    ✓ z=8.6587 OK
+    ✓ z=8.4693 OK
+    ✓ z=8.2836 OK
+    ✓ z=8.1016 OK
+    ✓ z=7.9231 OK
+    ✓ z=7.7481 OK
+    ✓ z=7.5766 OK
+    ✓ z=7.4084 OK
+    ✓ z=7.2436 OK
+    ✓ z=7.0819 OK
+    ✓ z=6.9235 OK
+    ✓ z=6.7681 OK
+    ✓ z=6.6158 OK
+    ✓ z=6.4665 OK
+    ✓ z=6.3201 OK
+    ✓ z=6.1765 OK
+    ✓ z=6.0358 OK
+    ✓ z=5.8979 OK
+    ✓ z=5.7626 OK
+    ✓ z=5.6300 OK
+    ✓ z=5.5000 OK
+
+  ✓ All nodes passed — reached z=5.5000
+
+======================================================================
+  RESULT: PASSED — safe for production
+======================================================================
+
+======================================================================
+  Finished : $(date)
+  Exit code: ${EXIT_CODE}
+/var/spool/pbs/mom_priv/jobs/1626215.swarm.SC: line 92: [: ${EXIT_CODE}: integer expression expected
+  VERDICT  : ✗ FAILED
+======================================================================
+/var/spool/pbs/mom_priv/jobs/1626215.swarm.SC: line 98: exit: ${EXIT_CODE}: numeric argument required

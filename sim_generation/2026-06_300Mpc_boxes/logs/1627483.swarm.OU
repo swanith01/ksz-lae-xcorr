@@ -1,0 +1,61 @@
+======================================================================
+  kSZ2 x LAE  coeval simulation
+  Seed        : 1
+  Node        : compute-1-6
+  Started     : Tue Jun 30 09:30:35 IST 2026
+  PBS job ID  : 1627483.swarm
+  OMP threads : 32
+======================================================================
+
+======================================================================
+kSZ2 x LAE  —  py21cmfast v4.1.0  —  seed 1
+======================================================================
+  Project root : /user1/swanith/kSZ2_LAE_project_22Jun2026
+  Seed dir     : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1
+  Cache dir    : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_1/cache
+
+  z range      : 5.0 -> 20.0  (step factor 1.02)
+  Nodes        : 65  [5.0000, 20.3090]
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  BOX_LEN      : 300.0 cMpc
+  HII_DIM      : 300  (1.000 cMpc/cell)
+  DIM          : 512  (0.500 cMpc/cell  — same as Jahaan 300Mpc/600)
+  N_THREADS    : 32
+  KEEP_3D_VEL  : True
+  INHOMO_RECO  : True
+  USE_TS_FLUCT : True
+  SAMPLE_METHOD: MASS-LIMITED
+
+======================================================================
+  Computing initial conditions ...
+  ✓ Initial conditions done  (0.7 min)
+
+======================================================================
+  Running 65 coeval nodes  (seed 1)
+======================================================================
+
+Traceback (most recent call last):
+  File "/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/py21cmfast/wrapper/outputs.py", line 216, in get
+    ary = self.arrays[ary]
+          ~~~~~~~~~~~^^^^^
+KeyError: 'hires_density'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/user1/swanith/kSZ2_LAE_project_22Jun2026/codes/run_coeval_seed.py", line 227, in <module>
+    n_halos = save_coeval(coeval, halo_catalog, out_dir)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/user1/swanith/kSZ2_LAE_project_22Jun2026/codes/run_coeval_seed.py", line 153, in save_coeval
+    hires_den = coeval.perturbed_field.get("hires_density").astype(np.float32)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/py21cmfast/wrapper/outputs.py", line 221, in get
+    raise AttributeError(f"The array {ary} does not exist") from e
+AttributeError: The array hires_density does not exist
+
+======================================================================
+  Finished    : Tue Jun 30 09:32:18 IST 2026
+  Exit code   : 1
+======================================================================

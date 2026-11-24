@@ -1,0 +1,188 @@
+======================================================================
+  kSZ2 x LAE  coeval simulation
+  Seed        : 7
+  Node        : compute-1-10
+  Started     : Tue Jun 30 17:23:14 IST 2026
+  PBS job ID  : 1627644.swarm
+  OMP threads : 32
+======================================================================
+
+======================================================================
+kSZ2 x LAE  —  py21cmfast v4.1.0  —  seed 7
+======================================================================
+  Project root : /user1/swanith/kSZ2_LAE_project_22Jun2026
+  Seed dir     : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7
+  Cache dir    : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/cache
+  Halo dir     : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/halo_catalogs
+
+  z range      : 5.0 -> 20.0  (step factor 1.02)
+  Nodes        : 65  [5.0000, 20.3090]
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  BOX_LEN      : 300.0 cMpc
+  HII_DIM      : 300  (1.000 cMpc/cell)
+  DIM          : 600  (0.500 cMpc/cell)
+  N_THREADS    : 32
+  KEEP_3D_VEL  : True
+  INHOMO_RECO  : True
+  USE_TS_FLUCT : True
+  SAMPLE_METHOD: MASS-LIMITED
+
+======================================================================
+  Computing initial conditions ...
+  ✓ Initial conditions done  (0.7 min)
+
+======================================================================
+  PASS 1 — halo catalogs, 65 nodes, low-z -> high-z
+======================================================================
+
+  z= 5.0000  halos=266,856,104  node_time=112.8s  elapsed=1.9min
+  z= 5.1200  halos=263,340,633  node_time=27.8s  elapsed=2.3min
+  z= 5.2424  halos=259,517,510  node_time=26.4s  elapsed=2.8min
+  z= 5.3672  halos=255,397,833  node_time=25.6s  elapsed=3.2min
+  z= 5.4946  halos=250,974,418  node_time=25.8s  elapsed=3.6min
+  z= 5.6245  halos=246,256,035  node_time=24.4s  elapsed=4.0min
+  z= 5.7570  halos=241,261,512  node_time=24.2s  elapsed=4.5min
+  z= 5.8921  halos=235,985,389  node_time=23.7s  elapsed=4.9min
+  z= 6.0300  halos=230,454,796  node_time=24.1s  elapsed=5.3min
+  z= 6.1706  halos=224,675,451  node_time=22.9s  elapsed=5.6min
+  z= 6.3140  halos=218,663,085  node_time=22.4s  elapsed=6.0min
+  z= 6.4602  halos=212,431,117  node_time=21.0s  elapsed=6.4min
+  z= 6.6095  halos=205,994,140  node_time=20.4s  elapsed=6.7min
+  z= 6.7616  halos=199,368,517  node_time=19.5s  elapsed=7.0min
+  z= 6.9169  halos=192,580,064  node_time=18.8s  elapsed=7.3min
+  z= 7.0752  halos=185,636,814  node_time=18.3s  elapsed=7.6min
+  z= 7.2367  halos=178,572,500  node_time=17.9s  elapsed=7.9min
+  z= 7.4014  halos=171,398,344  node_time=17.2s  elapsed=8.2min
+  z= 7.5695  halos=164,145,870  node_time=16.1s  elapsed=8.5min
+  z= 7.7409  halos=156,834,145  node_time=15.8s  elapsed=8.8min
+  z= 7.9157  halos=149,491,135  node_time=14.8s  elapsed=9.0min
+  z= 8.0940  halos=142,148,070  node_time=14.0s  elapsed=9.2min
+  z= 8.2759  halos=134,813,610  node_time=13.7s  elapsed=9.5min
+  z= 8.4614  halos=127,520,706  node_time=12.9s  elapsed=9.7min
+  z= 8.6506  halos=120,292,106  node_time=12.4s  elapsed=9.9min
+  z= 8.8436  halos=113,144,335  node_time=11.8s  elapsed=10.1min
+  z= 9.0405  halos=106,100,239  node_time=10.6s  elapsed=10.3min
+  z= 9.2413  halos=99,178,283  node_time=10.0s  elapsed=10.4min
+  z= 9.4461  halos=92,401,191  node_time=9.4s  elapsed=10.6min
+  z= 9.6551  halos=85,788,398  node_time=8.9s  elapsed=10.7min
+  z= 9.8682  halos=79,364,769  node_time=8.5s  elapsed=10.9min
+  z=10.0855  halos=73,148,156  node_time=7.7s  elapsed=11.0min
+  z=10.3072  halos=67,157,278  node_time=7.1s  elapsed=11.1min
+  z=10.5334  halos=61,412,067  node_time=6.5s  elapsed=11.2min
+  z=10.7641  halos=55,918,549  node_time=5.9s  elapsed=11.3min
+  z=10.9993  halos=50,702,277  node_time=5.5s  elapsed=11.4min
+  z=11.2393  halos=45,759,919  node_time=5.0s  elapsed=11.5min
+  z=11.4841  halos=41,107,063  node_time=4.4s  elapsed=11.6min
+  z=11.7338  halos=36,750,367  node_time=4.3s  elapsed=11.7min
+  z=11.9885  halos=32,684,294  node_time=3.7s  elapsed=11.7min
+  z=12.2482  halos=28,916,870  node_time=3.2s  elapsed=11.8min
+  z=12.5132  halos=25,438,766  node_time=2.9s  elapsed=11.8min
+  z=12.7835  halos=22,251,369  node_time=2.4s  elapsed=11.9min
+  z=13.0591  halos=19,348,040  node_time=2.2s  elapsed=11.9min
+  z=13.3403  halos=16,720,490  node_time=1.9s  elapsed=11.9min
+  z=13.6271  halos=14,357,081  node_time=1.6s  elapsed=12.0min
+  z=13.9197  halos=12,246,140  node_time=1.6s  elapsed=12.0min
+  z=14.2181  halos=10,369,180  node_time=1.3s  elapsed=12.0min
+  z=14.5224  halos= 8,715,103  node_time=1.2s  elapsed=12.0min
+  z=14.8329  halos= 7,268,449  node_time=1.2s  elapsed=12.1min
+  z=15.1495  halos= 6,012,399  node_time=0.9s  elapsed=12.1min
+  z=15.4725  halos= 4,933,125  node_time=0.8s  elapsed=12.1min
+  z=15.8020  halos= 4,012,417  node_time=0.7s  elapsed=12.1min
+  z=16.1380  halos= 3,234,253  node_time=0.6s  elapsed=12.1min
+  z=16.4808  halos= 2,584,311  node_time=0.5s  elapsed=12.1min
+  z=16.8304  halos= 2,045,584  node_time=0.5s  elapsed=12.1min
+  z=17.1870  halos= 1,601,319  node_time=0.5s  elapsed=12.1min
+  z=17.5507  halos= 1,239,821  node_time=0.4s  elapsed=12.1min
+  z=17.9217  halos=   949,135  node_time=0.4s  elapsed=12.1min
+  z=18.3002  halos=   718,938  node_time=0.4s  elapsed=12.1min
+  z=18.6862  halos=   538,255  node_time=0.4s  elapsed=12.2min
+  z=19.0799  halos=   398,558  node_time=0.4s  elapsed=12.2min
+  z=19.4815  halos=   290,431  node_time=0.3s  elapsed=12.2min
+  z=19.8911  halos=   209,211  node_time=0.3s  elapsed=12.2min
+  z=20.3090  halos=   148,352  node_time=0.3s  elapsed=12.2min
+
+  ✓ PASS 1 complete — 12.2 min total
+
+
+======================================================================
+  PASS 2 — coeval fields, 65 nodes, high-z -> low-z
+======================================================================
+
+  z=20.3090  halos=   148,352  node_time=3.1s  elapsed=25.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z20.308959
+  z=19.8911  halos=   209,211  node_time=1.5s  elapsed=27.2min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z19.891137
+  z=19.4815  halos=   290,431  node_time=1.5s  elapsed=28.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z19.481507
+  z=19.0799  halos=   398,558  node_time=1.7s  elapsed=30.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z19.079908
+  z=18.6862  halos=   538,255  node_time=2.0s  elapsed=31.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z18.686185
+  z=18.3002  halos=   718,938  node_time=1.6s  elapsed=33.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z18.300181
+  z=17.9217  halos=   949,135  node_time=1.6s  elapsed=34.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z17.921746
+  z=17.5507  halos= 1,239,821  node_time=1.9s  elapsed=36.2min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z17.550732
+  z=17.1870  halos= 1,601,319  node_time=1.7s  elapsed=37.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z17.186992
+  z=16.8304  halos= 2,045,584  node_time=1.7s  elapsed=39.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z16.830384
+  z=16.4808  halos= 2,584,311  node_time=1.7s  elapsed=41.2min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z16.480769
+  z=16.1380  halos= 3,234,253  node_time=1.7s  elapsed=43.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z16.138008
+  z=15.8020  halos= 4,012,417  node_time=3.4s  elapsed=45.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z15.801969
+  z=15.4725  halos= 4,933,125  node_time=2.0s  elapsed=47.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z15.472519
+  z=15.1495  halos= 6,012,399  node_time=2.0s  elapsed=49.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z15.149528
+  z=14.8329  halos= 7,268,449  node_time=2.1s  elapsed=51.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z14.832871
+  z=14.5224  halos= 8,715,103  node_time=2.0s  elapsed=53.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z14.522422
+  z=14.2181  halos=10,369,180  node_time=1.9s  elapsed=55.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z14.218061
+  z=13.9197  halos=12,246,140  node_time=2.2s  elapsed=57.1min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z13.919668
+  z=13.6271  halos=14,357,081  node_time=2.3s  elapsed=58.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z13.627125
+  z=13.3403  halos=16,720,490  node_time=3.1s  elapsed=60.8min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z13.340319
+  z=13.0591  halos=19,348,040  node_time=2.5s  elapsed=62.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z13.059136
+  z=12.7835  halos=22,251,369  node_time=2.6s  elapsed=64.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z12.783467
+  z=12.5132  halos=25,438,766  node_time=2.8s  elapsed=66.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z12.513203
+  z=12.2482  halos=28,916,870  node_time=3.2s  elapsed=68.1min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z12.248238
+  z=11.9885  halos=32,684,294  node_time=3.4s  elapsed=69.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z11.988469
+  z=11.7338  halos=36,750,367  node_time=3.3s  elapsed=71.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z11.733793
+  z=11.4841  halos=41,107,063  node_time=3.6s  elapsed=73.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z11.484111
+  z=11.2393  halos=45,759,919  node_time=3.5s  elapsed=75.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z11.239324
+  z=10.9993  halos=50,702,277  node_time=3.9s  elapsed=77.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z10.999337
+  z=10.7641  halos=55,918,549  node_time=3.9s  elapsed=79.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z10.764056
+  z=10.5334  halos=61,412,067  node_time=4.4s  elapsed=81.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z10.533388
+  z=10.3072  halos=67,157,278  node_time=4.3s  elapsed=83.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z10.307244
+  z=10.0855  halos=73,148,156  node_time=4.6s  elapsed=85.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z10.085533
+  z= 9.8682  halos=79,364,769  node_time=6.1s  elapsed=87.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z9.868170
+  z= 9.6551  halos=85,788,398  node_time=5.3s  elapsed=89.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z9.655068
+  z= 9.4461  halos=92,401,191  node_time=4.9s  elapsed=91.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z9.446145
+  z= 9.2413  halos=99,178,283  node_time=5.5s  elapsed=93.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z9.241319
+  z= 9.0405  halos=106,100,239  node_time=6.9s  elapsed=95.5min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z9.040509
+  z= 8.8436  halos=113,144,335  node_time=5.7s  elapsed=97.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z8.843636
+  z= 8.6506  halos=120,292,106  node_time=5.8s  elapsed=100.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z8.650623
+  z= 8.4614  halos=127,520,706  node_time=6.9s  elapsed=102.1min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z8.461396
+  z= 8.2759  halos=134,813,610  node_time=8.0s  elapsed=104.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z8.275878
+  z= 8.0940  halos=142,148,070  node_time=7.4s  elapsed=106.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z8.093998
+  z= 7.9157  halos=149,491,135  node_time=7.3s  elapsed=109.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z7.915684
+  z= 7.7409  halos=156,834,145  node_time=8.2s  elapsed=112.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z7.740867
+  z= 7.5695  halos=164,145,870  node_time=8.9s  elapsed=114.7min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z7.569477
+  z= 7.4014  halos=171,398,344  node_time=10.9s  elapsed=117.8min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z7.401449
+  z= 7.2367  halos=178,572,500  node_time=11.6s  elapsed=120.2min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z7.236714
+  z= 7.0752  halos=185,636,814  node_time=10.9s  elapsed=122.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z7.075210
+  z= 6.9169  halos=192,580,064  node_time=10.6s  elapsed=125.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z6.916873
+  z= 6.7616  halos=199,368,517  node_time=10.2s  elapsed=127.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z6.761640
+  z= 6.6095  halos=205,994,140  node_time=9.5s  elapsed=130.2min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z6.609451
+  z= 6.4602  halos=212,431,117  node_time=11.2s  elapsed=133.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z6.460246
+  z= 6.3140  halos=218,663,085  node_time=10.9s  elapsed=136.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z6.313967
+  z= 6.1706  halos=224,675,451  node_time=10.0s  elapsed=139.1min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z6.170555
+  z= 6.0300  halos=230,454,796  node_time=10.4s  elapsed=142.2min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z6.029956
+  z= 5.8921  halos=235,985,389  node_time=10.8s  elapsed=146.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.892114
+  z= 5.7570  halos=241,261,512  node_time=10.9s  elapsed=149.0min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.756975
+  z= 5.6245  halos=246,256,035  node_time=9.8s  elapsed=152.8min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.624485
+  z= 5.4946  halos=250,974,418  node_time=9.8s  elapsed=155.6min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.494593
+  z= 5.3672  halos=255,397,833  node_time=10.3s  elapsed=158.9min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.367248
+  z= 5.2424  halos=259,517,510  node_time=10.7s  elapsed=161.3min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.242400
+  z= 5.1200  halos=263,340,633  node_time=10.8s  elapsed=164.8min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.120000
+  z= 5.0000  halos=266,856,104  node_time=10.9s  elapsed=167.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7/coeval_z5.000000
+
+======================================================================
+  ✓  SEED 7 COMPLETE  —  179.6 min total (both passes)
+  Output: /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_7
+======================================================================
+
+
+======================================================================
+  Finished    : Tue Jun 30 20:23:57 IST 2026
+  Exit code   : 0
+======================================================================

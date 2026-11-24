@@ -1,0 +1,9 @@
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+Testing LOW-z to HIGH-z chaining direction...
+  z=5.0000  real_halos=1238377
+  z=5.1200  real_halos=1220875
+  z=5.2424  real_halos=1202419
+  z=5.3672  real_halos=1182052
+  z=5.4946  real_halos=1160096
+DONE - if all z show nonzero halos, low-to-high direction works

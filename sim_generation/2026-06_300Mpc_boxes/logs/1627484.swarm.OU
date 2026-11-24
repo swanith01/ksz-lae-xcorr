@@ -1,0 +1,5 @@
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+perturbed_field.arrays keys: ['density', 'velocity_z', 'velocity_x', 'velocity_y']
+ionized_box.arrays keys: ['neutral_fraction', 'ionisation_rate_G12', 'mean_free_path', 'z_reion', 'cumulative_recombinations', 'kinetic_temperature']
+ts_box.arrays keys: ['spin_temperature', 'xray_ionised_fraction', 'kinetic_temp_neutral']

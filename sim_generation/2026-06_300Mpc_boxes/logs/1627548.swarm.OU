@@ -1,0 +1,37 @@
+
+======================================================================
+kSZ2 x LAE  —  py21cmfast v4.1.0  —  seed 99
+======================================================================
+  Project root : /user1/swanith/kSZ2_LAE_project_22Jun2026
+  Seed dir     : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_99
+  Cache dir    : /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_99/cache
+
+  z range      : 5.0 -> 20.0  (step factor 1.02)
+  Nodes        : 65  [5.0000, 20.3090]
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  BOX_LEN      : 300.0 cMpc
+  HII_DIM      : 300  (1.000 cMpc/cell)
+  DIM          : 600  (0.500 cMpc/cell)
+  N_THREADS    : 8
+  KEEP_3D_VEL  : True
+  INHOMO_RECO  : True
+  USE_TS_FLUCT : True
+  SAMPLE_METHOD: MASS-LIMITED
+
+======================================================================
+  Computing initial conditions ...
+  ✓ Initial conditions done  (0.8 min)
+
+======================================================================
+  Running 65 coeval nodes  (seed 99)
+======================================================================
+
+  z=20.3090  halos= 1,000,000  node_time=11.9s  elapsed=26.4min  -> /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_99/coeval_z20.308959
+
+======================================================================
+  ✓  SEED 99 COMPLETE  —  26.4 min total
+  Output: /user1/swanith/kSZ2_LAE_project_22Jun2026/seed_99
+======================================================================
+

@@ -1,0 +1,22 @@
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+=== init_box ===
+init_box.arrays keys: ['lowres_density', 'lowres_vx', 'lowres_vy', 'lowres_vz', 'hires_density', 'lowres_vx_2LPT', 'lowres_vy_2LPT', 'lowres_vz_2LPT', 'hires_vx_2LPT', 'hires_vy_2LPT', 'hires_vz_2LPT']
+  lowres_density: shape=(25, 25, 25)
+  lowres_vx: shape=(25, 25, 25)
+  lowres_vy: shape=(25, 25, 25)
+  lowres_vz: shape=(25, 25, 25)
+  hires_density: shape=(50, 50, 50)
+  lowres_vx_2LPT: shape=(25, 25, 25)
+  lowres_vy_2LPT: shape=(25, 25, 25)
+  lowres_vz_2LPT: shape=(25, 25, 25)
+  hires_vx_2LPT: shape=(50, 50, 50)
+  hires_vy_2LPT: shape=(50, 50, 50)
+  hires_vz_2LPT: shape=(50, 50, 50)
+
+=== perturbed_field (direct call, before coeval wrapping) ===
+perturbed_field.arrays keys: ['density', 'velocity_z', 'velocity_x', 'velocity_y']
+  density: shape=(25, 25, 25)
+  velocity_z: shape=(25, 25, 25)
+  velocity_x: shape=(25, 25, 25)
+  velocity_y: shape=(25, 25, 25)

@@ -1,0 +1,100 @@
+======================================================================
+  py21cmfast v4.1.0 bounds-check test
+  Node     : compute-1-1
+  Started  : Sat Jun 27 12:45:55 IST 2026
+======================================================================
+py21cmfast version: 4.1.0
+Testing BOX_LEN=200, HII_DIM=512, DIM=512 ...
+(same params that crashed in p21c_v4dev312)
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  Step 1: Computing initial conditions ...
+  ✓ Initial conditions done
+
+  Step 2: Testing highest redshift node (z~20) ...
+2026-06-27 13:06:57 | ERROR   | Stochasticity.c | sample_halo_progenitors:1067 [pid=289471/thr=0] | Halo buffer overflow (allocated 18524915 halos per thread)
+2026-06-27 13:06:57 | ERROR   | Stochasticity.c | sample_halo_progenitors:1069 [pid=289471/thr=0] | Thread 0: 18524915 halos
+2026-06-27 13:06:57 | ERROR   | Stochasticity.c | sample_halo_progenitors:1069 [pid=289471/thr=0] | Thread 1: 18427877 halos
+2026-06-27 13:06:57 | ERROR   | Stochasticity.c | sample_halo_progenitors:1069 [pid=289471/thr=0] | Thread 2: 15988543 halos
+2026-06-27 13:06:57 | ERROR   | Stochasticity.c | sample_halo_progenitors:1069 [pid=289471/thr=0] | Thread 3: 18443273 halos
+2026-06-27 13:06:57 | ERROR   | Stochasticity.c | sample_halo_progenitors:1071 [pid=289471/thr=0] | If you expected to have an above average halo number try raising config['HALO_CATALOG_MEM_FACTOR']
+In function: ComputeHaloCatalog.  Arguments: (6.1765252208, 6.320055725216, InitialConditions(inputs=cosmo_params: CosmoParams(_SIGMA_8=None, hlittle=0.6766, OMm=0.30964144154550644, OMb=0.04897468161869667, POWER_INDEX=0.9665, _A_s=None, OMn=0.0, OMk=0.0, OMr=8.6e-05, OMtot=1.0, Y_He=0.24, wl=-1.0)
+simulation_options: SimulationOptions(HII_DIM=512, _BOX_LEN=200.0, _DIM=512, _HIRES_TO_LOWRES_FACTOR=None, _LOWRES_CELL_SIZE_MPC=None, NON_CUBIC_FACTOR=1.0, N_THREADS=4, SAMPLER_MIN_MASS=100000000.0, SAMPLER_BUFFER_FACTOR=2.0, N_COND_INTERP=200, N_PROB_INTERP=400, MIN_LOGPROB=-12.0, HALOMASS_CORRECTION=0.89, PARKINSON_G0=1.0, PARKINSON_y1=0.0, PARKINSON_y2=0.0, Z_HEAT_MAX=20.0, ZPRIME_STEP_FACTOR=1.02, MIN_XE_FOR_FCOLL_IN_TAUX=0.001, INITIAL_REDSHIFT=300.0, DELTA_R_FACTOR=1.1, DENSITY_SMOOTH_RADIUS=0.2, DEXM_OPTIMIZE_MINMASS=100000000000.0, DEXM_R_OVERLAP=2.0, CORR_STAR=0.5, CORR_SFR=0.2, CORR_LX=0.2, K_MAX_FOR_CLASS=None)
+matter_options: MatterOptions(HMF='ST', USE_RELATIVE_VELOCITIES=False, POWER_SPECTRUM='EH', PERTURB_ON_HIGH_RES=False, USE_INTERPOLATION_TABLES='hmf-interpolation', MINIMIZE_MEMORY=False, KEEP_3D_VELOCITIES=True, SAMPLE_METHOD='MASS-LIMITED', FILTER='spherical-tophat', HALO_FILTER='spherical-tophat', SMOOTH_EVOLVED_DENSITY_FIELD=False, DEXM_OPTIMIZE=False, PERTURB_ALGORITHM='2LPT', USE_FFTW_WISDOM=False, SOURCE_MODEL='CHMF-SAMPLER')
+astro_params: AstroParams(HII_EFF_FACTOR=30.0, F_STAR10=-1.3, ALPHA_STAR=0.5, F_STAR7_MINI=-2.8, ALPHA_STAR_MINI=0.5, F_ESC10=-1.0, ALPHA_ESC=-0.5, F_ESC7_MINI=-2.0, M_TURN=8.7, R_BUBBLE_MAX=15.0, R_BUBBLE_MIN=0.620350491, ION_Tvir_MIN=4.69897, L_X=40.5, L_X_MINI=40.5, NU_X_THRESH=500.0, X_RAY_SPEC_INDEX=1.0, X_RAY_Tvir_MIN=4.69897, F_H2_SHIELD=0.0, t_STAR=0.5, A_LW=2.0, BETA_LW=0.6, A_VCB=1.0, BETA_VCB=1.8, UPPER_STELLAR_TURNOVER_MASS=11.447, UPPER_STELLAR_TURNOVER_INDEX=-0.6, SIGMA_STAR=0.25, SIGMA_LX=0.5, SIGMA_SFR_LIM=0.19, SIGMA_SFR_INDEX=-0.12, T_RE=20000.0, FIXED_VAVG=25.86, POP2_ION=5000.0, POP3_ION=44021.0, PHOTONCONS_CALIBRATION_END=3.5, CLUMPING_FACTOR=2.0, ALPHA_UVB=5.0, R_MAX_TS=500.0, N_STEP_TS=40, MAX_DVDR=0.2, DELTA_R_HII_FACTOR=1.1, NU_X_BAND_MAX=2000.0, NU_X_MAX=10000.0)
+astro_options: AstroOptions(USE_MINI_HALOS=False, USE_X_RAY_HEATING=True, USE_CMB_HEATING=True, USE_LYA_HEATING=True, INHOMO_RECO=True, USE_TS_FLUCT=True, FIX_VCB_AVG=False, USE_EXP_FILTER=True, CELL_RECOMB=True, PHOTON_CONS_TYPE='no-photoncons', USE_UPPER_STELLAR_TURNOVER=True, M_MIN_in_Mass=True, HALO_SCALING_RELATIONS_MEDIAN=False, HII_FILTER='spherical-tophat', HEAT_FILTER='spherical-tophat', IONISE_ENTIRE_SPHERE=False, INTEGRATION_METHOD_ATOMIC='GAUSS-LEGENDRE', INTEGRATION_METHOD_MINI='GAUSS-LEGENDRE')
+, dummy=False, initial=False, lowres_density=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[-3.763966  -4.1802926]
+  [-4.441569   0.148357 ]]
+
+ [[-4.0270615 -1.9059329]
+  [-1.7008466  0.469298 ]]]
+Min | Max | Mean: -27.071306228637695 | 30.88412094116211 | 0.0
+First elements: [-3.763966   0.569015  -1.831568  -6.039354  -3.2624555  2.26985  ], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/lowres_density')), lowres_vx=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[-6.7661176 -7.3144116]
+  [-6.68052   -6.838694 ]]
+
+ [[-7.5577073 -8.112739 ]
+  [-7.2424054 -7.5484185]]]
+Min | Max | Mean: -30.239391326904297 | 30.984643936157227 | 1.1920928955078125e-07
+First elements: [-6.7661176 -6.224091  -5.870353  -5.108143  -5.211265  -5.701382 ], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/lowres_vx')), lowres_vy=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[-6.256239  -6.150515 ]
+  [-6.909412  -6.75312  ]]
+
+ [[-6.3156657 -5.655174 ]
+  [-6.3346295 -5.983384 ]]]
+Min | Max | Mean: -28.13664436340332 | 29.576087951660156 | -1.367880031466484e-09
+First elements: [-6.256239  -6.6457763 -7.556555  -7.457457  -7.220816  -7.12616  ], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/lowres_vy')), lowres_vz=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[5.597194  5.057684 ]
+  [5.5840483 5.3703   ]]
+
+ [[4.757594  4.9528694]
+  [5.101192  5.488607 ]]]
+Min | Max | Mean: -26.852731704711914 | 30.533472061157227 | 3.341202869933113e-10
+First elements: [5.597194  5.7384377 5.153527  5.3858795 5.661031  5.579523 ], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/lowres_vz')), hires_density=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[-3.763966  -4.1802926]
+  [-4.441569   0.148357 ]]
+
+ [[-4.0270615 -1.9059329]
+  [-1.7008466  0.469298 ]]]
+Min | Max | Mean: -27.071306228637695 | 30.884119033813477 | 3.725290298461914e-09
+First elements: [-3.763966   0.569015  -1.831568  -6.039354  -3.2624555  2.26985  ], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/hires_density')), hires_vx=None, hires_vy=None, hires_vz=None, lowres_vx_2LPT=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[-1.3485984  -0.7371539 ]
+  [-1.1287346  -1.3895266 ]]
+
+ [[-0.07031965  0.04908013]
+  [-0.6674881  -0.66058797]]]
+Min | Max | Mean: -49.085853576660156 | 42.227474212646484 | 0.0
+First elements: [-1.3485984 -1.8240395 -2.5829086 -2.0580313 -2.250138  -2.2467885], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/lowres_vx_2LPT')), lowres_vy_2LPT=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[ 0.6482732   0.62000227]
+  [ 1.8177419   1.7009885 ]]
+
+ [[ 1.1299152   0.6838009 ]
+  [ 0.6857939  -0.20905662]]]
+Min | Max | Mean: -45.335628509521484 | 46.97385025024414 | -2.473825588822365e-10
+First elements: [0.6482732 1.5827708 2.244409  2.0811458 1.4117517 2.2023172], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/lowres_vy_2LPT')), lowres_vz_2LPT=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[[ 0.1424698   0.11462343]
+  [-0.23450929  0.30471563]]
+
+ [[ 1.177895   -0.66393065]
+  [ 0.07953167 -0.8563247 ]]]
+Min | Max | Mean: -42.40687561035156 | 40.008235931396484 | 3.0325963962241076e-11
+First elements: [0.1424698 0.5389886 2.6837533 1.9707041 1.2169902 1.0256554], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/lowres_vz_2LPT')), hires_vx_2LPT=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=False, c_memory=False, computed_in_mem=False, on_disk=True), initfunc=<built-in function zeros>, value=None, cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/hires_vx_2LPT')), hires_vy_2LPT=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=False, c_memory=False, computed_in_mem=False, on_disk=True), initfunc=<built-in function zeros>, value=None, cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/hires_vy_2LPT')), hires_vz_2LPT=Array(shape=(512, 512, 512), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=False, c_memory=False, computed_in_mem=False, on_disk=True), initfunc=<built-in function zeros>, value=None, cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/InitialConditions.h5'), dataset='/InitialConditions/OutputFields/hires_vz_2LPT')), lowres_vcb=None), 1, HaloCatalog(inputs=cosmo_params: CosmoParams(_SIGMA_8=None, hlittle=0.6766, OMm=0.30964144154550644, OMb=0.04897468161869667, POWER_INDEX=0.9665, _A_s=None, OMn=0.0, OMk=0.0, OMr=8.6e-05, OMtot=1.0, Y_He=0.24, wl=-1.0)
+simulation_options: SimulationOptions(HII_DIM=512, _BOX_LEN=200.0, _DIM=512, _HIRES_TO_LOWRES_FACTOR=None, _LOWRES_CELL_SIZE_MPC=None, NON_CUBIC_FACTOR=1.0, N_THREADS=4, SAMPLER_MIN_MASS=100000000.0, SAMPLER_BUFFER_FACTOR=2.0, N_COND_INTERP=200, N_PROB_INTERP=400, MIN_LOGPROB=-12.0, HALOMASS_CORRECTION=0.89, PARKINSON_G0=1.0, PARKINSON_y1=0.0, PARKINSON_y2=0.0, Z_HEAT_MAX=20.0, ZPRIME_STEP_FACTOR=1.02, MIN_XE_FOR_FCOLL_IN_TAUX=0.001, INITIAL_REDSHIFT=300.0, DELTA_R_FACTOR=1.1, DENSITY_SMOOTH_RADIUS=0.2, DEXM_OPTIMIZE_MINMASS=100000000000.0, DEXM_R_OVERLAP=2.0, CORR_STAR=0.5, CORR_SFR=0.2, CORR_LX=0.2, K_MAX_FOR_CLASS=None)
+matter_options: MatterOptions(HMF='ST', USE_RELATIVE_VELOCITIES=False, POWER_SPECTRUM='EH', PERTURB_ON_HIGH_RES=False, USE_INTERPOLATION_TABLES='hmf-interpolation', MINIMIZE_MEMORY=False, KEEP_3D_VELOCITIES=True, SAMPLE_METHOD='MASS-LIMITED', FILTER='spherical-tophat', HALO_FILTER='spherical-tophat', SMOOTH_EVOLVED_DENSITY_FIELD=False, DEXM_OPTIMIZE=False, PERTURB_ALGORITHM='2LPT', USE_FFTW_WISDOM=False, SOURCE_MODEL='CHMF-SAMPLER')
+astro_params: AstroParams(HII_EFF_FACTOR=30.0, F_STAR10=-1.3, ALPHA_STAR=0.5, F_STAR7_MINI=-2.8, ALPHA_STAR_MINI=0.5, F_ESC10=-1.0, ALPHA_ESC=-0.5, F_ESC7_MINI=-2.0, M_TURN=8.7, R_BUBBLE_MAX=15.0, R_BUBBLE_MIN=0.620350491, ION_Tvir_MIN=4.69897, L_X=40.5, L_X_MINI=40.5, NU_X_THRESH=500.0, X_RAY_SPEC_INDEX=1.0, X_RAY_Tvir_MIN=4.69897, F_H2_SHIELD=0.0, t_STAR=0.5, A_LW=2.0, BETA_LW=0.6, A_VCB=1.0, BETA_VCB=1.8, UPPER_STELLAR_TURNOVER_MASS=11.447, UPPER_STELLAR_TURNOVER_INDEX=-0.6, SIGMA_STAR=0.25, SIGMA_LX=0.5, SIGMA_SFR_LIM=0.19, SIGMA_SFR_INDEX=-0.12, T_RE=20000.0, FIXED_VAVG=25.86, POP2_ION=5000.0, POP3_ION=44021.0, PHOTONCONS_CALIBRATION_END=3.5, CLUMPING_FACTOR=2.0, ALPHA_UVB=5.0, R_MAX_TS=500.0, N_STEP_TS=40, MAX_DVDR=0.2, DELTA_R_HII_FACTOR=1.1, NU_X_BAND_MAX=2000.0, NU_X_MAX=10000.0)
+astro_options: AstroOptions(USE_MINI_HALOS=False, USE_X_RAY_HEATING=True, USE_CMB_HEATING=True, USE_LYA_HEATING=True, INHOMO_RECO=True, USE_TS_FLUCT=True, FIX_VCB_AVG=False, USE_EXP_FILTER=True, CELL_RECOMB=True, PHOTON_CONS_TYPE='no-photoncons', USE_UPPER_STELLAR_TURNOVER=True, M_MIN_in_Mass=True, HALO_SCALING_RELATIONS_MEDIAN=False, HII_FILTER='spherical-tophat', HEAT_FILTER='spherical-tophat', IONISE_ENTIRE_SPHERE=False, INTEGRATION_METHOD_ATOMIC='GAUSS-LEGENDRE', INTEGRATION_METHOD_MINI='GAUSS-LEGENDRE')
+, dummy=False, initial=False, redshift=6.1765252208, desc_redshift=6.03580904, halo_masses=Array(shape=(76247447,), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [2.9238659e+09 0.0000000e+00]
+Min | Max | Mean: 0.0 | 3230784028672.0 | 478507104.0
+First elements: [2.9238659e+09 8.2971763e+08 1.0677994e+08 1.2184816e+08 1.3580614e+10
+ 4.5062563e+08], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/7c146f16c0d3cedd1550c7d305317078/6.1765/HaloCatalog.h5'), dataset='/HaloCatalog/OutputFields/halo_masses')), star_rng=Array(shape=(76247447,), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [0.6585212 0.       ]
+Min | Max | Mean: -5.590216159820557 | 5.5803608894348145 | 8.220049494411796e-06
+First elements: [ 0.6585212   0.41474834 -0.381007   -0.02498695 -0.92797446 -1.4113076 ], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/7c146f16c0d3cedd1550c7d305317078/6.1765/HaloCatalog.h5'), dataset='/HaloCatalog/OutputFields/star_rng')), sfr_rng=Array(shape=(76247447,), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [-0.5118579  0.       ]
+Min | Max | Mean: -5.322309970855713 | 5.484818935394287 | 0.00015580482431687415
+First elements: [-0.5118579   1.4453385  -1.5838877  -1.6692678   3.1766512   0.85860103], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/7c146f16c0d3cedd1550c7d305317078/6.1765/HaloCatalog.h5'), dataset='/HaloCatalog/OutputFields/sfr_rng')), xray_rng=Array(shape=(76247447,), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [0.24175477 0.        ]
+Min | Max | Mean: -5.426328659057617 | 6.131178379058838 | -9.79779870249331e-05
+First elements: [ 0.24175477 -0.04240305 -0.3561758  -0.8220021  -0.59606767  1.2504909 ], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/7c146f16c0d3cedd1550c7d305317078/6.1765/HaloCatalog.h5'), dataset='/HaloCatalog/OutputFields/xray_rng')), halo_coords=Array(shape=(76247447, 3), dtype=<class 'numpy.float32'>, state=ArrayState(initialized=True, c_memory=False, computed_in_mem=True, on_disk=True), initfunc=<built-in function zeros>, value=Corners: [[199.99971  16.40766]
+ [  0.        0.     ]]
+Min | Max | Mean: 0.0 | 200.0 | 98.96477508544922
+First elements: [1.9999971e+02 1.9999887e+02 1.6407660e+01 1.9996927e+02 1.3614187e-02
+ 6.0972515e+01], cache_backend=H5Backend(path=PosixPath('/var/tmp/pbs.1622587.swarm/tmp7zv6oo3j/e66b696c10da5b7195792abac6a65fb2/1/7c146f16c0d3cedd1550c7d305317078/6.1765/HaloCatalog.h5'), dataset='/HaloCatalog/OutputFields/halo_coords')), n_halos=75438439, buffer_size=76247447))
+  ✗ FAILED at high-z node: An incorrect argument has been defined or passed! (check the LOG for more info)
+
+======================================================================
+  Finished : Sat Jun 27 13:07:14 IST 2026
+  Exit code: 1
+  VERDICT  : ✗ v4.1.0 still crashes — need newer version or different fix
+======================================================================

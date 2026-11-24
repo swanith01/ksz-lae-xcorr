@@ -1,0 +1,17 @@
+======================================================================
+  py21cmfast v4.1.0 bounds-check test
+  Node     : compute-1-5
+  Started  : Thu Jun 25 20:51:31 IST 2026
+======================================================================
+py21cmfast version: 4.1.0
+Testing BOX_LEN=400, HII_DIM=512, DIM=1024 ...
+(same params that crashed in p21c_v4dev312)
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  Step 1: Computing initial conditions ...
+  ✓ Initial conditions done
+
+  Step 2: Testing highest redshift node (z~20) ...
+=>> PBS: job killed: walltime 1823 exceeded limit 1800
+Terminated

@@ -1,0 +1,23 @@
+======================================================================
+  py21cmfast v4.1.0 bounds-check test
+  Node     : compute-1-12
+  Started  : Sat Jun 27 16:54:39 IST 2026
+======================================================================
+py21cmfast version: 4.1.0
+Testing BOX_LEN=200, HII_DIM=300, DIM=512 ...
+(same params that crashed in p21c_v4dev312)
+/user1/swanith/miniconda3/envs/p21c_v41/lib/python3.11/site-packages/attr/_make.py:3323: UserWarning: You are setting R_BUBBLE_MAX != 50 when INHOMO_RECO=True. This is non-standard (but allowed), and usually occurs upon manual update of INHOMO_RECO
+  v(inst, attr, value)
+
+  Step 1: Computing initial conditions ...
+  ✓ Initial conditions done
+
+  Step 2: Testing highest redshift node (z~20) ...
+  ✓ z=20.3267 OK — no out-of-bounds crash
+  ✗ FAILED at high-z node: Coeval has no attribute 'purge'
+
+======================================================================
+  Finished : Sat Jun 27 17:28:24 IST 2026
+  Exit code: 1
+  VERDICT  : ✗ v4.1.0 still crashes — need newer version or different fix
+======================================================================
