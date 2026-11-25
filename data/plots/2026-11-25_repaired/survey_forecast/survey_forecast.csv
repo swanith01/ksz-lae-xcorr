@@ -1,0 +1,57 @@
+survey,cmb,overlap,shells_in_sim,SN_toy_same_shells,SN_toy_all_shells,SN_sim_LaPlante_model,SN_sim_lae_L42.5,counts
+HSC SILVERRUSH (NB816+NB921),ACT DR6 (white noise),1.0,6.6,0.0018,0.006,0.0103,0.0124,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+HSC SILVERRUSH (NB816+NB921),SPT-3G Main (white noise),0.0,,0.0,0.0,0.0,0.0,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+HSC SILVERRUSH (NB816+NB921),SO (post-ILC),1.0,6.6,0.0013,0.0043,0.0074,0.0091,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+HSC SILVERRUSH (NB816+NB921),SO (white noise),1.0,6.6,0.0016,0.0056,0.0097,0.0116,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+HSC SILVERRUSH (NB816+NB921),CMB-S4 (post-ILC),1.0,6.6,0.0025,0.0085,0.0162,0.0198,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+HSC SILVERRUSH (NB816+NB921),CMB-S4 (white noise),1.0,6.6,0.0114,0.0391,0.0851,0.1066,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+HSC SILVERRUSH (NB816+NB921),CMB-HD (post-ILC),1.0,6.6,0.012,0.0413,0.0919,0.1152,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+HSC SILVERRUSH (NB816+NB921),CMB-HD (white noise),1.0,6.6,0.0326,0.1119,0.2519,0.3168,z=5.7: N/deg2 69 observed; z=6.6: N/deg2 41 observed
+"Subaru PFS (SSP, repo value)",ACT DR6 (white noise),1.0,6.6,0.0027,0.0108,0.0167,0.0194,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+"Subaru PFS (SSP, repo value)",SPT-3G Main (white noise),0.0,,0.0,0.0,0.0,0.0,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+"Subaru PFS (SSP, repo value)",SO (post-ILC),1.0,6.6,0.0019,0.0077,0.0119,0.0142,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+"Subaru PFS (SSP, repo value)",SO (white noise),1.0,6.6,0.0025,0.0102,0.0156,0.0182,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+"Subaru PFS (SSP, repo value)",CMB-S4 (post-ILC),1.0,6.6,0.0038,0.0154,0.0256,0.0306,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+"Subaru PFS (SSP, repo value)",CMB-S4 (white noise),1.0,6.6,0.0175,0.0705,0.1295,0.1603,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+"Subaru PFS (SSP, repo value)",CMB-HD (post-ILC),1.0,6.6,0.0185,0.0745,0.1411,0.1739,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+"Subaru PFS (SSP, repo value)",CMB-HD (white noise),1.0,6.6,0.0502,0.2018,0.3901,0.4781,z=5.7: N/deg2 1256 from LF; z=6.6: N/deg2 493 from LF
+LAGER (DECam NB964),ACT DR6 (white noise),1.0,6.9,0.003,0.003,0.0063,0.0102,z=6.9: N/deg2 17 observed
+LAGER (DECam NB964),SPT-3G Main (white noise),0.0,,0.0,0.0,0.0,0.0,z=6.9: N/deg2 17 observed
+LAGER (DECam NB964),SO (post-ILC),1.0,6.9,0.0021,0.0021,0.0045,0.0073,z=6.9: N/deg2 17 observed
+LAGER (DECam NB964),SO (white noise),1.0,6.9,0.0028,0.0028,0.0059,0.0096,z=6.9: N/deg2 17 observed
+LAGER (DECam NB964),CMB-S4 (post-ILC),1.0,6.9,0.0042,0.0042,0.0102,0.0155,z=6.9: N/deg2 17 observed
+LAGER (DECam NB964),CMB-S4 (white noise),1.0,6.9,0.0193,0.0193,0.0552,0.0741,z=6.9: N/deg2 17 observed
+LAGER (DECam NB964),CMB-HD (post-ILC),1.0,6.9,0.0204,0.0204,0.059,0.0778,z=6.9: N/deg2 17 observed
+LAGER (DECam NB964),CMB-HD (white noise),1.0,6.9,0.0552,0.0552,0.1548,0.2085,z=6.9: N/deg2 17 observed
+"Roman grism deep z=7.5-10, no evolution from z=7",ACT DR6 (white noise),1.0,8 9 9.75,0.019,0.019,0.0133,0.0271,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, no evolution from z=7",SPT-3G Main (white noise),1.0,8 9 9.75,0.1459,0.1459,0.1344,0.2456,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, no evolution from z=7",SO (post-ILC),1.0,8 9 9.75,0.0136,0.0136,0.0094,0.0194,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, no evolution from z=7",SO (white noise),1.0,8 9 9.75,0.0178,0.0178,0.0122,0.0253,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, no evolution from z=7",CMB-S4 (post-ILC),1.0,8 9 9.75,0.0269,0.0269,0.0225,0.0438,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, no evolution from z=7",CMB-S4 (white noise),1.0,8 9 9.75,0.1236,0.1236,0.1147,0.206,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, no evolution from z=7",CMB-HD (post-ILC),1.0,8 9 9.75,0.1306,0.1306,0.1217,0.2249,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, no evolution from z=7",CMB-HD (white noise),1.0,8 9 9.75,0.3531,0.3531,0.3108,0.5751,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",ACT DR6 (white noise),1.0,8 9 9.75,0.0081,0.0081,0.0056,0.0116,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",SPT-3G Main (white noise),1.0,8 9 9.75,0.062,0.062,0.0585,0.106,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",SO (post-ILC),1.0,8 9 9.75,0.0058,0.0058,0.004,0.0083,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",SO (white noise),1.0,8 9 9.75,0.0076,0.0076,0.0052,0.0108,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",CMB-S4 (post-ILC),1.0,8 9 9.75,0.0114,0.0114,0.0096,0.0188,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",CMB-S4 (white noise),1.0,8 9 9.75,0.0525,0.0525,0.05,0.0893,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",CMB-HD (post-ILC),1.0,8 9 9.75,0.0555,0.0555,0.0526,0.0964,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+"Roman grism deep z=7.5-10, LF as observed at z=7.3",CMB-HD (white noise),1.0,8 9 9.75,0.1502,0.1502,0.1338,0.2469,z=8.0: N/deg2 11 from LF; z=9.0: N/deg2 10 from LF; z=9.75: N/deg2 5 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),ACT DR6 (white noise),1.0,8 9 9.75,0.166,0.166,0.0675,0.1389,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),SPT-3G Main (white noise),1.0,8 9 9.75,1.265,1.265,0.6286,1.2053,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),SO (post-ILC),1.0,8 9 9.75,0.1186,0.1186,0.0478,0.0989,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),SO (white noise),1.0,8 9 9.75,0.156,0.156,0.0627,0.1297,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-S4 (post-ILC),1.0,8 9 9.75,0.2354,0.2354,0.1096,0.2192,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-S4 (white noise),1.0,8 9 9.75,1.0739,1.0739,0.537,1.0218,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-HD (post-ILC),1.0,8 9 9.75,1.1342,1.1342,0.5698,1.0926,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+Roman grism 16 deg2 at deep-field depth (Maitra+25 area),CMB-HD (white noise),1.0,8 9 9.75,2.9554,2.9554,1.4494,2.7242,z=8.0: N/deg2 124 from LF; z=9.0: N/deg2 112 from LF; z=9.75: N/deg2 52 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",ACT DR6 (white noise),1.0,8 9 9.75,0.0176,0.0176,0.0074,0.0152,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",SPT-3G Main (white noise),1.0,8 9 9.75,0.1356,0.1356,0.0674,0.1294,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",SO (post-ILC),1.0,8 9 9.75,0.0126,0.0126,0.0052,0.0108,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",SO (white noise),1.0,8 9 9.75,0.0166,0.0166,0.0069,0.0141,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-S4 (post-ILC),1.0,8 9 9.75,0.025,0.025,0.0117,0.0237,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-S4 (white noise),1.0,8 9 9.75,0.1149,0.1149,0.057,0.111,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-HD (post-ILC),1.0,8 9 9.75,0.1214,0.1214,0.0606,0.1153,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
+"Roman HLWAS deep tier (19.2 deg2, grism 6e-17)",CMB-HD (white noise),1.0,8 9 9.75,0.3286,0.3286,0.1559,0.2869,z=8.0: N/deg2 1 from LF; z=9.0: N/deg2 0 from LF; z=9.75: N/deg2 0 from LF
