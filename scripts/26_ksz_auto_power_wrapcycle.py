@@ -58,10 +58,11 @@ def main():
                     help="scipy periodic mode; 'wrap' reproduces ksz-pipeline bit-for-bit")
     ap.add_argument("--ne-convention", choices=("helium", "legacy"), default="helium")
     ap.add_argument("--tau0", choices=("analytic", "none"), default="analytic")
-    ap.add_argument("--field-convention", choices=("physical", "legacy"), default="physical",
+    ap.add_argument("--field-convention", choices=("physical", "legacy", "evolved"), default=None,
                     help="physical (default): velocity_z/(1+z) and delta(z)=D(z)/D(0)*hires_density "
                          "(both missing before 2026-10-06, see utils/field_units.py); "
-                         "legacy: raw fields as in the first run (~700x too high)")
+                         "legacy: raw fields as in the first run (~700x too high); evolved: the repaired evolved "
+                         "density (2026-11-24).  Default: lightcone.field_convention of the config, else physical")
     ap.add_argument("--out-dir", default=None, help="default: <products_root>/ksz_auto_wrapcycle")
     ap.add_argument("--save-maps", action="store_true",
                     help="ALSO save the La Plante map-estimator inputs (kSZ map + bias-weighted "
@@ -77,6 +78,7 @@ def main():
     args = ap.parse_args()
 
     cfg = load_config(args.config)
+    args.field_convention = args.field_convention or cfg.lightcone.get("field_convention") or "physical"
     wrap_seed = args.seed + args.wrap_cycle_seed_offset
     out_dir = args.out_dir or os.path.join(cfg.paths.products_root, "ksz_auto_wrapcycle")
     os.makedirs(out_dir, exist_ok=True)

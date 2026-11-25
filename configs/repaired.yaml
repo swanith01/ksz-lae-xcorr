@@ -1,0 +1,122 @@
+# =============================================================================
+# configs/repaired.yaml  (2026-11-25)
+# Same as configs/fiducial.yaml except for the 2026-11-24 box repair
+# (sim_generation/2026-06_300Mpc_boxes/README.md and repair/):
+#   lightcone.field_convention: evolved  -- evolved 21cmFAST density instead of D(z)/D(0) x the IC field
+#   lightcone.halo_positions:   eulerian -- displaced halo positions instead of the Lagrangian ones
+#   paths.lae_catalogue_root             -- LAE catalogue re-attenuated by scripts/61 (lae_catalogue_v2)
+#   paths.products_root                  -- separate output tree
+# The cosmology block is unchanged (note: the boxes were run with the py21cmfast 4.1 default, astropy Planck18:
+# H0 67.66, Om0 0.30966, Ob0 0.04897 -- slightly different from the values below; to be harmonised separately).
+# =============================================================================
+# =============================================================================
+# fiducial.yaml
+# Single source of truth for the kSZ^2 x LAE (x LBG) cross-correlation paper.
+# Every script and src/ module reads box/cosmology/path parameters from here —
+# nothing should be hardcoded a second time anywhere else.
+# =============================================================================
+
+run_name: "repaired_300Mpc"
+
+# -----------------------------------------------------------------------------
+# Cosmology — 21cmFAST-default, matches ksz2-21cm and the halo simulation
+# itself. NOT the astropy Planck18 preset used in ksz-pipeline; this is a
+# deliberate, documented deviation (see README "Cosmology" section).
+# -----------------------------------------------------------------------------
+cosmology:
+  H0: 67.77          # km/s/Mpc
+  Om0: 0.3086
+  Ob0: 0.0489
+  ns: 0.9665          # scalar spectral index, used in the CAMB C_ell^TT call
+
+# -----------------------------------------------------------------------------
+# Simulation box (py21cmfast coeval boxes)
+# -----------------------------------------------------------------------------
+box:
+  box_len_mpc: 300.0
+  hii_dim: 300         # low-res grid: velocity, xHI, kinetic temp
+  dim: 600             # hi-res grid: density, halos
+  z_min: 5.0
+  z_max: 20.0
+  z_step_factor: 1.02
+  seeds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# -----------------------------------------------------------------------------
+# py21cmfast simulation/astro options (see run_coeval_seed.py for rationale,
+# in particular the two-pass halo-catalog fix from 30 Jun 2026)
+# -----------------------------------------------------------------------------
+p21c_options:
+  sampler_min_mass: 1.0e+8
+  sampler_buffer_factor: 2.0
+  halo_catalog_mem_factor: 3.0
+  keep_3d_velocities: true
+  use_interpolation_tables: "hmf-interpolation"
+  inhomo_reco: true
+  use_ts_fluct: true
+
+# -----------------------------------------------------------------------------
+# Lightcone stitching
+# -----------------------------------------------------------------------------
+lightcone:
+  n_lc_pix: 512          # pixels along line of sight
+  angle_deg: 10.0         # rotation applied per-slab to reduce box repetition
+  field_convention: evolved    # density_evolved.npy (repaired 2026-11-24) + v_pec = vz/(1+z)
+  halo_positions: eulerian     # halo_coords_eulerian.npy (displaced with perturb_halo_catalog, 2026-11-24)
+  fields:
+    continuous: [xH, density, vz]
+    discrete: [halos, lae, lbg]
+
+# -----------------------------------------------------------------------------
+# Tracer selection cuts
+# -----------------------------------------------------------------------------
+tracers:
+  halo_mass_cut_msun: 1.0e+10        # applied to the raw halo tracer map
+  lae_lbg_mass_cut_msun: 3.162e+9    # 10^9.5 -- the mass-cut subset that
+                                     # Jahaan's LAE/LBG ids index into
+  lbg_muv_cut: -17.0
+
+# -----------------------------------------------------------------------------
+# Cross-correlation / power spectrum settings
+# -----------------------------------------------------------------------------
+correlation:
+  n_kbins: 25
+  dz_tracer_bin: 0.5     # width of redshift slices tracers are projected in
+  signals: [kSZ2, xe2, v2, v_proj, v_proj2]
+  tracers: [halo, lae, lbg]
+
+# -----------------------------------------------------------------------------
+# SNR forecast — LAE only. LBG cross-correlations are kept for physics
+# interpretation (see plotting/) but are deliberately excluded from the SNR
+# pipeline; do not add 'lbg' here.
+# -----------------------------------------------------------------------------
+snr:
+  tracer: lae               # LBG deliberately excluded -- see correlation/ note
+  ell_min: 100
+  ell_max: 10000
+  n_ell: 500
+  camb_lmax: 12000
+  f_sky: 0.053               # Roman HLS 2200 deg^2
+  experiments:
+    SO:
+      delta_n_uk_arcmin: 10.0
+      theta_fwhm_arcmin: 1.4
+    CMB-S4:
+      delta_n_uk_arcmin: 2.0
+      theta_fwhm_arcmin: 1.4
+    CMB-HD:
+      delta_n_uk_arcmin: 0.6
+      theta_fwhm_arcmin: 0.16667   # 10 arcsec
+
+# -----------------------------------------------------------------------------
+# Paths — cluster (pride/swarm). Override in configs/variants/ for local runs.
+# -----------------------------------------------------------------------------
+paths:
+  project_root: "/user1/swanith/kSZ2_LAE_project_22Jun2026"
+  coeval_root: "${paths.project_root}"
+  halo_root: "${paths.project_root}"
+  lightcone_root: "/user1/swanith/ksz_lae_lightcones_300Mpc"
+  products_root: "data/products_repaired"           # kept apart from the pre-repair products
+
+  # External inputs -- NOT part of this repo, see data/README.md
+  lae_catalogue_root: "/user1/swanith/lae_catalogue_v2/obs_prop"   # scripts/61 (2026-11-24): Jahaan's intrinsic LAEs re-attenuated on the repaired boxes
+  lbg_catalogue_root: "/user1/jahaan/swanith/int_prop"   # Jahaan's int_prop dir -- access + convention confirmed Aug 2026

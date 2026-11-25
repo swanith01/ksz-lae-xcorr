@@ -39,9 +39,9 @@ class TypeBBuilder(Stitcher):
 
         occ = np.zeros((self.ngrid,) * 3, dtype=np.float32)
         mval = np.zeros((self.ngrid,) * 3, dtype=np.float64)
-        ix = (coords[:, 0] / self.cell).astype(int) % self.ngrid
-        iy = (coords[:, 1] / self.cell).astype(int) % self.ngrid
-        iz = (coords[:, 2] / self.cell).astype(int) % self.ngrid
+        ix = np.floor(coords[:, 0] / self.cell).astype(int) % self.ngrid
+        iy = np.floor(coords[:, 1] / self.cell).astype(int) % self.ngrid
+        iz = np.floor(coords[:, 2] / self.cell).astype(int) % self.ngrid
         for a, b, c, m in zip(ix, iy, iz, masses):
             occ[a, b, c] += 1.0
             mval[a, b, c] += m
@@ -67,9 +67,9 @@ class TypeBBuilder(Stitcher):
 
         occ = np.zeros((self.ngrid,) * 3, dtype=np.float32)
         lgrid = np.zeros((self.ngrid,) * 3, dtype=np.float64)
-        ix = (lae_coords[:, 0] / self.cell).astype(int) % self.ngrid
-        iy = (lae_coords[:, 1] / self.cell).astype(int) % self.ngrid
-        iz = (lae_coords[:, 2] / self.cell).astype(int) % self.ngrid
+        ix = np.floor(lae_coords[:, 0] / self.cell).astype(int) % self.ngrid
+        iy = np.floor(lae_coords[:, 1] / self.cell).astype(int) % self.ngrid
+        iz = np.floor(lae_coords[:, 2] / self.cell).astype(int) % self.ngrid
         for a, b, c, l in zip(ix, iy, iz, lum):
             occ[a, b, c] += 1.0
             lgrid[a, b, c] += l
@@ -97,9 +97,9 @@ class TypeBBuilder(Stitcher):
 
         occ = np.zeros((self.ngrid,) * 3, dtype=np.float32)
         mgrid = np.zeros((self.ngrid,) * 3, dtype=np.float64)
-        ix = (lbg_coords[:, 0] / self.cell).astype(int) % self.ngrid
-        iy = (lbg_coords[:, 1] / self.cell).astype(int) % self.ngrid
-        iz = (lbg_coords[:, 2] / self.cell).astype(int) % self.ngrid
+        ix = np.floor(lbg_coords[:, 0] / self.cell).astype(int) % self.ngrid
+        iy = np.floor(lbg_coords[:, 1] / self.cell).astype(int) % self.ngrid
+        iz = np.floor(lbg_coords[:, 2] / self.cell).astype(int) % self.ngrid
         for a, b, c, m in zip(ix, iy, iz, muv_sel):
             occ[a, b, c] += 1.0
             mgrid[a, b, c] += m

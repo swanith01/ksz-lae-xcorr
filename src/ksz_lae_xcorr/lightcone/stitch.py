@@ -38,8 +38,10 @@ from ksz_lae_xcorr.utils.cosmology import get_cosmology
 from ksz_lae_xcorr.utils.field_units import delta_at_z_from_ic, peculiar_velocity_from_raw
 from ksz_lae_xcorr.utils.grid import block_average_downsample
 
-FIELD_CONVENTIONS = ("legacy", "physical")
+FIELD_CONVENTIONS = ("legacy", "physical", "evolved")
 FIELD_CONVENTION_ENV = "KSZ_FIELD_CONVENTION"
+HALO_POSITIONS = ("lagrangian", "eulerian")
+HALO_POSITIONS_ENV = "KSZ_HALO_POSITIONS"
 _LEGACY_WARNED = False
 
 
@@ -49,6 +51,19 @@ def resolve_field_convention(cfg, explicit: str | None = None) -> str:
     if conv not in FIELD_CONVENTIONS:
         raise ValueError(f"field_convention must be one of {FIELD_CONVENTIONS}, got {conv!r}")
     return conv
+
+
+def resolve_halo_positions(cfg, explicit: str | None = None) -> str:
+    """Which halo coordinates to use.  Precedence: explicit > env KSZ_HALO_POSITIONS > cfg.lightcone.halo_positions >
+    'lagrangian' (the old behaviour).
+      'lagrangian': <halo_root>/seed_<S>/halo_catalogs/halo_coords_z*.npy -- the UNDISPLACED positions returned by
+                    determine_halo_catalog (found 2026-11-24; sim_generation/2026-06_300Mpc_boxes/README.md);
+      'eulerian'  : <coeval_root>/seed_<S>/coeval_z*/halo_coords_eulerian.npy -- displaced with 21cmFAST's
+                    perturb_halo_catalog by sim_generation/.../repair/repair_seed.py (same row order, masses unchanged)."""
+    pos = explicit or os.environ.get(HALO_POSITIONS_ENV) or cfg.lightcone.get("halo_positions") or "lagrangian"
+    if pos not in HALO_POSITIONS:
+        raise ValueError(f"halo_positions must be one of {HALO_POSITIONS}, got {pos!r}")
+    return pos
 
 
 def _warn_legacy_once() -> None:
@@ -146,6 +161,7 @@ class Stitcher:
     def __init__(self, cfg, field_convention: str | None = None):
         self.cfg = cfg
         self.field_convention = resolve_field_convention(cfg, field_convention)
+        self.halo_positions = resolve_halo_positions(cfg)
         self.cosmo = get_cosmology(cfg)
         self.box_len = cfg.box.box_len_mpc
         self.ngrid = cfg.box.hii_dim
@@ -252,6 +268,8 @@ class Stitcher:
                       results stay reproducible.
           'physical': vz -> v_pec = vz/(1+z);  density -> linear delta(z) = D(z)/D(0)*delta_IC
                       (still delta, not 1+delta: callers add 1; no floor applied here).
+          'evolved' : vz -> v_pec = vz/(1+z);  density -> the evolved 21cmFAST density delta(z) on the HII grid
+                      (density_evolved.npy = perturbed_field.density, written by the 2026-11-24 box repair).
         Select per Stitcher via Stitcher(cfg, field_convention=...), the env var
         KSZ_FIELD_CONVENTION, or cfg.lightcone.field_convention."""
         conv = self.field_convention if convention is None else convention
@@ -264,13 +282,17 @@ class Stitcher:
             "density": "hires_density.npy",
             "vz": "velocity_z.npy",
         }
+        if conv == "evolved" and field_name == "density":
+            field_map["density"] = "density_evolved.npy"
         fname = field_map[field_name]
         path = os.path.join(self.root_coeval, f"seed_{seed}", f"coeval_z{z:.6f}", fname)
         if not os.path.exists(path):
             raise FileNotFoundError(f"Missing: {path}")
         box = np.load(path, mmap_mode="r")
 
-        if field_name == "density":
+        if field_name == "density" and conv == "evolved":
+            box = np.array(box, dtype=np.float32)       # already delta(z) on the HII_DIM grid
+        elif field_name == "density":
             # hires_density.npy is saved on the DIM grid (finer than HII_DIM --
             # e.g. 600 vs 300 in the fiducial config). get_slab() assumes every
             # field it's given is already on the self.ngrid (HII_DIM) grid, so
@@ -302,7 +324,7 @@ class Stitcher:
             # field that formula was designed to convert; it's already a
             # genuine comoving peculiar velocity in Mpc/s.
             box = np.array(box)
-            if conv == "physical":
+            if conv in ("physical", "evolved"):
                 box = peculiar_velocity_from_raw(box, z).astype(np.float32)
         return box
 
@@ -310,15 +332,20 @@ class Stitcher:
         halo_dir = os.path.join(self.root_halos, f"seed_{seed}", "halo_catalogs")
         cpath = os.path.join(halo_dir, f"halo_coords_z{z:.6f}.npy")
         mpath = os.path.join(halo_dir, f"halo_masses_z{z:.6f}.npy")
+        if self.halo_positions == "eulerian":
+            cpath = os.path.join(self.root_coeval, f"seed_{seed}", f"coeval_z{z:.6f}", "halo_coords_eulerian.npy")
         if not os.path.exists(cpath) or not os.path.exists(mpath):
-            raise FileNotFoundError(f"Missing halo files at z={z:.6f}")
-        return np.load(cpath, mmap_mode="r"), np.load(mpath, mmap_mode="r")
+            raise FileNotFoundError(f"Missing halo files at z={z:.6f}: {cpath} / {mpath}")
+        coords, masses = np.load(cpath, mmap_mode="r"), np.load(mpath, mmap_mode="r")
+        if coords.shape[0] != masses.shape[0]:
+            raise ValueError(f"halo coords ({coords.shape[0]}) and masses ({masses.shape[0]}) differ at z={z:.6f}")
+        return coords, masses
 
     def _bin_to_grid(self, coords: np.ndarray) -> np.ndarray:
         grid = np.zeros((self.ngrid, self.ngrid, self.ngrid), dtype=np.float32)
-        ix = (coords[:, 0] / self.cell).astype(int) % self.ngrid
-        iy = (coords[:, 1] / self.cell).astype(int) % self.ngrid
-        iz = (coords[:, 2] / self.cell).astype(int) % self.ngrid
+        ix = np.floor(coords[:, 0] / self.cell).astype(int) % self.ngrid
+        iy = np.floor(coords[:, 1] / self.cell).astype(int) % self.ngrid
+        iz = np.floor(coords[:, 2] / self.cell).astype(int) % self.ngrid
         for a, b, c in zip(ix, iy, iz):
             grid[a, b, c] += 1.0
         return grid

@@ -38,6 +38,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", default="configs/fiducial.yaml")
     ap.add_argument("--seed", type=int, required=True)
+    ap.add_argument("--field-convention", choices=("physical", "legacy", "evolved"), default=None,
+                    help="default: lightcone.field_convention of the config, else physical")
     ap.add_argument("--specs", default="default", help="'default' or e.g. 'halo:1e10,lae:42.5,lbg:-19'")
     ap.add_argument("--kmax", type=float, default=0.15, help="Mpc^-1: b_lin uses modes below this")
     ap.add_argument("--every", type=int, default=1, help="use every N-th snapshot (smoke tests)")
@@ -48,10 +50,11 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     cfg = load_config(args.config)
+    conv = args.field_convention or cfg.lightcone.get("field_convention") or "physical"
     specs = suite.parse_specs(args.specs)
     os.makedirs(args.out_dir, exist_ok=True)
     logger = setup_logger(args.seed, cfg.paths.lightcone_root)
-    st = Stitcher(cfg, field_convention="physical")
+    st = Stitcher(cfg, field_convention=conv)
     c = cfg.cosmology
     sig = suite.SigmaOfM(Om=c.Om0, Ob=c.Ob0, h=c.H0 / 100.0, ns=c.ns, sigma8=args.sigma8, backend="auto")
     vol = float(cfg.box.box_len_mpc) ** 3
@@ -62,7 +65,7 @@ def main(argv=None):
     for iz, z in enumerate(sorted(zs)):
         cat = suite.load_catalogues(st, args.seed, z)
         tr = suite.snapshot_tracers(cat, specs, st.ngrid, st.cell)
-        dm = np.asarray(st.load_field_box(args.seed, z, "density", convention="physical"), dtype=np.float32)
+        dm = np.asarray(st.load_field_box(args.seed, z, "density", convention=conv), dtype=np.float32)
         for spec in specs:
             t = tr[spec.name]
             r = suite.halo_bias_from_grids(t["grid"], dm, float(cfg.box.box_len_mpc), kmax=args.kmax)

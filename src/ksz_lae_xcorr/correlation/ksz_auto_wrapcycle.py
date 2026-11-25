@@ -49,7 +49,7 @@ from ksz_lae_xcorr.snr.roman_hls_benchmark import chi_eff_power_weighted
 from ksz_lae_xcorr.utils.cosmology import get_cosmology
 from ksz_lae_xcorr.utils.optical_depth import analytic_tau_below, ne_scale_helium
 
-FIELD_CONVENTIONS = ("physical", "legacy")
+FIELD_CONVENTIONS = ("physical", "legacy", "evolved")
 NE_CONVENTIONS = ("helium", "legacy")
 TAU0_MODES = ("analytic", "none")
 
@@ -76,7 +76,9 @@ def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, l
       'physical' (default): velocity_z / (1+z) (raw is the comoving rate, not v_pec) and
                   delta(z) = D(z)/D(0) * hires_density (raw is the z=0-normalised IC field);
                   1+delta floored at 0 (linear delta can dip below -1 in the tails).
-      'legacy'  : the raw fields exactly as before (known to be ~(1+z)^2 * (rms ratio)^2 too high)."""
+      'legacy'  : the raw fields exactly as before (known to be ~(1+z)^2 * (rms ratio)^2 too high).
+      'evolved' : velocity as 'physical'; density = the evolved 21cmFAST delta(z) (density_evolved.npy, box repair
+                  of 2026-11-24) instead of the linear D(z)/D(0) scaling; 1+delta floored at 0."""
     if field_convention not in FIELD_CONVENTIONS:
         raise ValueError(f"field_convention must be one of {FIELD_CONVENTIONS}, got {field_convention!r}")
     cosmo = get_cosmology(cfg)
@@ -105,7 +107,7 @@ def build_wrapcycle_field_data(cfg, seed: int, wrap_cycle_seed: int, stitcher, l
         "z_lc": z_arr,
         "xHI_lc": lc["xH"].astype(np.float64),
         "density_lc": (np.maximum(1.0 + lc["density"].astype(np.float64), 0.0)
-                       if field_convention == "physical"
+                       if field_convention in ("physical", "evolved")
                        else 1.0 + lc["density"].astype(np.float64)),   # delta -> 1+delta, ONCE
         "velocity_lc": lc["vz"].astype(np.float64),             # Mpc/s, v4: NO conversion
     }

@@ -90,6 +90,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", default="configs/fiducial.yaml", help="decides the kSZ products to start from (in-dir)")
     ap.add_argument("--seed", type=int, required=True)
+    ap.add_argument("--field-convention", choices=("physical", "legacy", "evolved"), default=None,
+                    help="default: lightcone.field_convention of the config, else physical")
     ap.add_argument("--specs", default="default")
     ap.add_argument("--wrap-offset", type=int, default=0)
     ap.add_argument("--in-dir", default=None, help="default: <products_root>/ksz_auto_wrapcycle (seed*_wo*_lpmaps.pkl)")
@@ -98,6 +100,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     cfg = load_config(args.config)
+    conv = args.field_convention or cfg.lightcone.get("field_convention") or "physical"
     specs = suite.parse_specs(args.specs)
     in_dir = args.in_dir or os.path.join(cfg.paths.products_root, "ksz_auto_wrapcycle")
     in_path = os.path.join(in_dir, f"seed{args.seed}_wo{args.wrap_offset}_lpmaps.pkl")
@@ -105,7 +108,7 @@ def main(argv=None):
         prod = pickle.load(f)
     logger = setup_logger(args.seed, cfg.paths.lightcone_root)
     log = logger.info
-    st = Stitcher(cfg, field_convention="physical")
+    st = Stitcher(cfg, field_convention=conv)
     ngrid, cell = int(cfg.box.hii_dim), float(cfg.box.box_len_mpc) / int(cfg.box.hii_dim)
 
     z_arr, chi = build_los_z_grid(get_cosmology(cfg), cfg.box.z_min, cfg.box.z_max, cell)

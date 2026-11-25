@@ -35,6 +35,7 @@ are in Bouwens+21 Table 4).
 | Itoh18 | Itoh et al. 2018, CHORUS II (z=7.0) | 1805.05944 | Table 3 Schechter only (alpha fixed) | binned values not tabulated in the paper |
 | Ouchi10 | Ouchi et al. 2010 (z=6.6) | 1007.2961 | Table 3 Schechter only | apparent L*, alpha fixed to -1.5 |
 | Konno14 | Konno et al. 2014 (z=7.3) | 1404.6066 | Table 4 Schechter only | very large errors |
+| Wold22 | Wold et al. 2022, LAGER z=6.9 four-field LF | 2105.12191 | Schechter fit, text/Table (L* = 8.95e42, phi* = 2.19e-4 Mpc^-3) | alpha fixed at -2.5; added 2026-11-03 for the LAGER pair |
 
 Looked at, no numbers taken: Ota et al. 2017 (1703.02501; LF table beyond the readable text), and the other points that appear in the
 last figure you sent (Hu 2010/2019, Ning 2022, Matthee 2015, Wold 2022, Goto 2021, Zheng 2017, Taylor 2021, Ouchi 2008, Konno 2012):
