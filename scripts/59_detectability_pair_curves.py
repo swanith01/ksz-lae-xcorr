@@ -138,7 +138,7 @@ def main(argv=None):
         a2.set_title("cumulative S/N vs l_max (real shells)", fontsize=9.5)
         from matplotlib.lines import Line2D
         key_h = [Line2D([], [], color="0.3", ls="-", lw=2, label="solid: simulated LAEs (excess not yet confirmed)"),
-                 Line2D([], [], color="0.3", ls="--", lw=2, label="dashed: La Plante's galaxy model (validated; may be low by up to 2x)"),
+                 Line2D([], [], color="0.3", ls="--", lw=2, label="dashed: La Plante's galaxy model (validated: our / La Plante Table 2 = 0.92-1.12)"),
                  Line2D([], [], color="0.3", lw=2.2, label="thick: post-ILC noise" + (" (white only for ACT / SPT-3G)" if True else "")),
                  Line2D([], [], color="0.3", lw=1.1, label="thin: white (instrument) noise"),
                  Line2D([], [], color="0.6", ls=":", label="1$\\sigma$"), Line2D([], [], color="0.6", ls="--", label="3$\\sigma$")]

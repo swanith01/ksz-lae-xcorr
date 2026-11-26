@@ -15,8 +15,8 @@ Everything as in scripts/55-56: S/N = La Plante+22 Eq. 13 summed over l = l_min(
 quadrature; real survey area, observed catalogue counts for the shot noise where known (SILVERRUSH: Ouchi+18; LAGER: Wold+22),
 else the LF above L_min; survey bias by Sheth-Tormen abundance matching; footprint overlap from snr/feasibility.OVERLAP.
 Two signals, both from the simulation, rescaled to the survey's bias:
-  * La Plante's galaxy model (matter x Waters+16 bias): the setup validated against La Plante (scripts/57; per bin our signal is
-    ~2x below theirs at l >~ 1000, so these may be low by up to ~2x);
+  * La Plante's galaxy model (matter x Waters+16 bias): the setup validated against La Plante (scripts/57; on the repaired
+    boxes, configs/repaired.yaml, our Table 2 S/N is 0.92-1.12 of theirs; before the repair it was ~0.7 and per bin ~2x low);
   * the simulated LAEs (lae_L42.5): includes the LAE excess, NOT yet confirmed by a null test.
 Noise: ACT DR6 white noise only (optimistic, no foreground residual); SO and CMB-HD post-ILC (La Plante Fig. 1) and white noise.
 Roman: the LAE density is bracketed by the z = 7.0 LF (no evolution, optimistic) and the z = 7.3 LF (observed decline).
@@ -176,7 +176,7 @@ def main(argv=None):
     a1.set_xlabel("total S/N (all l, all shells of the survey)")
     a1.set_title("S/N per CMB x LAE pair", fontsize=10)
     from matplotlib.lines import Line2D
-    h = [Line2D([], [], marker="o", ls="", color="0.3", ms=8, label="La Plante's galaxy model (validated; may be low by up to 2x)"),
+    h = [Line2D([], [], marker="o", ls="", color="0.3", ms=8, label="La Plante's galaxy model (validated: our / La Plante Table 2 = 0.92-1.12)"),
          Line2D([], [], marker="D", ls="", color="0.3", ms=7, label="simulated LAEs (excess not yet confirmed)"),
          Line2D([], [], marker="o", ls="", color="0.3", mfc="0.3", ms=8, label="filled: post-ILC noise (ACT / SPT-3G: white noise only)"),
          Line2D([], [], marker="o", ls="", color="0.3", mfc="white", ms=8, label="open: white (instrument) noise"),
