@@ -65,7 +65,7 @@ def catalogue(root, z, seed):
 
 def coords_of(seed, z, ids, which):
     f = "halo_coords.npy" if which == "old" else "halo_coords_eulerian.npy"
-    c = np.load(os.path.join(args.boxes_root, f"seed_{seed}", f"coeval_z{z:.6f}", f), mmap_mode="r")
+    c = np.load(os.path.join(args.boxes_root, f"seed_{seed}", f"coeval_z{z:.6f}", f))
     order = np.argsort(ids)
     out = np.empty((ids.size, 3), np.float64)
     out[order] = np.asarray(c[ids[order]], dtype=np.float64)
